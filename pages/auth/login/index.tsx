@@ -13,13 +13,16 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import AppVersion from "../../app-version.json";
+
 function Copyright(props: any) {
   return (
     <Box display={"flex"} flexDirection={"row"}>
       <Typography
         variant="body2"
         color="text.secondary"
-        align="center"
+        align="left"
+        flexGrow={1}
         {...props}
       >
         {"Copyright © PhilHealth "}
@@ -29,10 +32,10 @@ function Copyright(props: any) {
       <Typography
         variant="body2"
         color="text.secondary"
-        align="center"
+        align="right"
         {...props}
       >
-        {"version 2.1.0"}
+        v{AppVersion.version}
       </Typography>
     </Box>
   );
