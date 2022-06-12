@@ -77,3 +77,7 @@ export const isInputPassword = (value: any, minLength: number = 6) => {
   }
   return result;
 };
+// check if all values are true
+export const isAllTrue = (arr: boolean[]) => {
+  return arr.every((element) => element === true);
+};
