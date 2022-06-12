@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,8 +12,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-import AppVersion from "../../app-version.json";
+import app from "../../app-version.json";
+import { isInputNumber, isInputPassword } from "pages/helpers/validate";
 
 function Copyright(props: any) {
   return (
@@ -35,20 +35,34 @@ function Copyright(props: any) {
         align="right"
         {...props}
       >
-        v{AppVersion.version}
+        v{app.version}
       </Typography>
     </Box>
   );
 }
 
-const theme = createTheme();
+const theme = createTheme({
+  palette: {
+    background: {
+      default: "#fafafa",
+    },
+  },
+});
 
-export default function SignIn() {
+export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [idError, setIdError] = useState<any>({});
+  const [passwordError, setPasswordError] = useState<any>({});
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
+    setIdError(isInputNumber("User ID", data.get("company_id_number"), 8));
+    setPasswordError(isInputPassword(data.get("password")));
+
     console.log({
-      email: data.get("email"),
+      company_id: data.get("company_id_number"),
       password: data.get("password"),
     });
   };
@@ -65,11 +79,11 @@ export default function SignIn() {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: "success.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Log in
           </Typography>
           <Box
             component="form"
@@ -81,11 +95,14 @@ export default function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="company-id-number"
+              label="User ID"
+              name="company_id_number"
+              autoComplete="company_id_number"
               autoFocus
+              color={"success"}
+              error={idError.error}
+              helperText={idError.message}
             />
             <TextField
               margin="normal"
@@ -93,21 +110,31 @@ export default function SignIn() {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
+              color={"success"}
+              error={passwordError.error}
+              helperText={passwordError.message}
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+              control={
+                <Checkbox
+                  value={showPassword}
+                  onChange={() => setShowPassword(!showPassword)}
+                  color="success"
+                />
+              }
+              label="Show password"
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              color={"success"}
             >
-              Sign In
+              Log In
             </Button>
             <Grid container>
               <Grid item xs>
@@ -116,8 +143,8 @@ export default function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                <Link href="/auth/register" variant="body2">
+                  {"Don't have an account? Register"}
                 </Link>
               </Grid>
             </Grid>
