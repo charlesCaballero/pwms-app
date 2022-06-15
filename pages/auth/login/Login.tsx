@@ -12,7 +12,6 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import app from "../../app-version.json";
 import { isAllTrue, isInputNumber, isInputPassword } from "helpers/validate";
 import { api, Method } from "helpers/api/helper";
@@ -48,14 +47,6 @@ function Copyright(props: any) {
   );
 }
 
-const theme = createTheme({
-  palette: {
-    background: {
-      default: "#fafafa",
-    },
-  },
-});
-
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [idError, setIdError] = useState<any>({});
@@ -74,7 +65,8 @@ export default function Login() {
           setLoginError(result.message);
         } else {
           Cookies.set("token", result?.data.data.token);
-          Router.push("/");
+          Cookies.set("user_id", result?.data.data.user_id);
+          Router.push("/app/");
         }
       },
     });
@@ -99,91 +91,80 @@ export default function Login() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "success.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Log in
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: "primary.dark" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Log in
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          {loginError ? <Alert severity="error">{loginError}</Alert> : ""}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="company-id-number"
+            label="User ID"
+            name="company_id_number"
+            autoComplete="company_id_number"
+            autoFocus
+            error={idError.error}
+            helperText={idError.message}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            id="password"
+            autoComplete="current-password"
+            error={passwordError.error}
+            helperText={passwordError.message}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                value={showPassword}
+                onChange={() => setShowPassword(!showPassword)}
+              />
+            }
+            label="Show password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
           >
-            {loginError ? <Alert severity="error">{loginError}</Alert> : ""}
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="company-id-number"
-              label="User ID"
-              name="company_id_number"
-              autoComplete="company_id_number"
-              autoFocus
-              color={"success"}
-              error={idError.error}
-              helperText={idError.message}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              autoComplete="current-password"
-              color={"success"}
-              error={passwordError.error}
-              helperText={passwordError.message}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={showPassword}
-                  onChange={() => setShowPassword(!showPassword)}
-                  color="success"
-                />
-              }
-              label="Show password"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              color={"success"}
-            >
-              Log In
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="/auth/register" variant="body2">
-                  {"Don't have an account? Register"}
-                </Link>
-              </Grid>
+            Log In
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2" color={"info.main"}>
+                Forgot password?
+              </Link>
             </Grid>
-          </Box>
+            <Grid item>
+              <Link href="/auth/register" variant="body2" color={"info.main"}>
+                {"Don't have an account? Register"}
+              </Link>
+            </Grid>
+          </Grid>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
-      </Container>
-    </ThemeProvider>
+      </Box>
+      <Copyright sx={{ mt: 8, mb: 4 }} />
+    </Container>
   );
 }

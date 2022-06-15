@@ -31,7 +31,6 @@ import {
 import { useState } from "react";
 import { useMutation } from "react-query";
 import app from "../../app-version.json";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Router from "next/router";
 import AlertDialog from "@components/Dialogs/Alerts";
@@ -61,8 +60,6 @@ function Copyright(props: any) {
     </Box>
   );
 }
-
-const theme = createTheme();
 
 export default function Register() {
   const [officeID, setOfficeID] = useState("");
@@ -134,163 +131,148 @@ export default function Register() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "success.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Register
-          </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Register
+        </Typography>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            {registrationError ? (
+              <Grid item xs={12}>
+                <Alert severity="error">
+                  An error was encoutered while registering. Please try again.
+                </Alert>
+              </Grid>
+            ) : (
+              ""
+            )}
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="company-id-number"
+                label="ID Number"
+                name="company_id_number"
+                error={idError.error}
+                helperText={idError.message}
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoComplete="given-name"
+                name="first_name"
+                required
+                fullWidth
+                id="first-name"
+                label="First Name"
+                error={firstNameError.error}
+                helperText={firstNameError.message}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                id="last-name"
+                label="Last Name"
+                name="last_name"
+                autoComplete="family-name"
+                error={lastNameError.error}
+                helperText={lastNameError.message}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                error={emailError.error}
+                helperText={emailError.message}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth error={officeIdError.error}>
+                <InputLabel required id="office-id" color="success">
+                  Office
+                </InputLabel>
+                <Select
+                  labelId="office-id-select-label"
+                  id="office-id-select"
+                  value={officeID}
+                  label="Office"
+                  onChange={handleOfficeChange}
+                  required
+                >
+                  <MenuItem value={1}>ITMS</MenuItem>
+                  <MenuItem value={2}>GSU</MenuItem>
+                  <MenuItem value={3}>Thirty</MenuItem>
+                </Select>
+                {officeIdError.error ? (
+                  <FormHelperText>{officeIdError.message}</FormHelperText>
+                ) : (
+                  ""
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                id="password"
+                autoComplete="new-password"
+                error={passwordError.error}
+                helperText={passwordError.message}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    value={showPassword}
+                    onChange={() => setShowPassword(!showPassword)}
+                  />
+                }
+                label="Show password"
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
           >
-            <Grid container spacing={2}>
-              {registrationError ? (
-                <Grid item xs={12}>
-                  <Alert severity="error">
-                    An error was encoutered while registering. Please try again.
-                  </Alert>
-                </Grid>
-              ) : (
-                ""
-              )}
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="company-id-number"
-                  label="ID Number"
-                  name="company_id_number"
-                  error={idError.error}
-                  helperText={idError.message}
-                  autoFocus
-                  color="success"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="first_name"
-                  required
-                  fullWidth
-                  id="first-name"
-                  label="First Name"
-                  color="success"
-                  error={firstNameError.error}
-                  helperText={firstNameError.message}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="last-name"
-                  label="Last Name"
-                  name="last_name"
-                  autoComplete="family-name"
-                  color="success"
-                  error={lastNameError.error}
-                  helperText={lastNameError.message}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  color="success"
-                  error={emailError.error}
-                  helperText={emailError.message}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth error={officeIdError.error}>
-                  <InputLabel required id="office-id" color="success">
-                    Office
-                  </InputLabel>
-                  <Select
-                    labelId="office-id-select-label"
-                    id="office-id-select"
-                    value={officeID}
-                    label="Office"
-                    onChange={handleOfficeChange}
-                    required
-                    color="success"
-                  >
-                    <MenuItem value={1}>ITMS</MenuItem>
-                    <MenuItem value={2}>GSU</MenuItem>
-                    <MenuItem value={3}>Thirty</MenuItem>
-                  </Select>
-                  {officeIdError.error ? (
-                    <FormHelperText>{officeIdError.message}</FormHelperText>
-                  ) : (
-                    ""
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  autoComplete="new-password"
-                  color="success"
-                  error={passwordError.error}
-                  helperText={passwordError.message}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      value={showPassword}
-                      onChange={() => setShowPassword(!showPassword)}
-                      color="success"
-                    />
-                  }
-                  label="Show password"
-                />
-              </Grid>
+            Register
+          </Button>
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+              <Link href="/auth/login" variant="body2" color={"info.main"}>
+                Already have an account? Log in
+              </Link>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              color="success"
-            >
-              Register
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/auth/login" variant="body2">
-                  Already have an account? Log in
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
+          </Grid>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
+      </Box>
+      <Copyright sx={{ mt: 5 }} />
 
       <AlertDialog
         isOpen={isAlertOpen}
@@ -299,6 +281,6 @@ export default function Register() {
         title="Registration Complete"
         message="The admin has been notified of your registration. Please wait for a confimation to log-in in your account."
       />
-    </ThemeProvider>
+    </Container>
   );
 }

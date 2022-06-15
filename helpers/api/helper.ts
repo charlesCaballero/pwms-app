@@ -1,4 +1,5 @@
 import axios from "axios";
+import { redirectErrors } from "helpers/utils/authUtils";
 import Cookies from "js-cookie";
 
 // export const url = 'https://icliquesms.apexfuelstation.com/api/v1';
@@ -29,12 +30,8 @@ export const api = (method: Method, endpoint: string, input?: any) => {
     })
       .then((response) => response.data)
       .catch((err) => {
-        if (err.response.status == 401) {
-          return axios({
-            method: Method.POST,
-            url: `${url}/auth/logout`,
-          });
-        }
+        redirectErrors(err.response.status);
+        // return null;
       });
   }
 
@@ -78,12 +75,7 @@ export const api = (method: Method, endpoint: string, input?: any) => {
     })
       .then((response) => response.data)
       .catch((err) => {
-        if (err.response.status == 401) {
-          return axios({
-            method: Method.POST,
-            url: `${url}/auth/logout`,
-          });
-        }
+        redirectErrors(err.response.status);
       });
   }
 
@@ -103,12 +95,7 @@ export const api = (method: Method, endpoint: string, input?: any) => {
     })
       .then((response) => response.data)
       .catch((err) => {
-        if (err.response.status == 401) {
-          return axios({
-            method: Method.POST,
-            url: `${url}/auth/logout`,
-          });
-        }
+        redirectErrors(err.response.status);
       });
   }
 };

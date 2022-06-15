@@ -1,12 +1,10 @@
-import { QueryClient, QueryClientProvider } from "react-query";
+import { Container } from "@mui/material";
 import Login from "./Login";
 
-const queryClient = new QueryClient();
-
-export default function Auth() {
+export default function LoginAuth() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <Container maxWidth={"sm"}>
       <Login />
-    </QueryClientProvider>
+    </Container>
   );
 }

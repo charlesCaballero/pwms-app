@@ -1,12 +1,10 @@
-import { QueryClient, QueryClientProvider } from "react-query";
+import { Container } from "@mui/material";
 import Register from "./Register";
 
-const queryClient = new QueryClient();
-
-export default function Auth() {
+export default function RegisterAuth() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <Container maxWidth={"sm"}>
       <Register />
-    </QueryClientProvider>
+    </Container>
   );
 }

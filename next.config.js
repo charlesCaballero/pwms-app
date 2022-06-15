@@ -4,13 +4,7 @@ const nextConfig = {
   redirects: async () => [
     {
       source: "/",
-      has: [
-        {
-          type: "cookie",
-          key: "token",
-        },
-      ],
-      permanent: false,
+      permanent: true,
       destination: "/auth/login",
     },
   ],
