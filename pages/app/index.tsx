@@ -1,17 +1,9 @@
-import {
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Typography,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { api, Method } from "helpers/api/helper";
 import { userDetails } from "helpers/api/queries";
 import { useQuery } from "react-query";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { logOut } from "helpers/utils/authUtils";
 import Loading from "@components/Loading";
 import AppLayout from "@components/Layouts/AppLayout";
 import Dashboard from "./home/dashboard";
