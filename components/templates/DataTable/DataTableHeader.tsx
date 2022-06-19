@@ -1,3 +1,4 @@
+import { EnhancedTableProps } from "@helpers/interface";
 import {
   Box,
   Checkbox,
@@ -8,22 +9,6 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { visuallyHidden } from "@mui/utils";
-import { ActiveColumns } from "./DataTableToolBar";
-
-type Order = "asc" | "desc";
-
-interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-  headCells: any[];
-  enableSelection: boolean;
-  actionButtons: boolean;
-  activeColumns: Array<ActiveColumns>;
-}
 
 export default function DataTableHeader(props: EnhancedTableProps) {
   const {

@@ -24,27 +24,10 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { alpha } from "@mui/material/styles";
-
-export interface ActiveColumns {
-  id: string;
-  active: boolean;
-  label: string;
-}
-
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-  dense: boolean;
-  onDenseChange: any;
-  activeColumns: Array<ActiveColumns>;
-  onChangeActiveColumn(id: string): void;
-}
-interface HideShowColumnProps {
-  anchorEl: any;
-  onClose(): void;
-  id: string;
-  columns: Array<ActiveColumns>;
-  onChangeActiveColumn(id: string): void;
-}
+import {
+  EnhancedTableToolbarProps,
+  HideShowColumnProps,
+} from "@helpers/interface";
 
 const HideShowColumn = (props: HideShowColumnProps) => {
   const { anchorEl, id, onClose, columns, onChangeActiveColumn } = props;

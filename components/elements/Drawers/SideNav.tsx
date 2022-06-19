@@ -21,11 +21,7 @@ import { useEffect, useState } from "react";
 import { userModulesQuery } from "@helpers/api/queries";
 import { grey } from "@mui/material/colors";
 import { api, Method } from "@utils/queryUtils";
-
-interface SideNavProps {
-  drawerWidth: number;
-  userModules: string;
-}
+import { SideNavProps } from "@helpers/interface";
 
 export default function SideNav(props: SideNavProps) {
   const { drawerWidth, userModules } = props;
