@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import Login from "./Login";
+import Login from "@modules/auth/Login";
 
 export default function LoginAuth() {
   return (

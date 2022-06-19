@@ -5,14 +5,15 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { yellow } from "@mui/material/colors";
-// import Nunito from "@styles/fonts/Nunito/Nunito-VariableFont_wght.ttf";
-
-// import '../assets/fontawesome-pro.css';
-// import '../assets/main.scss';
-// import '../assets/tailwind.css';
+import AppLayout from "@components/layouts/app/AppLayout";
+import { useRouter } from "next/router";
+import "@fontsource/inter/variable-full.css";
+// import "@fontsource/nunito/";
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const queryClient = new QueryClient();
+  const router = useRouter();
+  const pathName = router.pathname;
 
   const theme = createTheme({
     palette: {
@@ -27,7 +28,8 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       },
     },
     typography: {
-      fontFamily: "Nunito",
+      fontFamily: "Inter, sans-serif",
+      // fontFamily: "Nunito, sans-serif",
     },
   });
 
@@ -35,20 +37,16 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <Head>
-          <title>iClique</title>
+          <title>PWMS</title>
           <link rel="shortcut icon" href="/favicon.png" />
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Nunito:wght@500&display=swap"
-            rel="stylesheet"
-          />
         </Head>
-        <Component {...pageProps} />
+        {pathName.includes("auth") || pathName.includes("error") ? (
+          <Component {...pageProps} />
+        ) : (
+          <AppLayout>
+            <Component {...pageProps} />
+          </AppLayout>
+        )}
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

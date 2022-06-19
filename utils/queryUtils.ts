@@ -1,5 +1,5 @@
 import axios from "axios";
-import { redirectErrors } from "helpers/utils/authUtils";
+import { redirectErrors } from "./authUtils";
 import Cookies from "js-cookie";
 
 // export const url = 'https://icliquesms.apexfuelstation.com/api/v1';

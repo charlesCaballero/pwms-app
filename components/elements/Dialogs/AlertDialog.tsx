@@ -9,8 +9,9 @@ import Box from "@mui/material/Box";
 import InfoIcon from "@mui/icons-material/Info";
 import WarningIcon from "@mui/icons-material/Warning";
 import ErrorIcon from "@mui/icons-material/Error";
+import { AlertDialogProps } from "@helpers/interface";
 
-export default function AlertDialog(props: any) {
+export default function AlertDialog(props: AlertDialogProps) {
   const { isOpen, onClose, message, type, title } = props;
 
   return (
@@ -44,7 +45,7 @@ export default function AlertDialog(props: any) {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} variant={"contained"} autoFocus>
+          <Button onClick={() => onClose} variant={"contained"} autoFocus>
             Okay
           </Button>
         </DialogActions>

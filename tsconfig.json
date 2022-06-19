@@ -6,7 +6,8 @@
       "@components/*": ["components/*"],
       "@modules/*": ["modules/*"],
       "@styles/*": ["styles/*"],
-      "@helpers/*": ["helpers/*"]
+      "@helpers/*": ["helpers/*"],
+      "@utils/*": ["utils/*"]
     },
     "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],

@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import Register from "./Register";
+import Register from "@modules/auth/Register";
 
 export default function RegisterAuth() {
   return (

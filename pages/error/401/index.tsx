@@ -1,5 +1,4 @@
 import { Box, Button, Container, Typography } from "@mui/material";
-import WarningTwoToneIcon from "@mui/icons-material/WarningTwoTone";
 import DoNotTouchIcon from "@mui/icons-material/DoNotTouch";
 import Router from "next/router";
 
@@ -22,7 +21,7 @@ export default function UnauthorizedEntry() {
         </Typography>
         <Button
           variant="contained"
-          onClick={() => Router.push("/")}
+          onClick={() => Router.push("/auth/login")}
           size={"small"}
           sx={{ maxWidth: 100, my: 2 }}
         >

@@ -12,9 +12,9 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import app from "../../app-version.json";
+import app from "@helpers/app-version.json";
 import { isAllTrue, isInputNumber, isInputPassword } from "helpers/validate";
-import { api, Method } from "helpers/api/helper";
+import { api, Method } from "@utils/queryUtils";
 import { loginMutation } from "helpers/api/mutations";
 import { AxiosPromise } from "axios";
 import { useMutation } from "react-query";
@@ -66,7 +66,7 @@ export default function Login() {
         } else {
           Cookies.set("token", result?.data.data.token);
           Cookies.set("user_id", result?.data.data.user_id);
-          Router.push("/app/");
+          Router.push("/app/home");
         }
       },
     });

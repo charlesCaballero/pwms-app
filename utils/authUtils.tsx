@@ -2,7 +2,7 @@ import Cookie from "js-cookie";
 import Router from "next/router";
 import { useMutation } from "react-query";
 import { logoutMutation } from "@helpers/api/mutations";
-import { api, Method } from "@helpers/api/helper";
+import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
 
 export const redirectErrors = (status) => {
@@ -10,7 +10,7 @@ export const redirectErrors = (status) => {
     Cookie.remove("token");
     Cookie.remove("user_id");
     // logoutQuery.refetch();
-    Router.push("error/401");
+    Router.push("/error/401");
   }
 };
 

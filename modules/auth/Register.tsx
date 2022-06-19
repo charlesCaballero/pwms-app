@@ -18,7 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { api, Method } from "helpers/api/helper";
+import { api, Method } from "@utils/queryUtils";
 import { registerMutation } from "helpers/api/mutations";
 import { AxiosPromise } from "axios";
 import {
@@ -30,10 +30,10 @@ import {
 } from "helpers/validate";
 import { useState } from "react";
 import { useMutation } from "react-query";
-import app from "../../app-version.json";
+import app from "@helpers/app-version.json";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Router from "next/router";
-import AlertDialog from "@components/Dialogs/Alerts";
+import AlertDialog from "@components/elements/Dialogs/AlertDialog";
 
 function Copyright(props: any) {
   return (
