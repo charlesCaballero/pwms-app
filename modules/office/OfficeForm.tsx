@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   Button,
+  FormHelperText,
 } from "@mui/material";
 import { AddToPhotos, ModeEdit } from "@mui/icons-material";
 import { officeMutation } from "@helpers/api/mutations";
@@ -18,6 +19,7 @@ import { useMutation } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
 import { grey } from "@mui/material/colors";
+import { isAllTrue, isInputEmpty } from "@helpers/validate";
 
 type FormValues = {
   name: string;
@@ -28,6 +30,9 @@ type FormValues = {
 export default function OfficeForm(props: FormProps) {
   const { isOpen, onClose, rowData } = props;
   const { register, handleSubmit, reset } = useForm<FormValues>();
+  const [officeNameError, setOfficeNameError] = useState<any>({});
+  const [officeAcronymError, setOfficeAcronymError] = useState<any>({});
+  const [officeCodeError, setOfficeCodeError] = useState<any>({});
 
   const updateOffice = useMutation((values: any) => {
     return api(
@@ -41,11 +46,11 @@ export default function OfficeForm(props: FormProps) {
   });
 
   const handleFormClose = () => {
-    resetForm();
+    clearForm();
     onClose(false);
   };
 
-  const resetForm = () => {
+  const clearForm = () => {
     reset({
       name: "",
       acronym: "",
@@ -60,26 +65,43 @@ export default function OfficeForm(props: FormProps) {
         acronym: rowData.acronym,
         code: rowData.code,
       });
-    }
+    } else clearForm();
   }, [rowData]);
 
   const handleFormSubmit = handleSubmit((values) => {
-    rowData
-      ? updateOffice.mutateAsync(values, {
-          onSuccess: () => {
-            console.log("result: " + JSON.stringify(values));
-            resetForm();
-            onClose(true);
-          },
-          onError: () => {},
-        })
-      : addOffice.mutateAsync(values, {
-          onSuccess: () => {
-            resetForm();
-            onClose(true);
-          },
-          onError: () => {},
-        });
+    const isNameError = isInputEmpty("Office Name", values.name);
+    const isAcronymError = isInputEmpty("Acronym", values.acronym);
+    const isCodeError = isInputEmpty("Office Code", values.code);
+
+    if (
+      isAllTrue([!isNameError.error, !isAcronymError.error, !isCodeError.error])
+    ) {
+      rowData
+        ? updateOffice.mutateAsync(values, {
+            onSuccess: (result) => {
+              // console.log("result: " + JSON.stringify(result));
+              if (result) {
+                clearForm();
+                onClose(true);
+              }
+            },
+            onError: () => {},
+          })
+        : addOffice.mutateAsync(values, {
+            onSuccess: (result) => {
+              // console.log("result: " + JSON.stringify(result));
+              if (result.data) {
+                clearForm();
+                onClose(true);
+              }
+            },
+            onError: () => {},
+          });
+    }
+
+    setOfficeNameError(isNameError);
+    setOfficeAcronymError(isAcronymError);
+    setOfficeCodeError(isCodeError);
   });
 
   return (
@@ -89,23 +111,27 @@ export default function OfficeForm(props: FormProps) {
       open={isOpen}
       onClose={() => handleFormClose()}
     >
-      <DialogTitle>
+      <DialogTitle variant="h6" fontWeight={"bold"}>
         {rowData ? (
-          <Typography variant="h6" fontWeight={"bold"}>
-            <ModeEdit sx={{ mb: -0.8, color: "primary.main", mr: 2 }} />
-            Edit Office
-          </Typography>
+          <ModeEdit sx={{ mb: -0.8, color: "primary.main", mr: 2 }} />
         ) : (
-          <Typography variant="h6" fontWeight={"bold"}>
-            <AddToPhotos sx={{ mb: -0.8, color: "primary.main", mr: 2 }} />
-            New Office
-          </Typography>
+          <AddToPhotos sx={{ mb: -0.8, color: "primary.main", mr: 2 }} />
         )}
+        {rowData ? "Edit Office" : " New Office"}
       </DialogTitle>
       <Box component={"form"} onSubmit={handleFormSubmit}>
         <DialogContent>
-          <FormControl fullWidth variant="standard" sx={{ my: 2 }}>
-            <Typography variant="subtitle2" fontWeight={"bold"}>
+          <FormControl
+            error={officeNameError.error}
+            fullWidth
+            variant="standard"
+            sx={{ my: 2 }}
+          >
+            <Typography
+              variant="subtitle2"
+              fontWeight={"bold"}
+              color={officeNameError.error ? "error" : "default"}
+            >
               Office Name
             </Typography>
             <Input
@@ -118,16 +144,29 @@ export default function OfficeForm(props: FormProps) {
                 pt: 1,
               }}
             />
+            {officeNameError.error ? (
+              <FormHelperText>{officeNameError.message}</FormHelperText>
+            ) : (
+              ""
+            )}
           </FormControl>
           <Box display={"flex"} sx={{ my: 2 }}>
             <Box flexGrow={1} pr={2}>
-              <FormControl fullWidth variant="standard">
-                <Typography variant="subtitle2" fontWeight={"bold"}>
+              <FormControl
+                error={officeAcronymError.error}
+                fullWidth
+                variant="standard"
+              >
+                <Typography
+                  variant="subtitle2"
+                  fontWeight={"bold"}
+                  color={officeAcronymError.error ? "error" : "default"}
+                >
                   Acronym
                 </Typography>
                 <Input
-                  placeholder=""
-                  inputProps={{ "aria-label": "office-name" }}
+                  placeholder="Acronym"
+                  inputProps={{ "aria-label": "office-acronym" }}
                   {...register("acronym")}
                   sx={{
                     bgcolor: grey[200],
@@ -135,16 +174,29 @@ export default function OfficeForm(props: FormProps) {
                     pt: 1,
                   }}
                 />
+                {officeAcronymError.error ? (
+                  <FormHelperText>{officeAcronymError.message}</FormHelperText>
+                ) : (
+                  ""
+                )}
               </FormControl>
             </Box>
             <Box flexGrow={1} pl={2}>
-              <FormControl fullWidth variant="standard">
-                <Typography variant="subtitle2" fontWeight={"bold"}>
+              <FormControl
+                error={officeCodeError.error}
+                fullWidth
+                variant="standard"
+              >
+                <Typography
+                  variant="subtitle2"
+                  fontWeight={"bold"}
+                  color={officeCodeError.error ? "error" : "default"}
+                >
                   Office Code
                 </Typography>
                 <Input
                   placeholder="Code"
-                  inputProps={{ "aria-label": "office-name" }}
+                  inputProps={{ "aria-label": "office-code" }}
                   {...register("code")}
                   sx={{
                     bgcolor: grey[200],
@@ -152,6 +204,11 @@ export default function OfficeForm(props: FormProps) {
                     pt: 1,
                   }}
                 />
+                {officeCodeError.error ? (
+                  <FormHelperText>{officeCodeError.message}</FormHelperText>
+                ) : (
+                  ""
+                )}
               </FormControl>
             </Box>
           </Box>

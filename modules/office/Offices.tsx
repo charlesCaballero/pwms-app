@@ -3,9 +3,14 @@ import { officesQuery } from "@helpers/api/queries";
 import { Box, Button, Typography } from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import DataTable from "@components/templates/DataTable";
 import DeleteDialog from "@components/elements/Dialogs/DeleteDialog";
+import { officeMutation } from "@helpers/api/mutations";
+import { AxiosPromise } from "axios";
+import Loading from "@components/elements/Loader/Loading";
+import SnackbarAlert from "@components/elements/SnackBar/SnackBarAlert";
+import { Actions, SnackBarData } from "@helpers/interface";
 
 const tableHeader = [
   {
@@ -34,8 +39,14 @@ export default function Offices() {
   const [limit, setLimit] = useState<number>(5);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [rowsCount, setRowsCount] = useState<number>(0);
-  const [rowData, setFormData] = useState<Object>(null);
+  const [rowData, setRowData] = useState<any>(null);
   const [isDeleteDailogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [snackbarData, setSnackBarData] = useState<SnackBarData>({
+    isOpen: false,
+    message: "",
+    type: "error",
+  });
+  const [action, setAction] = useState<Actions>(null);
 
   const queryOffices = useQuery(
     "offices",
@@ -48,36 +59,99 @@ export default function Offices() {
     { refetchOnWindowFocus: false }
   );
 
+  const deleteOffice = useMutation(() => {
+    return api(
+      Method.DELETE,
+      `${officeMutation}/${rowData?.id}`
+    ) as AxiosPromise<any>;
+  });
+
+  const handleFormOpen = () => {
+    setIsFormOpen(true);
+    setAction("add");
+  };
+
   const handleFormClose = (isSubmitted) => {
     if (isSubmitted) {
       queryOffices.refetch();
     }
     setIsFormOpen(false);
-    setFormData(null);
+    setRowData(null);
   };
 
   const handleRowEdit = (row) => {
-    setFormData(row);
+    setAction("edit");
+    setRowData(row);
     setIsFormOpen(true);
   };
 
   const handleRowDelete = (row) => {
-    setFormData(row);
+    setRowData(row);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackBarData({
+      isOpen: false,
+      message: snackbarData.message,
+      type: snackbarData.type,
+    });
+    setAction(null);
   };
 
   const handleDeleteDialogClose = (isDeleted) => {
     if (isDeleted) {
-      queryOffices.refetch();
+      deleteOffice.mutateAsync(null, {
+        onSuccess: (result) => {
+          if (result) {
+            queryOffices.refetch();
+            setAction("delete");
+          }
+        },
+        onError: (error) => {
+          setSnackBarData({
+            isOpen: true,
+            message: JSON.stringify(error),
+            type: "error",
+          });
+        },
+      });
     }
+
     setIsDeleteDialogOpen(false);
-    setFormData(null);
+    setRowData(null);
   };
 
   useEffect(() => {
     if (queryOffices.data) {
       setOffices([...queryOffices?.data.data]);
       setRowsCount(queryOffices?.data.rows);
+
+      if (action === "edit") {
+        setSnackBarData({
+          isOpen: true,
+          message: "Record is successfully updated.",
+          type: "success",
+        });
+      } else if (action === "add") {
+        setSnackBarData({
+          isOpen: true,
+          message: "New office is successfully added.",
+          type: "success",
+        });
+      } else if (action === "delete") {
+        setSnackBarData({
+          isOpen: true,
+          message: "Record is deleted successfully.",
+          type: "success",
+        });
+      } else {
+        setSnackBarData({
+          isOpen: false,
+          message: "",
+          type: "error",
+        });
+      }
     }
   }, [queryOffices.data]);
 
@@ -108,7 +182,7 @@ export default function Offices() {
           <Button
             variant="contained"
             sx={{ height: 40, my: 2 }}
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => handleFormOpen()}
           >
             Add Office
           </Button>
@@ -136,6 +210,13 @@ export default function Offices() {
         isOpen={isDeleteDailogOpen}
         onClose={(isDeleted) => handleDeleteDialogClose(isDeleted)}
         rowData={rowData}
+      />
+      <Loading isOpen={queryOffices.isLoading} />
+      <SnackbarAlert
+        isOpen={snackbarData.isOpen}
+        type={snackbarData.type}
+        message={snackbarData.message}
+        onClose={() => handleCloseSnackbar()}
       />
     </Box>
   );

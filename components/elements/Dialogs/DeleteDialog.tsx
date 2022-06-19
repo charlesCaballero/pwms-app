@@ -13,21 +13,29 @@ export default function DeleteDialog(props: DeleteDialogProps) {
   const { isOpen, onClose, rowData, isStrict = true } = props;
   const [confirmDelete, setConfirmDelete] = useState<string>("");
 
+  const handleConfirmDelete = (confirmed) => {
+    onClose(confirmed);
+    setConfirmDelete("");
+  };
+
   return (
     <div>
       <Dialog
         open={isOpen}
-        onClose={() => onClose(false)}
+        onClose={() => handleConfirmDelete(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         fullWidth
         maxWidth={"sm"}
       >
-        <DialogTitle id="alert-dialog-title">
-          <Typography variant="h6" fontWeight={"bold"}>
-            <Delete sx={{ mb: -0.8, color: "error.main", mr: 2 }} />
-            Delete ?
-          </Typography>
+        <DialogTitle
+          id="alert-dialog-title"
+          variant="h6"
+          component={"h2"}
+          fontWeight={"bold"}
+        >
+          <Delete sx={{ mb: -0.8, color: "error.main", mr: 2 }} />
+          Delete ?
         </DialogTitle>
         <DialogContent>
           <Alert severity="error">
@@ -64,9 +72,9 @@ export default function DeleteDialog(props: DeleteDialogProps) {
           )}
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => onClose(false)}>Cancel</Button>
+          <Button onClick={() => handleConfirmDelete(false)}>Cancel</Button>
           <Button
-            onClick={() => onClose(false)}
+            onClick={() => handleConfirmDelete(true)}
             color={"error"}
             variant={"contained"}
             disabled={confirmDelete !== "Delete" && isStrict}
