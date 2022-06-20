@@ -1,7 +1,16 @@
+import { ReactElement } from "react";
+
 export type Actions = "edit" | "add" | "delete" | null;
 export interface SideNavProps {
   drawerWidth: number;
   userModules: string;
+}
+
+export interface PageLayoutProps {
+  pageTitle: string;
+  dataQuery: any;
+  dataMutation: any;
+  tableHeader: HeadCell[];
 }
 
 export interface HeadCell {
@@ -9,6 +18,11 @@ export interface HeadCell {
   id: string;
   label: string;
   numeric: boolean;
+}
+
+export interface OrderSetting {
+  order: Order;
+  column: string;
 }
 
 export interface DataTableProps {
@@ -23,6 +37,7 @@ export interface DataTableProps {
   setRowsPerPage(limit: number): any;
   onRowEdit?(row: Object): any;
   onRowDelete?(row: Object): any;
+  onColumnSort?(order: Order, column: string): void;
 }
 
 export interface ActiveColumns {
