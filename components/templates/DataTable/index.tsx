@@ -15,9 +15,7 @@ import {
 } from "@mui/material";
 import DataTableHeader from "./DataTableHeader";
 import DataTableToolBar from "./DataTableToolBar";
-import { DataTableProps } from "@helpers/interface";
-
-type Order = "asc" | "desc";
+import { DataTableProps, Order } from "@helpers/interface";
 
 export default function DataTable(props: DataTableProps) {
   const {
@@ -32,6 +30,7 @@ export default function DataTable(props: DataTableProps) {
     rowsCount,
     onRowEdit,
     onRowDelete,
+    onColumnSort,
   } = props;
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<any>("");
@@ -120,6 +119,10 @@ export default function DataTable(props: DataTableProps) {
     // arr !== activeColumns ? setActiveColumns(arr) : null;
     setActiveColumns([...arr]);
   }, []);
+
+  React.useEffect(() => {
+    onColumnSort(order, orderBy);
+  }, [order, orderBy]);
 
   return (
     <Box sx={{ width: "100%" }}>

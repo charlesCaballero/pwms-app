@@ -22,12 +22,19 @@ import { userModulesQuery } from "@helpers/api/queries";
 import { grey } from "@mui/material/colors";
 import { api, Method } from "@utils/queryUtils";
 import { SideNavProps } from "@helpers/interface";
+import Loading from "../Loader/Loading";
 
 export default function SideNav(props: SideNavProps) {
   const { drawerWidth, userModules } = props;
   const router = useRouter();
   const pathName = router.pathname;
   const [modules, setModules] = useState<any>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  Router.events.on("routeChangeStart", () => setLoading(true));
+  Router.events.on("routeChangeComplete", () => setLoading(false));
+  Router.events.on("routeChangeError", () => setLoading(false));
+
   const queryModules = useQuery(
     "modulesArr",
     () => {
@@ -41,6 +48,11 @@ export default function SideNav(props: SideNavProps) {
     },
     { refetchOnWindowFocus: false }
   );
+
+  const handleRoute = (ref) => {
+    Router.push(ref);
+    setLoading(true);
+  };
 
   useEffect(() => {
     if (userModules) queryModules.refetch();
@@ -83,7 +95,7 @@ export default function SideNav(props: SideNavProps) {
                 backgroundColor:
                   module.reference === pathName ? grey[300] : "none",
               }}
-              onClick={() => Router.push(module.reference)}
+              onClick={() => handleRoute(module.reference)}
             >
               <ListItemIcon
                 sx={{
@@ -110,6 +122,7 @@ export default function SideNav(props: SideNavProps) {
           </ListItem>
         ))}
       </List>
+      <Loading isOpen={loading} />
     </Drawer>
   );
 }
