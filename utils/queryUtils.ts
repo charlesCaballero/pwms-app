@@ -3,7 +3,8 @@ import { redirectErrors } from "./authUtils";
 import Cookies from "js-cookie";
 
 // export const url = 'https://icliquesms.apexfuelstation.com/api/v1';
-export const url = "http://127.0.0.1:8000/api";
+export const url = "http://172.22.123.129/api";
+// export const url = "http://127.0.0.1:8000/api";
 
 export enum Method {
   GET = "get",

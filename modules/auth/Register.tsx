@@ -31,9 +31,9 @@ import {
 import { useState } from "react";
 import { useMutation } from "react-query";
 import app from "@helpers/app-version.json";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Router from "next/router";
 import AlertDialog from "@components/elements/Dialogs/AlertDialog";
+import AppLogo from "@assets/images/pwms-logo-2.png";
 
 function Copyright(props: any) {
   return (
@@ -131,7 +131,7 @@ export default function Register() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="md">
       <CssBaseline />
       <Box
         sx={{
@@ -141,10 +141,11 @@ export default function Register() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <LockOutlinedIcon />
+        <Avatar sx={{ height: 100, width:100 }} variant={'square'}
+        alt="PWMS Logo"
+        src={AppLogo.src}>
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" pt={3}>
           Register
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>

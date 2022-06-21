@@ -15,6 +15,7 @@ yarn dev
 To update version after build/commit:
 
 ```bash
+npm install -g grunt-cli
 grunt bump
 ```
 

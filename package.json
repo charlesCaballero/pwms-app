@@ -1,9 +1,9 @@
 {
   "name": "pwms-v2-app",
-  "version": "2.0.8",
+  "version": "2.0.11",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 172.22.123.129",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -22,7 +22,8 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-hook-form": "^7.32.2",
-    "react-query": "^3.39.1"
+    "react-query": "^3.39.1",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "eslint": "8.17.0",
