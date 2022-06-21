@@ -1,18 +1,30 @@
 import OfficeForm from "@modules/office/OfficeForm";
 import { Box, Button, Typography } from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import DataTable from "@components/templates/DataTable";
-import DeleteDialog from "@components/elements/Dialogs/DeleteDialog";
 import { AxiosPromise } from "axios";
-import SnackbarAlert from "@components/elements/SnackBar/SnackBarAlert";
+import dynamic from "next/dynamic";
 import {
   Actions,
   OrderSetting,
   PageLayoutProps,
   SnackBarData,
 } from "@helpers/interface";
+import SkeletonLoading from "@components/Loader/SkeletonLoading";
+
+const DataTable = dynamic(() => import("@components/DataTable"), {
+  suspense: true,
+});
+const DeleteDialog = dynamic(() => import("@components/Dialogs/DeleteDialog"), {
+  suspense: true,
+});
+const SnackbarAlert = dynamic(
+  () => import("@components/SnackBar/SnackBarAlert"),
+  {
+    suspense: true,
+  }
+);
 
 export default function PageLayout(props: PageLayoutProps) {
   const { pageTitle, dataQuery, dataMutation, tableHeader } = props;
@@ -156,68 +168,69 @@ export default function PageLayout(props: PageLayoutProps) {
 
   return (
     <Box pt={1}>
-      <Box display={"flex"}>
-        <Box
-          display={"flex"}
-          flexDirection={"column"}
-          alignItems={"flex-start"}
-          justifyContent={"flex-end"}
-          flexGrow={1}
-        >
-          <Typography component={"h1"} variant="h3">
-            {pageTitle}
-          </Typography>
-        </Box>
-        <Box
-          display={"flex"}
-          flexDirection={"column"}
-          alignItems={"flex-end"}
-          justifyContent={"flex-end"}
-        >
-          <Button
-            variant="contained"
-            sx={{ height: 40, my: 2 }}
-            onClick={() => handleFormOpen()}
+      <Suspense fallback={<SkeletonLoading />}>
+        <Box display={"flex"}>
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"flex-start"}
+            justifyContent={"flex-end"}
+            flexGrow={1}
           >
-            Add {pageTitle.slice(0, -1)}
-          </Button>
+            <Typography component={"h1"} variant="h3">
+              {pageTitle}
+            </Typography>
+          </Box>
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"flex-end"}
+            justifyContent={"flex-end"}
+          >
+            <Button
+              variant="contained"
+              sx={{ height: 40, my: 2 }}
+              onClick={() => handleFormOpen()}
+            >
+              Add {pageTitle.slice(0, -1)}
+            </Button>
+          </Box>
         </Box>
-      </Box>
-      <DataTable
-        header={tableHeader}
-        rows={data}
-        actionButtons={true}
-        enableSelection={false}
-        page={page}
-        setPage={(newPage) => setPage(newPage)}
-        rowsPerPage={limit}
-        setRowsPerPage={(newLimit) => setLimit(newLimit)}
-        rowsCount={rowsCount}
-        onRowEdit={(row) => handleRowEdit(row)}
-        onRowDelete={(id) => handleRowDelete(id)}
-        onColumnSort={(order, column) => handleColumnSort(order, column)}
-      />
-
-      <DeleteDialog
-        isOpen={isDeleteDailogOpen}
-        onClose={(isDeleted) => handleDeleteDialogClose(isDeleted)}
-        rowData={rowData}
-      />
-      <SnackbarAlert
-        isOpen={snackbarData.isOpen}
-        type={snackbarData.type}
-        message={snackbarData.message}
-        onClose={() => handleCloseSnackbar()}
-      />
-      {pageTitle === "Offices" ? (
-        <OfficeForm
-          isOpen={isFormOpen}
-          onClose={(isSubmitted) => handleFormClose(isSubmitted)}
+        <DataTable
+          header={tableHeader}
+          rows={data}
+          actionButtons={true}
+          enableSelection={false}
+          page={page}
+          setPage={(newPage) => setPage(newPage)}
+          rowsPerPage={limit}
+          setRowsPerPage={(newLimit) => setLimit(newLimit)}
+          rowsCount={rowsCount}
+          onRowEdit={(row) => handleRowEdit(row)}
+          onRowDelete={(id) => handleRowDelete(id)}
+          onColumnSort={(order, column) => handleColumnSort(order, column)}
+        />
+        <DeleteDialog
+          isOpen={isDeleteDailogOpen}
+          onClose={(isDeleted) => handleDeleteDialogClose(isDeleted)}
           rowData={rowData}
         />
-      ) : (
-        ""
-      )}
+        <SnackbarAlert
+          isOpen={snackbarData.isOpen}
+          type={snackbarData.type}
+          message={snackbarData.message}
+          onClose={() => handleCloseSnackbar()}
+        />
+        {pageTitle === "Offices" ? (
+          <OfficeForm
+            isOpen={isFormOpen}
+            onClose={(isSubmitted) => handleFormClose(isSubmitted)}
+            rowData={rowData}
+          />
+        ) : (
+          ""
+        )}
+      </Suspense>
     </Box>
   );
 }

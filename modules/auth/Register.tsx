@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
-import { registerMutation } from "helpers/api/mutations";
+import { registerMutation } from "@helpers/api-mutations";
 import { AxiosPromise } from "axios";
 import {
   isInputNumber,
@@ -32,7 +32,7 @@ import { useState } from "react";
 import { useMutation } from "react-query";
 import app from "@helpers/app-version.json";
 import Router from "next/router";
-import AlertDialog from "@components/elements/Dialogs/AlertDialog";
+import AlertDialog from "@components/Dialogs/AlertDialog";
 import AppLogo from "@assets/images/pwms-logo-2.png";
 
 function Copyright(props: any) {
@@ -141,10 +141,12 @@ export default function Register() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ height: 100, width:100 }} variant={'square'}
-        alt="PWMS Logo"
-        src={AppLogo.src}>
-        </Avatar>
+        <Avatar
+          sx={{ height: 100, width: 100 }}
+          variant={"square"}
+          alt="PWMS Logo"
+          src={AppLogo.src}
+        ></Avatar>
         <Typography component="h1" variant="h5" pt={3}>
           Register
         </Typography>

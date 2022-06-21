@@ -14,13 +14,24 @@ import Container from "@mui/material/Container";
 import app from "@helpers/app-version.json";
 import { isAllTrue, isInputNumber, isInputPassword } from "helpers/validate";
 import { api, Method } from "@utils/queryUtils";
-import { loginMutation } from "helpers/api/mutations";
+import { loginMutation } from "@helpers/api-mutations";
 import { AxiosPromise } from "axios";
 import { useMutation } from "react-query";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import AppLogo from "@assets/images/pwms-logo-2.png";
+// import { useForm } from "react-hook-form";
+// import { yupResolver } from '@hookform/resolvers/yup';
+// import * as Yup from 'yup';
 
+// const validationSchema = Yup.object().shape({
+//   company_id_number: Yup.string().required("Username is required"),
+//   password: Yup.string().required("Password is required"),
+// });
+
+// interface LoginFormProps {
+//   company_id_number: number;
+// }
 
 function Copyright(props: any) {
   return (
@@ -49,7 +60,6 @@ function Copyright(props: any) {
 }
 
 export default function Login() {
-
   const [showPassword, setShowPassword] = useState(false);
   const [idError, setIdError] = useState<any>({});
   const [passwordError, setPasswordError] = useState<any>({});
@@ -77,7 +87,6 @@ export default function Login() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    
 
     const isIdError = isInputNumber(
       "ID Number",
@@ -104,10 +113,12 @@ export default function Login() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ height: 100, width:100 }} variant={'square'}
-        alt="PWMS Logo"
-        src={AppLogo.src}>
-        </Avatar>
+        <Avatar
+          sx={{ height: 100, width: 100 }}
+          variant={"square"}
+          alt="PWMS Logo"
+          src={AppLogo.src}
+        ></Avatar>
         <Typography component="h1" variant="h5" pt={3}>
           Log in
         </Typography>
