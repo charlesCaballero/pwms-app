@@ -9,7 +9,6 @@ import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import app from "@helpers/app-version.json";
@@ -20,6 +19,7 @@ import { AxiosPromise } from "axios";
 import { useMutation } from "react-query";
 import Cookies from "js-cookie";
 import Router from "next/router";
+import AppLogo from "@assets/images/pwms-logo-2.png";
 
 function Copyright(props: any) {
   return (
@@ -60,7 +60,7 @@ export default function Login() {
   const handleLogin = async (data: any) => {
     await login.mutate(data, {
       onSuccess: (result: any) => {
-        // console.log("asdasdasd: " + JSON.stringify(result));
+        console.log("asdasdasd: " + JSON.stringify(result));
         if (result.status === "Error") {
           setLoginError(result.message);
         } else {
@@ -101,10 +101,11 @@ export default function Login() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "primary.dark" }}>
-          <LockOutlinedIcon />
+        <Avatar sx={{ height: 100, width:100 }} variant={'square'}
+        alt="PWMS Logo"
+        src={AppLogo.src}>
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" pt={3}>
           Log in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>

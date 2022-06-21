@@ -8,6 +8,7 @@ import { yellow } from "@mui/material/colors";
 import AppLayout from "@components/layouts/app/AppLayout";
 import { useRouter } from "next/router";
 import "@fontsource/inter/variable-full.css";
+import AppLogo from "@assets/images/pwms-logo-2.png";
 // import "@fontsource/nunito/";
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
@@ -38,7 +39,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <ThemeProvider theme={theme}>
         <Head>
           <title>PWMS</title>
-          <link rel="shortcut icon" href="/favicon.png" />
+          <link rel="shortcut icon" href={AppLogo.src} />
         </Head>
         {pathName.includes("auth") || pathName.includes("error") ? (
           <Component {...pageProps} />
