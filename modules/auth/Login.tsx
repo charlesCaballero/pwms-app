@@ -21,6 +21,7 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 import AppLogo from "@assets/images/pwms-logo-2.png";
 
+
 function Copyright(props: any) {
   return (
     <Box display={"flex"} flexDirection={"row"}>
@@ -48,6 +49,7 @@ function Copyright(props: any) {
 }
 
 export default function Login() {
+
   const [showPassword, setShowPassword] = useState(false);
   const [idError, setIdError] = useState<any>({});
   const [passwordError, setPasswordError] = useState<any>({});
@@ -75,6 +77,7 @@ export default function Login() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    
 
     const isIdError = isInputNumber(
       "ID Number",
