@@ -1,4 +1,20 @@
-import { ReactElement } from "react";
+export interface LoadingProp {
+  isOpen: boolean;
+}
+
+export interface LoginFormProps {
+  company_id_number: number;
+  password: string;
+}
+
+export interface RegisterFormProps {
+  company_id_number: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  office_id: string;
+  password: string;
+}
 
 export type Actions = "edit" | "add" | "delete" | null;
 export interface SideNavProps {

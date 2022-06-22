@@ -12,7 +12,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import app from "@helpers/app-version.json";
-import { isAllTrue, isInputNumber, isInputPassword } from "helpers/validate";
 import { api, Method } from "@utils/queryUtils";
 import { loginMutation } from "@helpers/api-mutations";
 import { AxiosPromise } from "axios";
@@ -20,18 +19,21 @@ import { useMutation } from "react-query";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import AppLogo from "@assets/images/pwms-logo-2.png";
-// import { useForm } from "react-hook-form";
-// import { yupResolver } from '@hookform/resolvers/yup';
-// import * as Yup from 'yup';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import { LoginFormProps } from "@helpers/interface";
 
-// const validationSchema = Yup.object().shape({
-//   company_id_number: Yup.string().required("Username is required"),
-//   password: Yup.string().required("Password is required"),
-// });
+const validationSchema = Yup.object().shape({
+  company_id_number: Yup.string()
+    .required('You forgot to give your id number.')
+    .matches(/^[0-9]+$/, "Your id number should not contain any letter or symbol")
+    .min(8, 'Id number should be 8 digits')
+    .max(8, "Id number can't exceed 8 digits"),
+  password: Yup.string().required("Your password is empty.").min(6, "Password should at atleast contain 6 characters."),
+});
 
-// interface LoginFormProps {
-//   company_id_number: number;
-// }
+
 
 function Copyright(props: any) {
   return (
@@ -60,19 +62,21 @@ function Copyright(props: any) {
 }
 
 export default function Login() {
+
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormProps>({
+    resolver: yupResolver(validationSchema)
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [idError, setIdError] = useState<any>({});
-  const [passwordError, setPasswordError] = useState<any>({});
   const [loginError, setLoginError] = useState<any>(false);
 
   const login = useMutation((data: any) => {
     return api(Method.POST, loginMutation, data) as AxiosPromise<any>;
   });
 
-  const handleLogin = async (data: any) => {
+  const onSubmit = async (data: LoginFormProps) => {
     await login.mutate(data, {
       onSuccess: (result: any) => {
-        console.log("asdasdasd: " + JSON.stringify(result));
+        // console.log("result: " + JSON.stringify(result));
         if (result.status === "Error") {
           setLoginError(result.message);
         } else {
@@ -82,25 +86,7 @@ export default function Login() {
         }
       },
     });
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const isIdError = isInputNumber(
-      "ID Number",
-      data.get("company_id_number"),
-      8
-    );
-    const ispasswordError = isInputPassword(data.get("password"));
-
-    if (isAllTrue([!isIdError.error, !ispasswordError.error])) {
-      handleLogin(data);
-    }
-    setIdError(isIdError);
-    setPasswordError(ispasswordError);
-  };
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -122,7 +108,7 @@ export default function Login() {
         <Typography component="h1" variant="h5" pt={3}>
           Log in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           {loginError ? <Alert severity="error">{loginError}</Alert> : ""}
           <TextField
             margin="normal"
@@ -130,23 +116,23 @@ export default function Login() {
             fullWidth
             id="company-id-number"
             label="User ID"
-            name="company_id_number"
             autoComplete="company_id_number"
             autoFocus
-            error={idError.error}
-            helperText={idError.message}
+            {...register("company_id_number")}
+            error={errors.company_id_number !== undefined}
+            helperText={errors.company_id_number?.message}
           />
           <TextField
             margin="normal"
             required
             fullWidth
-            name="password"
             label="Password"
             type={showPassword ? "text" : "password"}
             id="password"
-            autoComplete="current-password"
-            error={passwordError.error}
-            helperText={passwordError.message}
+            autoComplete="password"
+            {...register("password")}
+            error={errors.password !== undefined}
+            helperText={errors.password?.message}
           />
           <FormControlLabel
             control={
