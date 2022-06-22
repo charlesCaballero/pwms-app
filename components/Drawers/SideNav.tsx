@@ -12,17 +12,17 @@ import {
 } from "@mui/material";
 import LanIcon from "@mui/icons-material/Lan";
 import MailIcon from "@mui/icons-material/Mail";
-import AppLogo from "@assets/images/web.png";
-import AppText from "@assets/images/logo-text.png";
+import AppLogo from "@assets/images/pwms-logo-alt-2.png";
+import AppText from "@assets/images/pwms-logo-text.png";
 import Image from "next/image";
 import Router, { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { userModulesQuery } from "@helpers/api/queries";
 import { grey } from "@mui/material/colors";
 import { api, Method } from "@utils/queryUtils";
 import { SideNavProps } from "@helpers/interface";
 import Loading from "../Loader/Loading";
+import { userModulesQuery } from "@helpers/api-queries";
 
 export default function SideNav(props: SideNavProps) {
   const { drawerWidth, userModules } = props;
@@ -80,7 +80,7 @@ export default function SideNav(props: SideNavProps) {
           justifyContent={"center"}
           alignItems={"center"}
         >
-          <Image src={AppLogo} alt="PWMS logo" width={60} height={60} />
+          <Image src={AppLogo} alt="PWMS logo" width={45} height={45} />
           <Image src={AppText} alt="PWMS text" />
         </Box>
       </Toolbar>

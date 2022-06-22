@@ -1,7 +1,6 @@
 import Cookie from "js-cookie";
 import Router from "next/router";
-import { useMutation } from "react-query";
-import { logoutMutation } from "@helpers/api/mutations";
+import { logoutMutation } from "@helpers/api-mutations";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
 

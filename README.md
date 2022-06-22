@@ -15,6 +15,7 @@ yarn dev
 To update version after build/commit:
 
 ```bash
+npm install -g grunt-cli
 grunt bump
 ```
 
@@ -25,6 +26,7 @@ grunt bump
 - [Prettier](https://prettier.io/)
 - [js-cookie](https://github.com/js-cookie/js-cookie)
 - [React Hook Form](https://react-hook-form.com/)
+- [Yup Form Validation](https://www.npmjs.com/package/yup)
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
