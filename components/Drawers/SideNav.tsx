@@ -18,11 +18,11 @@ import Image from "next/image";
 import Router, { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { userModulesQuery } from "@helpers/api/queries";
 import { grey } from "@mui/material/colors";
 import { api, Method } from "@utils/queryUtils";
 import { SideNavProps } from "@helpers/interface";
 import Loading from "../Loader/Loading";
+import { userModulesQuery } from "@helpers/api-queries";
 
 export default function SideNav(props: SideNavProps) {
   const { drawerWidth, userModules } = props;

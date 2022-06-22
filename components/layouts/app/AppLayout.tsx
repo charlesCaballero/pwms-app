@@ -8,13 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
-import SideNav from "@components/elements/Drawers/SideNav";
+import SideNav from "@components/Drawers/SideNav";
 import Cookies from "js-cookie";
-import { userDetailsQuery } from "@helpers/api/queries";
 import { api, Method } from "@utils/queryUtils";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
 import app from "@helpers/app-version.json";
+import { userDetailsQuery } from "@helpers/api-queries";
 
 const drawerWidth = 220;
 

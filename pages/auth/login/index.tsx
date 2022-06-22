@@ -1,10 +1,17 @@
 import { Container } from "@mui/material";
-import Login from "@modules/auth/Login";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+const Login = dynamic(() => import("@modules/auth/Login"), {
+  suspense: true,
+});
 
 export default function LoginAuth() {
   return (
     <Container maxWidth={"sm"}>
-      <Login />
+      <Suspense fallback={`Loading...`}>
+        <Login />
+      </Suspense>
     </Container>
   );
 }
