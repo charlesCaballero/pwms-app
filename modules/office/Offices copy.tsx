@@ -1,14 +1,14 @@
 import OfficeForm from "@modules/office/OfficeForm";
-import { officesQuery } from "@helpers/api/queries";
+import { officesQuery } from "@helpers/api-queries";
 import { Box, Button, Typography } from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import DataTable from "@components/templates/DataTable";
-import DeleteDialog from "@components/elements/Dialogs/DeleteDialog";
-import { officeMutation } from "@helpers/api/mutations";
+import DataTable from "@components/DataTable";
+import DeleteDialog from "@components/Dialogs/DeleteDialog";
+import { officeMutation } from "@helpers/api-mutations";
 import { AxiosPromise } from "axios";
-import SnackbarAlert from "@components/elements/SnackBar/SnackBarAlert";
+import SnackbarAlert from "@components/SnackBar/SnackBarAlert";
 import { Actions, OrderSetting, SnackBarData } from "@helpers/interface";
 
 const tableHeader = [

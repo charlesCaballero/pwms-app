@@ -1,9 +1,9 @@
 {
   "name": "pwms-v2-app",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "private": true,
   "scripts": {
-    "dev": "next dev -H 172.22.123.129",
+    "dev": "next dev ",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -14,6 +14,7 @@
     "@fontsource/inter": "^4.5.11",
     "@fontsource/nunito": "^4.5.9",
     "@fontsource/nunito-sans": "^4.5.8",
+    "@hookform/resolvers": "^2.9.1",
     "@mui/icons-material": "^5.8.3",
     "@mui/material": "^5.8.3",
     "axios": "^0.27.2",

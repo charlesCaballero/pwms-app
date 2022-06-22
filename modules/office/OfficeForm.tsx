@@ -14,7 +14,7 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { AddToPhotos, ModeEdit } from "@mui/icons-material";
-import { officeMutation } from "@helpers/api/mutations";
+import { officeMutation } from "@helpers/api-mutations";
 import { useMutation } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
