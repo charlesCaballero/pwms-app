@@ -41,6 +41,12 @@ export interface OrderSetting {
   column: string;
 }
 
+export interface FilterSettings {
+  column: string;
+  operator: string;
+  value: string;
+}
+
 export interface DataTableProps {
   header: Array<HeadCell>;
   rows: any[];
@@ -54,6 +60,7 @@ export interface DataTableProps {
   onRowEdit?(row: Object): any;
   onRowDelete?(row: Object): any;
   onColumnSort?(order: Order, column: string): void;
+  searchString?(str: string): void;
 }
 
 export interface ActiveColumns {
@@ -68,6 +75,7 @@ export interface EnhancedTableToolbarProps {
   onDenseChange: any;
   activeColumns: Array<ActiveColumns>;
   onChangeActiveColumn(id: string): void;
+  searchString?(str: string): void;
 }
 export interface HideShowColumnProps {
   anchorEl: any;

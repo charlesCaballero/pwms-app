@@ -84,8 +84,10 @@ export default function DataTableToolBar(props: EnhancedTableToolbarProps) {
     onDenseChange,
     activeColumns,
     onChangeActiveColumn,
+    searchString,
   } = props;
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [subString, setSubString] = useState<string>('');
   const handleOpenHideShowMenu = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -125,9 +127,10 @@ export default function DataTableToolBar(props: EnhancedTableToolbarProps) {
             sx={{ width: 300 }}
             placeholder="Search"
             inputProps={{ "aria-label": "description" }}
+            onChange={(event: any) => setSubString(event.target.value)}
             endAdornment={
               <InputAdornment position="end">
-                <IconButton aria-label="search" edge="end">
+                <IconButton onClick={() => { searchString(subString) }} aria-label="search" edge="end">
                   <Search />
                 </IconButton>
               </InputAdornment>

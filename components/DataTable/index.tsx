@@ -31,6 +31,7 @@ export default function DataTable(props: DataTableProps) {
     onRowEdit,
     onRowDelete,
     onColumnSort,
+    searchString,
   } = props;
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<any>("");
@@ -124,6 +125,7 @@ export default function DataTable(props: DataTableProps) {
     onColumnSort(order, orderBy);
   }, [order, orderBy]);
 
+
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
@@ -133,6 +135,7 @@ export default function DataTable(props: DataTableProps) {
           onDenseChange={handleChangeDense}
           activeColumns={activeColumns}
           onChangeActiveColumn={(id) => handleChangeActiveColumn(id)}
+          searchString={(str) => searchString(str)}
         />
         <TableContainer>
           <Table

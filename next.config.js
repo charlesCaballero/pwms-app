@@ -7,6 +7,28 @@ const nextConfig = {
       permanent: true,
       destination: "/auth/login",
     },
+    {
+      source: '/auth/login',
+      has: [
+        {
+          type: 'cookie',
+          key: 'token',
+        },
+      ],
+      permanent: false,
+      destination: '/app/home',
+    },
+    {
+      source: '/auth/register',
+      has: [
+        {
+          type: 'cookie',
+          key: 'token',
+        },
+      ],
+      permanent: false,
+      destination: '/app/home',
+    },
   ],
   /**
    * https://nextjs.org/docs/upgrading#swc-replacing-terser-for-minification
