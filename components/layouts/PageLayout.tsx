@@ -1,32 +1,32 @@
 import OfficeForm from "@modules/office/OfficeForm";
 import { Box, Button, Typography } from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { AxiosPromise } from "axios";
 import dynamic from "next/dynamic";
 import {
   Actions,
-  FilterSettings,
-  OrderSetting,
+  FilterType,
+  OrderType,
   PageLayoutProps,
   SnackBarData,
 } from "@helpers/interface";
 import SkeletonLoading from "@components/Loader/SkeletonLoading";
 
-const DataTable = dynamic(() => import("material-ui-datatable-api"), {
+// const DataTable = dynamic(() => import("material-ui-datatable-api"), {
+//   suspense: true,
+// });
+const DataTable = dynamic(() => import("@components/DataTable"), {
   suspense: false,
 });
-// const DataTable = dynamic(() => import("@components/DataTable"), {
-//   suspense: false,
-// });
 const DeleteDialog = dynamic(() => import("@components/Dialogs/DeleteDialog"), {
-  suspense: false,
+  suspense: true,
 });
 const SnackbarAlert = dynamic(
   () => import("@components/SnackBar/SnackBarAlert"),
   {
-    suspense: false,
+    suspense: true,
   }
 );
 
@@ -40,15 +40,12 @@ export default function PageLayout(props: PageLayoutProps) {
   const [rowData, setRowData] = useState<any>(null);
   const [isDeleteDailogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [searchString, setSearchString] = useState<string>('');
-  const [orderSettings, setOrderSettings] = useState<OrderSetting>({
+  const [filters, setFilters] = useState<FilterType[]>();
+  const [orderSettings, setOrderSettings] = useState<OrderType>({
     order: "asc",
     column: "",
   });
-  const [filters, setFilters] = useState<FilterSettings>({
-    column: '',
-    operator: '',
-    value: '',
-  })
+
   const [snackbarData, setSnackBarData] = useState<SnackBarData>({
     isOpen: false,
     message: "",
@@ -65,7 +62,7 @@ export default function PageLayout(props: PageLayoutProps) {
         `?page=${page}&limit=${limit}` +
         `&search=${searchString}` +
         `&order=${orderSettings.order}&orderBy=${orderSettings.column}` +
-        `&filterBy=${filters.column}&filterUsing=${filters.operator}&filterValue=${filters.value}`
+        `&filters=${JSON.stringify(filters)}`
       )) as any,
     { refetchOnWindowFocus: false }
   );
@@ -177,7 +174,7 @@ export default function PageLayout(props: PageLayoutProps) {
 
   useEffect(() => {
     querydata.refetch();
-  }, [page, limit, orderSettings, searchString]);
+  }, [page, limit, orderSettings, searchString, filters]);
 
   return (
     <Box pt={1}>
@@ -208,27 +205,25 @@ export default function PageLayout(props: PageLayoutProps) {
           </Button>
         </Box>
       </Box>
-      {
-        !querydata.isFetched ? <SkeletonLoading /> :
-          <DataTable
-            header={tableHeader}
-            rows={data}
-            actionButtons={true}
-            enableSelection={false}
-            page={page}
-            setPage={(newPage) => setPage(newPage)}
-            rowsPerPage={limit}
-            setRowsPerPage={(newLimit) => setLimit(newLimit)}
-            rowsCount={rowsCount}
-            onRowEdit={(row) => handleRowEdit(row)}
-            onRowDelete={(id) => handleRowDelete(id)}
-            onColumnSort={(order, column) => handleColumnSort(order, column)}
-            searchString={(str) => {
-              setSearchString(str)
-            }}
-          />
-      }
-
+      <Suspense fallback={<SkeletonLoading />}>
+        <DataTable
+          header={tableHeader}
+          rows={data}
+          actionButtons={true}
+          enableSelection={false}
+          page={page}
+          setPage={(newPage) => setPage(newPage)}
+          rowsPerPage={limit}
+          setRowsPerPage={(newLimit) => setLimit(newLimit)}
+          rowsCount={rowsCount}
+          onRowEdit={(row) => handleRowEdit(row)}
+          onRowDelete={(id) => handleRowDelete(id)}
+          onColumnSort={(order, column) => handleColumnSort(order, column)}
+          searchString={(str) => setSearchString(str)}
+          isDataLoading={!querydata.isFetched}
+          onFilter={(filters) => { setFilters([...filters]) }}
+        />
+      </Suspense>
       <DeleteDialog
         isOpen={isDeleteDailogOpen}
         onClose={(isDeleted) => handleDeleteDialogClose(isDeleted)}

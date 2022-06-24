@@ -7,7 +7,7 @@ export default function SkeletonLoading() {
     <Box sx={{ width: "100%", }}>
       <Skeleton animation="wave" height={60} />
       <Skeleton animation="wave" height={60} />
-      <Skeleton animation="wave" height={400} />
+      <Skeleton animation="wave" height={300} />
     </Box>
   );
 }

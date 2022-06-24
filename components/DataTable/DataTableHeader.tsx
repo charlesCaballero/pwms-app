@@ -1,4 +1,3 @@
-import { EnhancedTableProps } from "@helpers/interface";
 import {
   Box,
   Checkbox,
@@ -9,6 +8,8 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { visuallyHidden } from "@mui/utils";
+import { EnhancedTableProps } from "material-ui-datatable-api/dist/interfaces";
+import React from "react";
 
 export default function DataTableHeader(props: EnhancedTableProps) {
   const {
