@@ -1,5 +1,4 @@
 import * as React from "react";
-import Stack from "@mui/material/Stack";
 import Snackbar from "@mui/material/Snackbar";
 import { SnackBarProps } from "@helpers/interface";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
@@ -22,7 +21,7 @@ export default function SnackbarAlert(props: SnackBarProps) {
   } = props;
 
   const handleClose = (
-    event?: React.SyntheticEvent | Event,
+    _event?: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === "clickaway") {
@@ -32,21 +31,19 @@ export default function SnackbarAlert(props: SnackBarProps) {
   };
 
   return (
-    <Stack spacing={2} sx={{ width: "100%" }}>
-      <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={isOpen}
-        autoHideDuration={5000}
+    <Snackbar
+      anchorOrigin={{ vertical, horizontal }}
+      open={isOpen}
+      autoHideDuration={5000}
+      onClose={() => handleClose()}
+    >
+      <Alert
         onClose={() => handleClose()}
+        severity={type}
+        sx={{ width: "100%" }}
       >
-        <Alert
-          onClose={() => handleClose()}
-          severity={type}
-          sx={{ width: "100%" }}
-        >
-          {message}
-        </Alert>
-      </Snackbar>
-    </Stack>
+        {message}
+      </Alert>
+    </Snackbar>
   );
 }

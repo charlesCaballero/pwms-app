@@ -114,7 +114,7 @@ export default function AppLayout({ children }) {
           width: "100%",
           px: 1,
           py: 0.5,
-          zIndex: 9999,
+          zIndex: 99,
           bgcolor: "primary.main",
         }}
       >

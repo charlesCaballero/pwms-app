@@ -1,4 +1,3 @@
-import { AppProps } from "next/app";
 import Head from "next/head";
 import { FC, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -10,10 +9,14 @@ import "@fontsource/inter/variable-full.css";
 import FavIcon from "@assets/images/pwms-logo-alt-2.png";
 import dynamic from "next/dynamic";
 import Loading from "@components/Loader/Loading";
+import { AppProps } from "next/app";
 
 const AppLayout = dynamic(() => import("@components/layouts/AppLayout"), {
   suspense: true,
 });
+
+// Client-side cache, shared for the whole session of the user in the browser.
+
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const queryClient = new QueryClient();
@@ -42,7 +45,6 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <Head>
-          <title>PWMS</title>
           <link rel="shortcut icon" href={FavIcon.src} />
         </Head>
         {pathName.includes("auth") || pathName.includes("error") ? (
