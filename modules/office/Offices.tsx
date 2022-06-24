@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import PageLayout from "@components/layouts/page/PageLayout";
+import PageLayout from "@components/layouts/PageLayout";
 import { officeMutation } from "@helpers/api-mutations";
 import { officesQuery } from "@helpers/api-queries";
 

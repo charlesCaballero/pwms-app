@@ -12,7 +12,7 @@ npm run dev
 yarn dev
 ```
 
-To update version after build/commit:
+To update version after build/commit/push:
 
 ```bash
 npm install -g grunt-cli

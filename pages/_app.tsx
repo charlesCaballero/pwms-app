@@ -1,24 +1,27 @@
-import { AppProps } from "next/app";
 import Head from "next/head";
 import { FC, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { yellow } from "@mui/material/colors";
-// import AppLayout from "@components/layouts/app/AppLayout";
 import { useRouter } from "next/router";
 import "@fontsource/inter/variable-full.css";
-import AppLogo from "@assets/images/pwms-logo-2.png";
+import FavIcon from "@assets/images/pwms-logo-alt-2.png";
 import dynamic from "next/dynamic";
+import Loading from "@components/Loader/Loading";
+import { AppProps } from "next/app";
 
-const AppLayout = dynamic(() => import("@components/layouts/app/AppLayout"), {
+const AppLayout = dynamic(() => import("@components/layouts/AppLayout"), {
   suspense: true,
 });
+
+// Client-side cache, shared for the whole session of the user in the browser.
+
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const queryClient = new QueryClient();
   const router = useRouter();
-  const pathName = router.pathname;
+  const pathName = router.pathname
 
   const theme = createTheme({
     palette: {
@@ -42,13 +45,12 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <Head>
-          <title>PWMS</title>
-          <link rel="shortcut icon" href={AppLogo.src} />
+          <link rel="shortcut icon" href={FavIcon.src} />
         </Head>
         {pathName.includes("auth") || pathName.includes("error") ? (
           <Component {...pageProps} />
         ) : (
-          <Suspense fallback={`Loading...`}>
+          <Suspense fallback={<Loading isOpen />}>
             <AppLayout>
               <Component {...pageProps} />
             </AppLayout>

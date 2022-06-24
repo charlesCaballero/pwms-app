@@ -40,10 +40,10 @@ export default function SideNav(props: SideNavProps) {
     () => {
       return userModules
         ? (api(
-            Method.GET,
-            `${userModulesQuery}`,
-            `?modules=${userModules}`
-          ) as any)
+          Method.GET,
+          `${userModulesQuery}`,
+          `?modules=${userModules}`
+        ) as any)
         : null;
     },
     { refetchOnWindowFocus: false }
@@ -80,8 +80,12 @@ export default function SideNav(props: SideNavProps) {
           justifyContent={"center"}
           alignItems={"center"}
         >
-          <Image src={AppLogo} alt="PWMS logo" width={45} height={45} />
-          <Image src={AppText} alt="PWMS text" />
+          <Box width={45}>
+            <Image src={AppLogo} alt="PWMS logo" layout="responsive" />
+          </Box>
+          <Box width={80}>
+            <Image src={AppText} alt="PWMS text" layout="responsive" />
+          </Box>
         </Box>
       </Toolbar>
       <Divider />

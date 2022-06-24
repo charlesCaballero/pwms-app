@@ -7,14 +7,18 @@ import { AxiosPromise } from "axios";
 import dynamic from "next/dynamic";
 import {
   Actions,
-  OrderSetting,
+  FilterType,
+  OrderType,
   PageLayoutProps,
   SnackBarData,
 } from "@helpers/interface";
 import SkeletonLoading from "@components/Loader/SkeletonLoading";
 
+// const DataTable = dynamic(() => import("material-ui-datatable-api"), {
+//   suspense: true,
+// });
 const DataTable = dynamic(() => import("@components/DataTable"), {
-  suspense: true,
+  suspense: false,
 });
 const DeleteDialog = dynamic(() => import("@components/Dialogs/DeleteDialog"), {
   suspense: true,
@@ -35,10 +39,13 @@ export default function PageLayout(props: PageLayoutProps) {
   const [rowsCount, setRowsCount] = useState<number>(0);
   const [rowData, setRowData] = useState<any>(null);
   const [isDeleteDailogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [orderSettings, setOrderSettings] = useState<OrderSetting>({
+  const [searchString, setSearchString] = useState<string>('');
+  const [filters, setFilters] = useState<FilterType[]>();
+  const [orderSettings, setOrderSettings] = useState<OrderType>({
     order: "asc",
     column: "",
   });
+
   const [snackbarData, setSnackBarData] = useState<SnackBarData>({
     isOpen: false,
     message: "",
@@ -52,7 +59,10 @@ export default function PageLayout(props: PageLayoutProps) {
       (await api(
         Method.GET,
         `${dataQuery}`,
-        `?page=${page}&limit=${limit}&order=${orderSettings.order}&orderBy=${orderSettings.column}`
+        `?page=${page}&limit=${limit}` +
+        `&search=${searchString}` +
+        `&order=${orderSettings.order}&orderBy=${orderSettings.column}` +
+        `&filters=${JSON.stringify(filters)}`
       )) as any,
     { refetchOnWindowFocus: false }
   );
@@ -164,38 +174,38 @@ export default function PageLayout(props: PageLayoutProps) {
 
   useEffect(() => {
     querydata.refetch();
-  }, [page, limit, orderSettings]);
+  }, [page, limit, orderSettings, searchString, filters]);
 
   return (
     <Box pt={1}>
-      <Suspense fallback={<SkeletonLoading />}>
-        <Box display={"flex"}>
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"flex-start"}
-            justifyContent={"flex-end"}
-            flexGrow={1}
-          >
-            <Typography component={"h1"} variant="h3">
-              {pageTitle}
-            </Typography>
-          </Box>
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"flex-end"}
-            justifyContent={"flex-end"}
-          >
-            <Button
-              variant="contained"
-              sx={{ height: 40, my: 2 }}
-              onClick={() => handleFormOpen()}
-            >
-              Add {pageTitle.slice(0, -1)}
-            </Button>
-          </Box>
+      <Box display={"flex"}>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"flex-start"}
+          justifyContent={"flex-end"}
+          flexGrow={1}
+        >
+          <Typography component={"h1"} variant="h3">
+            {pageTitle}
+          </Typography>
         </Box>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"flex-end"}
+          justifyContent={"flex-end"}
+        >
+          <Button
+            variant="contained"
+            sx={{ height: 40, my: 2 }}
+            onClick={() => handleFormOpen()}
+          >
+            Add {pageTitle.slice(0, -1)}
+          </Button>
+        </Box>
+      </Box>
+      <Suspense fallback={<SkeletonLoading />}>
         <DataTable
           header={tableHeader}
           rows={data}
@@ -209,28 +219,31 @@ export default function PageLayout(props: PageLayoutProps) {
           onRowEdit={(row) => handleRowEdit(row)}
           onRowDelete={(id) => handleRowDelete(id)}
           onColumnSort={(order, column) => handleColumnSort(order, column)}
+          searchString={(str) => setSearchString(str)}
+          isDataLoading={!querydata.isFetched}
+          onFilter={(filters) => { setFilters([...filters]) }}
         />
-        <DeleteDialog
-          isOpen={isDeleteDailogOpen}
-          onClose={(isDeleted) => handleDeleteDialogClose(isDeleted)}
+      </Suspense>
+      <DeleteDialog
+        isOpen={isDeleteDailogOpen}
+        onClose={(isDeleted) => handleDeleteDialogClose(isDeleted)}
+        rowData={rowData}
+      />
+      <SnackbarAlert
+        isOpen={snackbarData.isOpen}
+        type={snackbarData.type}
+        message={snackbarData.message}
+        onClose={() => handleCloseSnackbar()}
+      />
+      {pageTitle === "Offices" ? (
+        <OfficeForm
+          isOpen={isFormOpen}
+          onClose={(isSubmitted) => handleFormClose(isSubmitted)}
           rowData={rowData}
         />
-        <SnackbarAlert
-          isOpen={snackbarData.isOpen}
-          type={snackbarData.type}
-          message={snackbarData.message}
-          onClose={() => handleCloseSnackbar()}
-        />
-        {pageTitle === "Offices" ? (
-          <OfficeForm
-            isOpen={isFormOpen}
-            onClose={(isSubmitted) => handleFormClose(isSubmitted)}
-            rowData={rowData}
-          />
-        ) : (
-          ""
-        )}
-      </Suspense>
+      ) : (
+        ""
+      )}
     </Box>
   );
 }

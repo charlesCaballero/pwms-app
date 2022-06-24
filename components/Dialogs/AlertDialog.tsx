@@ -45,7 +45,7 @@ export default function AlertDialog(props: AlertDialogProps) {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => onClose} variant={"contained"} autoFocus>
+          <Button onClick={() => onClose()} variant={"contained"} autoFocus>
             Okay
           </Button>
         </DialogActions>

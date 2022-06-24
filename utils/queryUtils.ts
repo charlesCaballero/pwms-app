@@ -2,8 +2,8 @@ import axios from "axios";
 import { redirectErrors } from "./authUtils";
 import Cookies from "js-cookie";
 
-// export const url = 'https://icliquesms.apexfuelstation.com/api/v1';
-export const url = "http://172.22.123.129/api";
+export const url = "http://pwms.api/api";
+// export const url = "http://172.22.123.129/api";
 // export const url = "http://127.0.0.1:8000/api";
 
 export enum Method {
@@ -40,15 +40,15 @@ export const api = (method: Method, endpoint: string, input?: any) => {
     const headers =
       Cookies.get("token") != undefined
         ? {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          }
+          Authorization: `Bearer ${Cookies.get("token")}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        }
         : {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer`,
-          };
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer`,
+        };
 
     return axios({
       method: method,
