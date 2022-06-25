@@ -1,3 +1,4 @@
+import { ActiveColumns, Order } from "@helpers/interface";
 import {
   Box,
   Checkbox,
@@ -8,8 +9,20 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { visuallyHidden } from "@mui/utils";
-import { EnhancedTableProps } from "material-ui-datatable-api/dist/interfaces";
 import React from "react";
+
+export interface EnhancedTableProps {
+  numSelected: number;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  order: Order;
+  orderBy: string;
+  rowCount: number;
+  headCells: any[];
+  enableSelection: boolean;
+  actionButtons: boolean;
+  activeColumns: Array<ActiveColumns>;
+}
 
 export default function DataTableHeader(props: EnhancedTableProps) {
   const {
@@ -30,7 +43,7 @@ export default function DataTableHeader(props: EnhancedTableProps) {
     };
 
   return (
-    <TableHead sx={{ bgcolor: grey[200] }}>
+    <TableHead sx={{ bgcolor: grey[300] }}>
       <TableRow>
         {enableSelection ? (
           <TableCell padding="checkbox">
