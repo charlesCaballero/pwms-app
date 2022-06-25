@@ -17,11 +17,10 @@ const AppLayout = dynamic(() => import("@components/layouts/AppLayout"), {
 
 // Client-side cache, shared for the whole session of the user in the browser.
 
-
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const queryClient = new QueryClient();
   const router = useRouter();
-  const pathName = router.pathname
+  const pathName = router.pathname;
 
   const theme = createTheme({
     palette: {
@@ -45,6 +44,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <Head>
+          <title>PWMS</title>
           <link rel="shortcut icon" href={FavIcon.src} />
         </Head>
         {pathName.includes("auth") || pathName.includes("error") ? (
