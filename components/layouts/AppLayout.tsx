@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
-import SideNav from "@components/Drawers/SideNav";
+import NavigationDrawer from "@components/Drawers/NavigationDrawer";
 import Cookies from "js-cookie";
 import { api, Method } from "@utils/queryUtils";
 import { useQuery } from "react-query";
@@ -24,7 +24,7 @@ function Copyright(props: any) {
       <Typography
         variant="body2"
         color="white"
-        align="left"
+        align="right"
         flexGrow={1}
         {...props}
       >
@@ -32,13 +32,7 @@ function Copyright(props: any) {
         {new Date().getFullYear()}
         {"."}
       </Typography>
-      <Typography
-        variant="body2"
-        color="white"
-        align="right"
-        flexGrow={1}
-        {...props}
-      >
+      <Typography pl={2} variant="body2" color="white" align="right" {...props}>
         version {app.version}
       </Typography>
     </Box>
@@ -93,7 +87,10 @@ export default function AppLayout({ children }) {
           </Box>
         </Toolbar>
       </AppBar>
-      <SideNav drawerWidth={drawerWidth} userModules={userData.modules} />
+      <NavigationDrawer
+        drawerWidth={drawerWidth}
+        userModules={userData.modules}
+      />
       <Box
         component="main"
         sx={{
