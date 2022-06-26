@@ -24,7 +24,7 @@ import { SideNavProps } from "@helpers/interface";
 import Loading from "../Loader/Loading";
 import { userModulesQuery } from "@helpers/api-queries";
 
-export default function SideNav(props: SideNavProps) {
+export default function NavigationDrawer(props: SideNavProps) {
   const { drawerWidth, userModules } = props;
   const router = useRouter();
   const pathName = router.pathname;
@@ -40,10 +40,10 @@ export default function SideNav(props: SideNavProps) {
     () => {
       return userModules
         ? (api(
-          Method.GET,
-          `${userModulesQuery}`,
-          `?modules=${userModules}`
-        ) as any)
+            Method.GET,
+            `${userModulesQuery}`,
+            `?modules=${userModules}`
+          ) as any)
         : null;
     },
     { refetchOnWindowFocus: false }

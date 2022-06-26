@@ -1,3 +1,7 @@
+import {
+  HeadCell,
+  Order,
+} from "material-ui-datatable-api/dist/table-interface";
 import { AppProps } from "next/app";
 
 export interface WithCacheAppProps extends AppProps {
@@ -26,7 +30,7 @@ export type Actions = "edit" | "add" | "delete" | null;
 
 export interface SideNavProps {
   drawerWidth: number;
-  userModules: string;
+  userModules?: string;
 }
 
 export interface PageLayoutProps {
@@ -47,65 +51,6 @@ export interface OrderType {
   order: Order;
   column: string;
 }
-
-// export interface FilterType {
-//   column: string;
-//   operator: string;
-//   value: string;
-// }
-
-// export interface DataTableProps {
-//   header: Array<HeadCell>;
-//   rows: any[];
-//   rowsPerPage: number;
-//   page: number;
-//   actionButtons?: boolean;
-//   enableSelection?: boolean;
-//   rowsCount: number;
-//   setPage(page: number): any;
-//   setRowsPerPage(limit: number): any;
-//   onRowEdit?(row: Object): any;
-//   onRowDelete?(row: Object): any;
-//   onColumnSort?(order: Order, column: string): void;
-//   searchString?(str: string): void;
-// }
-
-// export interface ActiveColumns {
-//   id: string;
-//   active: boolean;
-//   label: string;
-// }
-
-// export interface EnhancedTableToolbarProps {
-//   numSelected: number;
-//   dense: boolean;
-//   onDenseChange: any;
-//   activeColumns: Array<ActiveColumns>;
-//   onChangeActiveColumn(id: string): void;
-//   searchString?(str: string): void;
-// }
-// export interface HideShowColumnProps {
-//   anchorEl: any;
-//   onClose(): void;
-//   id: string;
-//   columns: Array<ActiveColumns>;
-//   onChangeActiveColumn(id: string): void;
-// }
-
-// export type Order = "asc" | "desc";
-
-// export interface EnhancedTableProps {
-//   numSelected: number;
-//   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
-//   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-//   order: Order;
-//   orderBy: string;
-//   rowCount: number;
-//   headCells: any[];
-//   enableSelection: boolean;
-//   actionButtons: boolean;
-//   activeColumns: Array<ActiveColumns>;
-// }
 
 type DialogType = "info" | "warning" | "error";
 export interface DialogProps {
@@ -144,94 +89,92 @@ export interface SnackBarProps extends DialogProps {
   horizontal?: Horizontal;
 }
 
-
 //from datatable package
 
-export interface HeadCell {
-  disablePadding: boolean;
-  id: string;
-  label: string;
-  numeric: boolean;
-}
+// export interface HeadCell {
+//   disablePadding: boolean;
+//   id: string;
+//   label: string;
+//   numeric: boolean;
+// }
 
+// export interface FilterType {
+//   column: string;
+//   operator: FilterOperators;
+//   value: string;
+// }
 
-export interface FilterType {
-  column: string;
-  operator: FilterOperators;
-  value: string;
-}
+// export interface DataTableProps {
+//   header: Array<HeadCell>;
+//   rows: any[];
+//   rowsPerPage: number;
+//   page: number;
+//   rowsCount: number;
+//   enableSelection?: boolean;
+//   actionButtons?: boolean;
+//   setPage(page: number): any;
+//   setRowsPerPage(limit: number): any;
+//   onRowEdit?(row: Object): any;
+//   onRowDelete?(row: Object): any;
+//   onColumnSort?(order: Order, column: string): void;
+//   searchString?(str: string): void;
+//   isDataLoading?: boolean;
+//   onFilter?(filters: FilterType[]): void;
+// }
 
-export interface DataTableProps {
-  header: Array<HeadCell>;
-  rows: any[];
-  rowsPerPage: number;
-  page: number;
-  rowsCount: number;
-  enableSelection?: boolean;
-  actionButtons?: boolean;
-  setPage(page: number): any;
-  setRowsPerPage(limit: number): any;
-  onRowEdit?(row: Object): any;
-  onRowDelete?(row: Object): any;
-  onColumnSort?(order: Order, column: string): void;
-  searchString?(str: string): void;
-  isDataLoading?: boolean;
-  onFilter?(filters: FilterType[]): void;
-}
+// export interface ActiveColumns {
+//   id: string;
+//   active: boolean;
+//   label: string;
+// }
 
-export interface ActiveColumns {
-  id: string;
-  active: boolean;
-  label: string;
-}
+// export interface EnhancedTableToolbarProps {
+//   numSelected: number;
+//   dense: boolean;
+//   onDenseChange: any;
+//   activeColumns: Array<ActiveColumns>;
+//   onChangeActiveColumn(id: string): void;
+//   searchString?(str: string): void;
+//   header: HeadCell[];
+//   filters?: FilterType[];
+//   onFilterChange(value: string, field: FilterFields, column: string): void;
+//   onAddFilter(): void;
+//   onDeleteFilter(column: string): void;
+//   noFilter: boolean;
+// }
 
-export interface EnhancedTableToolbarProps {
-  numSelected: number;
-  dense: boolean;
-  onDenseChange: any;
-  activeColumns: Array<ActiveColumns>;
-  onChangeActiveColumn(id: string): void;
-  searchString?(str: string): void;
-  header: HeadCell[];
-  filters?: FilterType[];
-  onFilterChange(value: string, field: FilterFields, column: string): void;
-  onAddFilter(): void;
-  onDeleteFilter(column: string): void;
-  noFilter: boolean;
-}
+// export interface PopoverProps {
+//   anchorEl: any;
+//   onClose(): void;
+//   id: string;
+// }
+// export interface HideShowColumnProps extends PopoverProps {
+//   columns: Array<ActiveColumns>;
+//   onChangeActiveColumn(id: string): void;
+// }
 
-export interface PopoverProps {
-  anchorEl: any;
-  onClose(): void;
-  id: string;
-}
-export interface HideShowColumnProps extends PopoverProps {
-  columns: Array<ActiveColumns>;
-  onChangeActiveColumn(id: string): void;
-}
+// export type FilterOperators = 'contains' | 'matches with' | 'starts with' | 'ends with' | 'is empty' | 'not empty';
+// export type FilterFields = 'column' | 'operator' | 'value';
 
-export type FilterOperators = 'contains' | 'matches with' | 'starts with' | 'ends with' | 'is empty' | 'not empty';
-export type FilterFields = 'column' | 'operator' | 'value';
+// export interface FilterProps extends PopoverProps {
+//   header: HeadCell[];
+//   filters: FilterType[];
+//   onFilterChange(value: string, field: FilterFields, column: string): void;
+//   onAddFilter(): void;
+//   onDeleteFilter(column: string): void;
+// }
 
-export interface FilterProps extends PopoverProps {
-  header: HeadCell[];
-  filters: FilterType[];
-  onFilterChange(value: string, field: FilterFields, column: string): void;
-  onAddFilter(): void;
-  onDeleteFilter(column: string): void;
-}
+// export type Order = "asc" | "desc";
 
-export type Order = "asc" | "desc";
-
-export interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-  headCells: any[];
-  enableSelection: boolean;
-  actionButtons: boolean;
-  activeColumns: Array<ActiveColumns>;
-}
+// export interface EnhancedTableProps {
+//   numSelected: number;
+//   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
+//   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+//   order: Order;
+//   orderBy: string;
+//   rowCount: number;
+//   headCells: any[];
+//   enableSelection: boolean;
+//   actionButtons: boolean;
+//   activeColumns: Array<ActiveColumns>;
+// }
