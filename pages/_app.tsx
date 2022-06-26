@@ -47,7 +47,9 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
           <title>PWMS</title>
           <link rel="shortcut icon" href={FavIcon.src} />
         </Head>
-        {pathName.includes("auth") || pathName.includes("error") ? (
+        {pathName.includes("auth") ||
+        pathName.includes("error") ||
+        pathName === "/" ? (
           <Component {...pageProps} />
         ) : (
           <Suspense fallback={<Loading isOpen />}>
