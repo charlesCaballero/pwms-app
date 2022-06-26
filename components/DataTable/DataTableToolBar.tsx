@@ -28,16 +28,44 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { alpha } from "@mui/material/styles";
 import {
-  EnhancedTableToolbarProps,
+  ActiveColumns,
+  FilterFields,
+  FilterOperators,
   FilterProps,
-  FilterType,
   HeadCell,
-  HideShowColumnProps,
+  PopoverProps,
 } from "@helpers/interface";
 import React from "react";
+
+interface EnhancedTableToolbarProps {
+  numSelected: number;
+  dense: boolean;
+  onDenseChange: any;
+  activeColumns: Array<ActiveColumns>;
+  onChangeActiveColumn(id: string): void;
+  searchString?(str: string): void;
+  header: HeadCell[];
+  filters?: FilterType[];
+  onFilterChange(value: string, field: FilterFields, column: string): void;
+  onAddFilter(): void;
+  onDeleteFilter(column: string): void;
+  noFilter: boolean;
+  onMultipleDelete(): void;
+}
+
+interface HideShowColumnProps extends PopoverProps {
+  columns: Array<ActiveColumns>;
+  onChangeActiveColumn(id: string): void;
+}
+
+interface FilterType {
+  column: string;
+  operator: FilterOperators;
+  value: string;
+}
 
 const HideShowColumn = (props: HideShowColumnProps) => {
   const { anchorEl, id, onClose, columns, onChangeActiveColumn } = props;
@@ -88,8 +116,24 @@ const HideShowColumn = (props: HideShowColumnProps) => {
 };
 
 const Filter = (props: FilterProps) => {
-  const { anchorEl, filters, onFilterChange, onClose, id, header, onAddFilter, onDeleteFilter } = props;
-  const operators = ['contains', 'matches with', 'starts with', 'ends with', 'is empty', 'not empty'];
+  const {
+    anchorEl,
+    filters,
+    onFilterChange,
+    onClose,
+    id,
+    header,
+    onAddFilter,
+    onDeleteFilter,
+  } = props;
+  const operators = [
+    "contains",
+    "matches with",
+    "starts with",
+    "ends with",
+    "is empty",
+    "not empty",
+  ];
 
   const open = Boolean(anchorEl);
 
@@ -110,27 +154,37 @@ const Filter = (props: FilterProps) => {
     >
       <Box sx={{ width: "100%", maxWidth: 500, bgcolor: "background.paper" }}>
         <nav aria-label="filter menu">
-          <Typography variant="body1" fontWeight={'bold'} px={2} pt={2}>
-            {filters.length <= 0 ? 'No Filters' : 'Filters'}
+          <Typography variant="body1" fontWeight={"bold"} px={2} pt={2}>
+            {filters.length <= 0 ? "No Filters" : "Filters"}
           </Typography>
           <List>
             {filters?.map((filter: FilterType) => {
               return (
-                <ListItem
-                  key={filter.column}
-                  sx={{ display: 'flex' }}
-                >
+                <ListItem key={filter.column} sx={{ display: "flex" }}>
                   <TextField
                     id="filter-column"
                     select
                     label="Column"
                     value={filter.column}
-                    onChange={(event) => onFilterChange(event.target.value, 'column', filter.column)}
+                    onChange={(event) =>
+                      onFilterChange(
+                        event.target.value,
+                        "column",
+                        filter.column
+                      )
+                    }
                     variant="standard"
                     fullWidth
                   >
                     {header.map((column: HeadCell) => (
-                      <MenuItem key={column.id} value={column.id} disabled={filter.column !== column.id && filters.some(el => el.column === column.id)}>
+                      <MenuItem
+                        key={column.id}
+                        value={column.id}
+                        disabled={
+                          filter.column !== column.id &&
+                          filters.some((el) => el.column === column.id)
+                        }
+                      >
                         {column.label}
                       </MenuItem>
                     ))}
@@ -140,7 +194,13 @@ const Filter = (props: FilterProps) => {
                     select
                     label="Operators"
                     value={filter.operator}
-                    onChange={(event) => onFilterChange(event.target.value, 'operator', filter.column)}
+                    onChange={(event) =>
+                      onFilterChange(
+                        event.target.value,
+                        "operator",
+                        filter.column
+                      )
+                    }
                     variant="standard"
                     sx={{ mx: 1, width: 400 }}
                   >
@@ -154,15 +214,18 @@ const Filter = (props: FilterProps) => {
                     id="filter-value"
                     label="Value"
                     value={filter.value}
-                    onChange={(event) => onFilterChange(event.target.value, 'value', filter.column)}
+                    onChange={(event) =>
+                      onFilterChange(event.target.value, "value", filter.column)
+                    }
                     variant="standard"
                     fullWidth
-                  >
-
-                  </TextField>
+                  ></TextField>
                   <Tooltip title="Remove">
                     <span>
-                      <IconButton onClick={() => onDeleteFilter(filter.column)} color="error" >
+                      <IconButton
+                        onClick={() => onDeleteFilter(filter.column)}
+                        color="error"
+                      >
                         <Delete />
                       </IconButton>
                     </span>
@@ -171,7 +234,13 @@ const Filter = (props: FilterProps) => {
               );
             })}
           </List>
-          <Button size="small" onClick={() => onAddFilter()} disabled={filters.length === header.length} variant={filters.length <= 0 ? "contained" : "text"} sx={{ mx: 2, mb: 2 }}>
+          <Button
+            size="small"
+            onClick={() => onAddFilter()}
+            disabled={filters.length === header.length}
+            variant={filters.length <= 0 ? "contained" : "text"}
+            sx={{ mx: 2, mb: 2 }}
+          >
             Add <Add />
           </Button>
         </nav>
@@ -194,14 +263,14 @@ export default function DataTableToolBar(props: EnhancedTableToolbarProps) {
     onAddFilter,
     onDeleteFilter,
     noFilter,
+    onMultipleDelete,
   } = props;
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [anchorElFilter, setAnchorElFilter] = useState<HTMLButtonElement | null>(null);
-  const [subString, setSubString] = useState<string>('');
+  const [anchorElFilter, setAnchorElFilter] =
+    useState<HTMLButtonElement | null>(null);
+  const [subString, setSubString] = useState<string>("");
 
-  const handleOpenFilterMenu = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleOpenFilterMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElFilter(event.currentTarget);
   };
 
@@ -248,7 +317,13 @@ export default function DataTableToolBar(props: EnhancedTableToolbarProps) {
             onChange={(event: any) => setSubString(event.target.value)}
             endAdornment={
               <InputAdornment position="end">
-                <IconButton onClick={() => { searchString?.(subString) }} aria-label="search" edge="end">
+                <IconButton
+                  onClick={() => {
+                    searchString?.(subString);
+                  }}
+                  aria-label="search"
+                  edge="end"
+                >
                   <Search />
                 </IconButton>
               </InputAdornment>
@@ -257,11 +332,14 @@ export default function DataTableToolBar(props: EnhancedTableToolbarProps) {
         </Box>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Delete />
-          </IconButton>
-        </Tooltip>
+        <Button
+          onClick={onMultipleDelete}
+          variant="contained"
+          color="error"
+          startIcon={<Delete />}
+        >
+          Delete
+        </Button>
       ) : (
         <Box display={"flex"}>
           <Tooltip title="Print Table">
@@ -269,16 +347,24 @@ export default function DataTableToolBar(props: EnhancedTableToolbarProps) {
               <Print />
             </IconButton>
           </Tooltip>
-          {noFilter ? '' : (<Tooltip title="Filter Data">
-            <IconButton
-              aria-describedby="filter-menu"
-              onClick={handleOpenFilterMenu}
-            >
-              <Badge badgeContent={filters.length} color="secondary" sx={{ fontWeight: 'bold' }}>
-                {filters.length <= 0 ? <FilterList /> : <FilterAlt />}
-              </Badge>
-            </IconButton>
-          </Tooltip>)}
+          {noFilter ? (
+            ""
+          ) : (
+            <Tooltip title="Filter Data">
+              <IconButton
+                aria-describedby="filter-menu"
+                onClick={handleOpenFilterMenu}
+              >
+                <Badge
+                  badgeContent={filters?.length}
+                  color="secondary"
+                  sx={{ fontWeight: "bold" }}
+                >
+                  {filters!.length <= 0 ? <FilterList /> : <FilterAlt />}
+                </Badge>
+              </IconButton>
+            </Tooltip>
+          )}
           <Tooltip title="Hide/Show Column">
             <IconButton
               aria-describedby="hide-show-menu"
@@ -304,11 +390,13 @@ export default function DataTableToolBar(props: EnhancedTableToolbarProps) {
 
       <Filter
         anchorEl={anchorElFilter}
-        id={'filter-menu'}
+        id={"filter-menu"}
         onClose={handlePopOverClose}
-        filters={filters}
+        filters={filters!}
         header={header}
-        onFilterChange={(value, field, column) => onFilterChange(value, field, column)}
+        onFilterChange={(value, field, column) =>
+          onFilterChange(value, field, column)
+        }
         onAddFilter={() => onAddFilter()}
         onDeleteFilter={(column) => onDeleteFilter(column)}
       />

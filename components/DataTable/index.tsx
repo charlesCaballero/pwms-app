@@ -1,8 +1,9 @@
 import * as React from "react";
-import { DeleteRounded, Edit } from "@mui/icons-material";
+import { DataObject, DeleteRounded, Edit, Feed } from "@mui/icons-material";
 import {
   Box,
   Checkbox,
+  Fade,
   IconButton,
   Paper,
   Table,
@@ -12,10 +13,36 @@ import {
   TablePagination,
   TableRow,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import DataTableHeader from "./DataTableHeader";
 import DataTableToolBar from "./DataTableToolBar";
-import { ActiveColumns, DataTableProps, FilterFields, FilterOperators, FilterType, Order } from "@helpers/interface";
+import {
+  ActiveColumns,
+  FilterFields,
+  FilterType,
+  HeadCell,
+  Order,
+} from "@helpers/interface";
+import DataLoading from "./DataLoading";
+
+interface DataTableProps {
+  header: Array<HeadCell>;
+  rows: any[];
+  rowsPerPage: number;
+  page: number;
+  rowsCount: number;
+  setPage(page: number): void;
+  setRowsPerPage(limit: number): void;
+  onRowEdit?(row: Object): void;
+  onRowDelete?(row: Object): void;
+  onRowInfo?(row: Object): void;
+  onColumnSort?(order: Order, column: string): void;
+  searchString?(str: string): void;
+  isDataLoading?: boolean;
+  onFilter?(filters: FilterType[]): void;
+  onMultipleDelete?(selected: string[]): void;
+}
 
 export default function DataTable(props: DataTableProps) {
   const {
@@ -23,24 +50,27 @@ export default function DataTable(props: DataTableProps) {
     header,
     page,
     rowsPerPage,
-    actionButtons = false,
-    enableSelection = true,
     setPage,
     setRowsPerPage,
     rowsCount,
     onRowEdit,
     onRowDelete,
+    onRowInfo,
     onColumnSort,
     searchString,
     isDataLoading,
     onFilter,
+    onMultipleDelete,
   } = props;
+  const [showRowActionButtons, setShowRowActionButtons] =
+    React.useState<boolean>(false);
+  const [enableSelection, setEnableSelection] = React.useState<boolean>(false);
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<any>("");
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [selected, setSelected] = React.useState<string[]>([]);
   const [dense, setDense] = React.useState(false);
   const [activeColumns, setActiveColumns] = React.useState<any>([]);
-  const [filters, setFilters] = React.useState<FilterType[]>([])
+  const [filters, setFilters] = React.useState<FilterType[]>([]);
 
   const handleRequestSort = (
     _event: React.MouseEvent<unknown>,
@@ -53,7 +83,7 @@ export default function DataTable(props: DataTableProps) {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
@@ -62,7 +92,7 @@ export default function DataTable(props: DataTableProps) {
 
   const handleClick = (_event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
-    let newSelected: readonly string[] = [];
+    let newSelected: string[] = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
@@ -103,7 +133,7 @@ export default function DataTable(props: DataTableProps) {
 
   const handleAddFilter = () => {
     let newFilter = filters;
-    let unFilteredColumns = [];
+    let unFilteredColumns: any[] = [];
     header.forEach((head) => unFilteredColumns.push(head.id));
     newFilter.forEach((obj) => {
       unFilteredColumns.forEach((value, index) => {
@@ -112,11 +142,11 @@ export default function DataTable(props: DataTableProps) {
     });
     newFilter.push({
       column: unFilteredColumns[0],
-      operator: 'contains',
-      value: ''
-    })
+      operator: "contains",
+      value: "",
+    });
     setFilters([...newFilter]);
-  }
+  };
 
   const handleDeleteFilter = (column: string) => {
     let newFilter = filters;
@@ -124,21 +154,29 @@ export default function DataTable(props: DataTableProps) {
       if (obj.column === column) newFilter.splice(index, 1);
     });
     setFilters([...newFilter]);
-  }
+  };
 
-  const handleFilterChange = (value: any, field: FilterFields, column: string) => {
+  const handleFilterChange = (
+    value: any,
+    field: FilterFields,
+    column: string
+  ) => {
     let newFilter = filters;
     newFilter.forEach((obj, index) => {
       if (obj.column === column) {
-        if (field === 'column') newFilter[index].column = value;
-        else if (field === 'operator') newFilter[index].operator = value;
+        if (field === "column") newFilter[index].column = value;
+        else if (field === "operator") newFilter[index].operator = value;
         else newFilter[index].value = value;
       }
     });
     setFilters([...newFilter]);
-  }
+  };
 
-  const isSelected = (name: string) => selected.indexOf(name) !== -1;
+  const handleMultipleDelete = () => {
+    onMultipleDelete !== undefined ? onMultipleDelete(selected) : null;
+  };
+
+  const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -154,13 +192,19 @@ export default function DataTable(props: DataTableProps) {
       });
     });
     setActiveColumns([...arr]);
+    setShowRowActionButtons(
+      onRowEdit !== undefined || onRowDelete !== undefined
+    );
+    setEnableSelection(onMultipleDelete !== undefined);
   }, []);
 
   React.useEffect(() => {
     onColumnSort?.(order, orderBy);
   }, [order, orderBy]);
 
-  React.useEffect(() => { onFilter !== undefined ? onFilter(filters) : null; }, [filters])
+  React.useEffect(() => {
+    onFilter !== undefined ? onFilter(filters) : null;
+  }, [filters]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -174,10 +218,13 @@ export default function DataTable(props: DataTableProps) {
           onChangeActiveColumn={(id) => handleChangeActiveColumn(id)}
           searchString={(str) => searchString?.(str)}
           filters={[...filters]}
-          onFilterChange={(value, field, column) => handleFilterChange(value, field, column)}
+          onFilterChange={(value, field, column) =>
+            handleFilterChange(value, field, column)
+          }
           onAddFilter={() => handleAddFilter()}
           onDeleteFilter={(column) => handleDeleteFilter(column)}
           noFilter={onFilter === undefined}
+          onMultipleDelete={() => handleMultipleDelete()}
         />
         <TableContainer>
           <Table
@@ -194,12 +241,45 @@ export default function DataTable(props: DataTableProps) {
               rowCount={rows.length}
               headCells={header}
               enableSelection={enableSelection}
-              actionButtons={actionButtons}
+              actionButtons={showRowActionButtons}
               activeColumns={activeColumns}
             />
-            {/* {isDataLoading ? (<DataLoading columnCount={header.length} />) : ( */}
-
             <TableBody>
+              {isDataLoading ? (
+                <DataLoading
+                  columnCount={
+                    showRowActionButtons ? header.length + 1 : header.length
+                  }
+                />
+              ) : (
+                ""
+              )}
+              {rows.length <= 0 && !isDataLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={
+                      showRowActionButtons ? header.length + 1 : header.length
+                    }
+                    align={"center"}
+                  >
+                    <Fade in={rows.length <= 0} timeout={600}>
+                      <Box
+                        display={"flex"}
+                        flexDirection={"column"}
+                        p={2}
+                        alignItems={"center"}
+                      >
+                        <DataObject color="error" sx={{ fontSize: 80 }} />
+                        <Typography fontSize={15}>
+                          Your query returned empty.
+                        </Typography>
+                      </Box>
+                    </Fade>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                ""
+              )}
               {[...rows].map((row: any, index) => {
                 const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
@@ -245,29 +325,50 @@ export default function DataTable(props: DataTableProps) {
                         </TableCell>
                       );
                     })}
-                    {actionButtons ? (
+                    {showRowActionButtons ? (
                       <TableCell>
                         <Box display={"flex"}>
-                          <Tooltip title="Edit">
-                            <IconButton
-                              color="info"
-                              size={dense ? "small" : "medium"}
-                              onClick={() => onRowEdit?.(row)}
-                            >
-                              <Edit fontSize={dense ? "small" : "inherit"} />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Delete">
-                            <IconButton
-                              color="error"
-                              size={dense ? "small" : "medium"}
-                              onClick={() => onRowDelete?.(row)}
-                            >
-                              <DeleteRounded
-                                fontSize={dense ? "small" : "inherit"}
-                              />
-                            </IconButton>
-                          </Tooltip>
+                          {onRowEdit !== undefined ? (
+                            <Tooltip title="Edit">
+                              <IconButton
+                                color="info"
+                                size={dense ? "small" : "medium"}
+                                onClick={() => onRowEdit?.(row)}
+                              >
+                                <Edit fontSize={dense ? "small" : "inherit"} />
+                              </IconButton>
+                            </Tooltip>
+                          ) : (
+                            ""
+                          )}
+                          {onRowDelete !== undefined ? (
+                            <Tooltip title="Delete">
+                              <IconButton
+                                color="error"
+                                size={dense ? "small" : "medium"}
+                                onClick={() => onRowDelete?.(row)}
+                              >
+                                <DeleteRounded
+                                  fontSize={dense ? "small" : "inherit"}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          ) : (
+                            ""
+                          )}
+                          {onRowInfo !== undefined ? (
+                            <Tooltip title="View All Related Info">
+                              <IconButton
+                                color="success"
+                                size={dense ? "small" : "medium"}
+                                onClick={() => onRowInfo?.(row)}
+                              >
+                                <Feed fontSize={dense ? "small" : "inherit"} />
+                              </IconButton>
+                            </Tooltip>
+                          ) : (
+                            ""
+                          )}
                         </Box>
                       </TableCell>
                     ) : (
@@ -287,7 +388,6 @@ export default function DataTable(props: DataTableProps) {
                 </TableRow>
               )}
             </TableBody>
-            {/* )} */}
           </Table>
         </TableContainer>
         <TablePagination

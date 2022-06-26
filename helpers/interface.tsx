@@ -1,7 +1,4 @@
-import {
-  HeadCell,
-  Order,
-} from "material-ui-datatable-api/dist/table-interface";
+import { HeadCell } from "material-ui-datatable-api/dist/table-interface";
 import { AppProps } from "next/app";
 
 export interface WithCacheAppProps extends AppProps {
@@ -98,11 +95,13 @@ export interface SnackBarProps extends DialogProps {
 //   numeric: boolean;
 // }
 
-// export interface FilterType {
-//   column: string;
-//   operator: FilterOperators;
-//   value: string;
-// }
+export type FilterOperators =
+  | "contains"
+  | "matches with"
+  | "starts with"
+  | "ends with"
+  | "is empty"
+  | "not empty";
 
 // export interface DataTableProps {
 //   header: Array<HeadCell>;
@@ -122,11 +121,11 @@ export interface SnackBarProps extends DialogProps {
 //   onFilter?(filters: FilterType[]): void;
 // }
 
-// export interface ActiveColumns {
-//   id: string;
-//   active: boolean;
-//   label: string;
-// }
+export interface PopoverProps {
+  anchorEl: any;
+  onClose(): void;
+  id: string;
+}
 
 // export interface EnhancedTableToolbarProps {
 //   numSelected: number;
@@ -143,38 +142,8 @@ export interface SnackBarProps extends DialogProps {
 //   noFilter: boolean;
 // }
 
-// export interface PopoverProps {
-//   anchorEl: any;
-//   onClose(): void;
-//   id: string;
-// }
-// export interface HideShowColumnProps extends PopoverProps {
-//   columns: Array<ActiveColumns>;
-//   onChangeActiveColumn(id: string): void;
-// }
-
-// export type FilterOperators = 'contains' | 'matches with' | 'starts with' | 'ends with' | 'is empty' | 'not empty';
-// export type FilterFields = 'column' | 'operator' | 'value';
-
-// export interface FilterProps extends PopoverProps {
-//   header: HeadCell[];
-//   filters: FilterType[];
-//   onFilterChange(value: string, field: FilterFields, column: string): void;
-//   onAddFilter(): void;
-//   onDeleteFilter(column: string): void;
-// }
+export type FilterFields = "column" | "operator" | "value";
 
 // export type Order = "asc" | "desc";
 
-// export interface EnhancedTableProps {
-//   numSelected: number;
-//   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
-//   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-//   order: Order;
-//   orderBy: string;
-//   rowCount: number;
-//   headCells: any[];
-//   enableSelection: boolean;
-//   actionButtons: boolean;
-//   activeColumns: Array<ActiveColumns>;
-// }
+export type Order = "asc" | "desc";
