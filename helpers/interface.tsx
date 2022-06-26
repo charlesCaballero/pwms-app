@@ -1,4 +1,7 @@
-import { HeadCell } from "material-ui-datatable-api/dist/table-interface";
+import {
+  HeadCell,
+  Order,
+} from "material-ui-datatable-api/dist/table-interface";
 import { AppProps } from "next/app";
 
 export interface WithCacheAppProps extends AppProps {
@@ -36,13 +39,6 @@ export interface PageLayoutProps {
   dataMutation: any;
   tableHeader: HeadCell[];
 }
-
-// export interface HeadCell {
-//   disablePadding: boolean;
-//   id: string;
-//   label: string;
-//   numeric: boolean;
-// }
 
 export interface OrderType {
   order: Order;
@@ -95,13 +91,13 @@ export interface SnackBarProps extends DialogProps {
 //   numeric: boolean;
 // }
 
-export type FilterOperators =
-  | "contains"
-  | "matches with"
-  | "starts with"
-  | "ends with"
-  | "is empty"
-  | "not empty";
+// export type FilterOperators =
+//   | "contains"
+//   | "matches with"
+//   | "starts with"
+//   | "ends with"
+//   | "is empty"
+//   | "not empty";
 
 // export interface DataTableProps {
 //   header: Array<HeadCell>;
@@ -121,11 +117,11 @@ export type FilterOperators =
 //   onFilter?(filters: FilterType[]): void;
 // }
 
-export interface PopoverProps {
-  anchorEl: any;
-  onClose(): void;
-  id: string;
-}
+// export interface PopoverProps {
+//   anchorEl: any;
+//   onClose(): void;
+//   id: string;
+// }
 
 // export interface EnhancedTableToolbarProps {
 //   numSelected: number;
@@ -142,8 +138,6 @@ export interface PopoverProps {
 //   noFilter: boolean;
 // }
 
-export type FilterFields = "column" | "operator" | "value";
+// export type FilterFields = "column" | "operator" | "value";
 
 // export type Order = "asc" | "desc";
-
-export type Order = "asc" | "desc";

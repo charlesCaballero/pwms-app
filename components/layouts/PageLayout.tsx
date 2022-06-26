@@ -7,11 +7,11 @@ import { AxiosPromise } from "axios";
 import dynamic from "next/dynamic";
 import {
   Actions,
-  FilterType,
   OrderType,
   PageLayoutProps,
   SnackBarData,
 } from "@helpers/interface";
+import { FilterType } from "material-ui-datatable-api/dist/table-interface";
 
 const DataTable = dynamic(() => import("material-ui-datatable-api"), {
   suspense: false,
