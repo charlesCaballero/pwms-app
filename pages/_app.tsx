@@ -3,13 +3,13 @@ import { FC, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { yellow } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import "@fontsource/inter/variable-full.css";
 import FavIcon from "@assets/images/pwms-logo-alt-2.png";
 import dynamic from "next/dynamic";
 import Loading from "@components/Loader/Loading";
 import { AppProps } from "next/app";
+import { yellow } from "@mui/material/colors";
 
 const AppLayout = dynamic(() => import("@components/layouts/AppLayout"), {
   suspense: true,

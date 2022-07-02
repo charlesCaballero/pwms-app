@@ -1,34 +1,31 @@
-import { api, Method } from "@utils/queryUtils";
-import { registerMutation } from "@helpers/api-mutations";
-import { AxiosPromise } from "axios";
-import { useState } from "react";
-import { useMutation, useQuery } from "react-query";
-import app from "@helpers/app-version.json";
-import Router from "next/router";
-import AlertDialog from "@components/Dialogs/AlertDialog";
-import AppLogo from "@assets/images/pwms-logo-2.png";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import { RegisterFormProps } from "@helpers/interface";
-import { getOfficesQuery } from "@helpers/api-queries";
-import Typography from "@mui/material/Typography";
+import { FormProps, RegisterFormProps } from "@helpers/interface";
+import { AddToPhotos, ModeEdit } from "@mui/icons-material";
+import { userDetailsMutation } from "@helpers/api-mutations";
+import { useMutation, useQuery } from "react-query";
+import { api, Method } from "@utils/queryUtils";
+import { AxiosPromise } from "axios";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import CssBaseline from "@mui/material/CssBaseline";
-import Avatar from "@mui/material/Avatar";
+import DialogContent from "@mui/material/DialogContent";
+import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import FormHelperText from "@mui/material/FormHelperText";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { getOfficesQuery } from "@helpers/api-queries";
 
 const validationSchema = Yup.object().shape({
   company_id_number: Yup.string()
@@ -47,38 +44,13 @@ const validationSchema = Yup.object().shape({
   office_id: Yup.string()
     .matches(/^[1-9]+$/, "Please select which office you belong.")
     .required("You forgot to choose the office where you belong."),
-  password: Yup.string()
-    .required("Your password is empty.")
-    .min(6, "Password should at atleast contain 6 characters."),
+  //   password: Yup.string()
+  //     .nullable()
+  //     .min(6, "Password should at atleast contain 6 characters."),
 });
 
-function Copyright(props: any) {
-  return (
-    <Box display={"flex"} flexDirection={"row"}>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        align="left"
-        flexGrow={1}
-        {...props}
-      >
-        {"Copyright © PhilHealth "}
-        {new Date().getFullYear()}
-        {"."}
-      </Typography>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        align="right"
-        {...props}
-      >
-        v{app.version}
-      </Typography>
-    </Box>
-  );
-}
-
-export default function Register() {
+export default function UserForm(props: FormProps) {
+  const { isOpen, onClose, rowData } = props;
   const {
     register,
     reset,
@@ -91,26 +63,35 @@ export default function Register() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [registrationError, setRegistrationError] = useState("");
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const registerUser = useMutation((data: any) => {
-    return api(Method.POST, registerMutation, data) as AxiosPromise<any>;
+  const updateUser = useMutation((values: any) => {
+    return api(
+      Method.PUT,
+      `${userDetailsMutation}/${rowData.id}`,
+      values
+    ) as AxiosPromise<any>;
   });
 
   const officeList = useQuery(
-    "result",
+    "officeList",
     async () => (await api(Method.GET, `${getOfficesQuery}`)) as any,
     { refetchOnWindowFocus: false }
   );
 
+  useMemo(() => {
+    if (rowData) {
+      reset(rowData);
+    }
+  }, [rowData]);
+
   const onSubmit = async (data: RegisterFormProps) => {
-    await registerUser.mutate(data, {
+    await updateUser.mutate(data, {
       onSuccess: (result: any) => {
         // console.log("result: " + JSON.stringify(result));
         if (result.status === "Error") {
           setRegistrationError(result.message);
         } else {
-          setIsAlertOpen(true);
+          onClose(true);
         }
       },
       onError: (result: any) => {
@@ -120,39 +101,23 @@ export default function Register() {
     });
   };
 
-  const onCloseSuccessAlert = () => {
-    console.log("im called.. yehey!!");
-
-    setIsAlertOpen(false);
-    Router.push("/auth/login");
-  };
-
   return (
-    <Container component="main" maxWidth="md">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Avatar
-          sx={{ height: 100, width: 100 }}
-          variant={"square"}
-          alt="PWMS Logo"
-          src={AppLogo.src}
-        ></Avatar>
-        <Typography component="h1" variant="h5" pt={3}>
-          Register
-        </Typography>
-        <Box
-          component="form"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-          sx={{ mt: 3 }}
-        >
+    <Dialog
+      fullWidth
+      maxWidth={"sm"}
+      open={isOpen}
+      onClose={() => onClose(false)}
+    >
+      <DialogTitle variant="h6" fontWeight={"bold"}>
+        {rowData ? (
+          <ModeEdit sx={{ mb: -0.8, color: "primary.main", mr: 2 }} />
+        ) : (
+          <AddToPhotos sx={{ mb: -0.8, color: "primary.main", mr: 2 }} />
+        )}
+        {rowData ? "Edit User" : " New User"}
+      </DialogTitle>
+      <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent>
           <Grid container spacing={2}>
             {registrationError ? (
               <Grid item xs={12}>
@@ -224,7 +189,7 @@ export default function Register() {
                   required
                   {...register("office_id")}
                 >
-                  {officeList.data?.map((office) => {
+                  {officeList?.data?.map((office) => {
                     return (
                       <MenuItem key={office.id} value={office.id}>
                         {office.name + " (" + office.acronym + ")"}
@@ -239,58 +204,17 @@ export default function Register() {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                id="password"
-                autoComplete="new-password"
-                {...register("password")}
-                error={errors.password !== undefined}
-                helperText={errors.password?.message}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    value={showPassword}
-                    onChange={() => setShowPassword(!showPassword)}
-                  />
-                }
-                label="Show password"
-              />
-            </Grid>
           </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Register
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => onClose(false)} color={"inherit"}>
+            Cancel
           </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Link href="/auth/login" variant="body2" color={"info.main"}>
-                Already have an account? Log in
-              </Link>
-            </Grid>
-          </Grid>
-        </Box>
+          <Button type="submit" variant={"contained"}>
+            Update
+          </Button>
+        </DialogActions>
       </Box>
-      <Copyright sx={{ mt: 5 }} />
-
-      <AlertDialog
-        isOpen={isAlertOpen}
-        onClose={() => onCloseSuccessAlert()}
-        type="info"
-        title="Registration Complete"
-        message="The admin has been notified of your registration. Please wait for a confimation to log-in in your account."
-      />
-    </Container>
+    </Dialog>
   );
 }
