@@ -59,7 +59,7 @@ const tableHeader: HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: "Status",
-    boolean: ["Activated", "Deactivated"],
+    boolean: ["Allowed", "Denied"],
   },
 ];
 
