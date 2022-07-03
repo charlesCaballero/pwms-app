@@ -42,13 +42,13 @@ export const api = (method: Method, endpoint: string, input?: any) => {
         ? {
             Authorization: `Bearer ${Cookies.get("token")}`,
             Accept: "application/json",
-            "Content-Type": input.photo
+            "Content-Type": input?.photo
               ? "multipart/form-data"
               : "application/json",
           }
         : {
             Accept: "application/json",
-            "Content-Type": input.photo
+            "Content-Type": input?.photo
               ? "multipart/form-data"
               : "application/json",
             Authorization: `Bearer`,

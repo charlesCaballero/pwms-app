@@ -1,7 +1,4 @@
-import {
-  HeadCell,
-  Order,
-} from "material-ui-datatable-api/dist/table-interface";
+import { HeadCell, Order } from "material-ui-datatable-api-v2/dist/interface";
 import { AppProps } from "next/app";
 
 export interface WithCacheAppProps extends AppProps {
@@ -26,7 +23,13 @@ export interface RegisterFormProps {
   password: string;
 }
 
-export type Actions = "edit" | "add" | "delete" | null;
+export type Actions =
+  | "edit"
+  | "add"
+  | "delete"
+  | "view"
+  | "multiple-delete"
+  | null;
 
 export interface SideNavProps {
   drawerWidth: number;
@@ -38,6 +41,7 @@ export interface PageLayoutProps {
   dataQuery: any;
   dataMutation: any;
   tableHeader: HeadCell[];
+  disableAdd?: boolean;
 }
 
 export interface OrderType {
@@ -82,62 +86,21 @@ export interface SnackBarProps extends DialogProps {
   horizontal?: Horizontal;
 }
 
-//from datatable package
+export interface PopoverProps {
+  anchorEl: any;
+  onClose(): void;
+  id: string;
+}
 
+//from datatable package
+// export type BooleanCell = [true: string, false: string];
 // export interface HeadCell {
 //   disablePadding: boolean;
 //   id: string;
 //   label: string;
 //   numeric: boolean;
+//   from?: string;
+//   boolean?: BooleanCell;
 // }
 
-// export type FilterOperators =
-//   | "contains"
-//   | "matches with"
-//   | "starts with"
-//   | "ends with"
-//   | "is empty"
-//   | "not empty";
-
-// export interface DataTableProps {
-//   header: Array<HeadCell>;
-//   rows: any[];
-//   rowsPerPage: number;
-//   page: number;
-//   rowsCount: number;
-//   enableSelection?: boolean;
-//   actionButtons?: boolean;
-//   setPage(page: number): any;
-//   setRowsPerPage(limit: number): any;
-//   onRowEdit?(row: Object): any;
-//   onRowDelete?(row: Object): any;
-//   onColumnSort?(order: Order, column: string): void;
-//   searchString?(str: string): void;
-//   isDataLoading?: boolean;
-//   onFilter?(filters: FilterType[]): void;
-// }
-
-// export interface PopoverProps {
-//   anchorEl: any;
-//   onClose(): void;
-//   id: string;
-// }
-
-// export interface EnhancedTableToolbarProps {
-//   numSelected: number;
-//   dense: boolean;
-//   onDenseChange: any;
-//   activeColumns: Array<ActiveColumns>;
-//   onChangeActiveColumn(id: string): void;
-//   searchString?(str: string): void;
-//   header: HeadCell[];
-//   filters?: FilterType[];
-//   onFilterChange(value: string, field: FilterFields, column: string): void;
-//   onAddFilter(): void;
-//   onDeleteFilter(column: string): void;
-//   noFilter: boolean;
-// }
-
-// export type FilterFields = "column" | "operator" | "value";
-
-// export type Order = "asc" | "desc";
+// export declare type Order = "asc" | "desc";

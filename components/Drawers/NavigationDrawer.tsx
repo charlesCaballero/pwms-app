@@ -1,28 +1,39 @@
-import {
-  Box,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import LanIcon from "@mui/icons-material/Lan";
-import MailIcon from "@mui/icons-material/Mail";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import AppLogo from "@assets/images/pwms-logo-alt-2.png";
 import AppText from "@assets/images/pwms-logo-text.png";
 import Image from "next/image";
 import Router, { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { grey } from "@mui/material/colors";
 import { api, Method } from "@utils/queryUtils";
 import { SideNavProps } from "@helpers/interface";
 import Loading from "../Loader/Loading";
 import { userModulesQuery } from "@helpers/api-queries";
+import DashboardRounded from "@mui/icons-material/DashboardRounded";
+import LanRounded from "@mui/icons-material/LanRounded";
+import { grey } from "@mui/material/colors";
+import SupervisedUserCircleRounded from "@mui/icons-material/SupervisedUserCircleRounded";
+import WorkRounded from "@mui/icons-material/WorkRounded";
+import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
+import PendingActionsRoundedIcon from "@mui/icons-material/PendingActionsRounded";
+import FilePresentRoundedIcon from "@mui/icons-material/FilePresentRounded";
+import DirectionsRoundedIcon from "@mui/icons-material/DirectionsRounded";
+import CollectionsBookmarkRoundedIcon from "@mui/icons-material/CollectionsBookmarkRounded";
+import ArchiveRoundedIcon from "@mui/icons-material/ArchiveRounded";
+import UnarchiveRoundedIcon from "@mui/icons-material/UnarchiveRounded";
+import InboxRoundedIcon from "@mui/icons-material/InboxRounded";
+import FolderDeleteRoundedIcon from "@mui/icons-material/FolderDeleteRounded";
+import Inventory2RoundedIcon from "@mui/icons-material/Inventory2Rounded";
+import Icon from "@components/DynamicIcon/Icon";
 
 export default function NavigationDrawer(props: SideNavProps) {
   const { drawerWidth, userModules } = props;
@@ -91,7 +102,7 @@ export default function NavigationDrawer(props: SideNavProps) {
       <Divider />
       <List>
         {modules?.map((module) => (
-          <ListItem key={module.id}>
+          <ListItem key={module.id} sx={{ m: 0, py: 0.5, px: 1 }}>
             <ListItemButton
               sx={{
                 borderRadius: "8px",
@@ -104,27 +115,33 @@ export default function NavigationDrawer(props: SideNavProps) {
               <ListItemIcon
                 sx={{
                   color:
-                    module.reference === pathName ? "primary.main" : "inherit",
+                    module.reference === pathName
+                      ? "primary.main"
+                      : "info.main",
                 }}
               >
-                {module.icon === "office" ? <LanIcon /> : <MailIcon />}
+                <Icon name={module.icon} size={20} />
               </ListItemIcon>
               <ListItemText
                 primary={
                   <Typography
                     color={
-                      module.reference === pathName ? "primary.main" : "inherit"
+                      module.reference === pathName
+                        ? "primary.main"
+                        : "grey.600"
                     }
                     fontWeight="bold"
+                    fontSize={"small"}
                   >
                     {module.name}
                   </Typography>
                 }
-                sx={{ marginLeft: "-15px" }}
+                sx={{ marginLeft: "-20px" }}
               />
             </ListItemButton>
           </ListItem>
         ))}
+        <ListItem sx={{ height: 50 }}></ListItem>
       </List>
       <Loading isOpen={loading} />
     </Drawer>

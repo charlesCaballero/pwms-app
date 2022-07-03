@@ -1,5 +1,5 @@
 import Loading from "@components/Loader/Loading";
-import { Container } from "@mui/material";
+import Container from "@mui/material/Container";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
