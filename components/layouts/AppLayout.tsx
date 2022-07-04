@@ -106,7 +106,7 @@ export default function AppLayout({ children }) {
               {userData.first_name !== undefined ? (
                 <Avatar
                   onClick={(event: any) => handleClick(event)}
-                  sx={{ bgcolor: "#111827", fontWeight: "bold" }}
+                  sx={{ bgcolor: "#111827", fontWeight: "bold", boxShadow: 5 }}
                   src={userData.photo}
                 >
                   {`${userData.first_name}`?.charAt(0) +
