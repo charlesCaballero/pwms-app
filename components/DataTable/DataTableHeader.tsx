@@ -1,4 +1,4 @@
-import { ActiveColumns, Order } from "@helpers/interface";
+// import { ActiveColumns, Order } from "@helpers/interface";
 import {
   Box,
   Checkbox,
@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { visuallyHidden } from "@mui/utils";
+import { ActiveColumns, Order } from "@helpers/interface";
 import React from "react";
 
 export interface EnhancedTableProps {
@@ -67,7 +68,9 @@ export default function DataTableHeader(props: EnhancedTableProps) {
 
           return (
             <TableCell
-              key={headCell.id}
+              key={
+                headCell.from ? headCell.from + "-" + headCell.id : headCell.id
+              }
               align={headCell.numeric ? "right" : "left"}
               padding={headCell.disablePadding ? "none" : "normal"}
               sortDirection={orderBy === headCell.id ? order : false}

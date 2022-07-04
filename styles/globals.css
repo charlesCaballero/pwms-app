@@ -15,3 +15,11 @@ a {
 * {
   box-sizing: border-box;
 }
+
+body::-webkit-scrollbar {
+  width: 12px;
+}
+body::-webkit-scrollbar-thumb {
+  background: #ff9c44;
+  border-radius: 6px;
+}

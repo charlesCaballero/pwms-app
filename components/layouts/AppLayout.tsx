@@ -1,19 +1,3 @@
-import {
-  AppBar,
-  Avatar,
-  Badge,
-  Box,
-  Button,
-  CssBaseline,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Popover,
-  Toolbar,
-  Typography,
-} from "@mui/material";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 import NavigationDrawer from "@components/Drawers/NavigationDrawer";
 import Cookies from "js-cookie";
@@ -22,22 +6,34 @@ import { useMutation, useQuery } from "react-query";
 import { useEffect, useState } from "react";
 import app from "@helpers/app-version.json";
 import { userDetailsQuery } from "@helpers/api-queries";
-import { PopoverProps } from "material-ui-datatable-api/dist/table-interface";
-import {
-  Apartment,
-  Edit,
-  Email,
-  HealthAndSafety,
-  Logout,
-  PhotoCamera,
-  Work,
-} from "@mui/icons-material";
+import Apartment from "@mui/icons-material/Apartment";
+import Edit from "@mui/icons-material/EditRounded";
+import Email from "@mui/icons-material/EmailRounded";
+import HealthAndSafety from "@mui/icons-material/HealthAndSafetyRounded";
+import Logout from "@mui/icons-material/LogoutRounded";
+import PhotoCamera from "@mui/icons-material/PhotoCameraRounded";
+import WorkRounded from "@mui/icons-material/WorkRounded";
 import { logoutMutation } from "@helpers/api-mutations";
 import { AxiosPromise } from "axios";
 import Router from "next/router";
 import ChangeProfilePhoto from "@components/Dialogs/ChangePhotoDialog";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Popover from "@mui/material/Popover";
+import Badge from "@mui/material/Badge";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Button from "@mui/material/Button";
+import { PopoverProps } from "@helpers/interface";
 
-const drawerWidth = 220;
+const drawerWidth = 250;
 
 export default function AppLayout({ children }) {
   const [userData, setUserData] = useState<any>({});
@@ -280,7 +276,7 @@ const ProfilePopOver = (props: PropfilePropoverProps) => {
             </ListItem>
             <ListItem>
               <ListItemIcon>
-                <Work />
+                <WorkRounded />
               </ListItemIcon>
               <ListItemText primary={user.role?.name} />
             </ListItem>
