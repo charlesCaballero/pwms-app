@@ -18,21 +18,7 @@ import { api, Method } from "@utils/queryUtils";
 import { SideNavProps } from "@helpers/interface";
 import Loading from "../Loader/Loading";
 import { userModulesQuery } from "@helpers/api-queries";
-import DashboardRounded from "@mui/icons-material/DashboardRounded";
-import LanRounded from "@mui/icons-material/LanRounded";
 import { grey } from "@mui/material/colors";
-import SupervisedUserCircleRounded from "@mui/icons-material/SupervisedUserCircleRounded";
-import WorkRounded from "@mui/icons-material/WorkRounded";
-import ViewModuleRoundedIcon from "@mui/icons-material/ViewModuleRounded";
-import PendingActionsRoundedIcon from "@mui/icons-material/PendingActionsRounded";
-import FilePresentRoundedIcon from "@mui/icons-material/FilePresentRounded";
-import DirectionsRoundedIcon from "@mui/icons-material/DirectionsRounded";
-import CollectionsBookmarkRoundedIcon from "@mui/icons-material/CollectionsBookmarkRounded";
-import ArchiveRoundedIcon from "@mui/icons-material/ArchiveRounded";
-import UnarchiveRoundedIcon from "@mui/icons-material/UnarchiveRounded";
-import InboxRoundedIcon from "@mui/icons-material/InboxRounded";
-import FolderDeleteRoundedIcon from "@mui/icons-material/FolderDeleteRounded";
-import Inventory2RoundedIcon from "@mui/icons-material/Inventory2Rounded";
 import Icon from "@components/DynamicIcon/Icon";
 
 export default function NavigationDrawer(props: SideNavProps) {
