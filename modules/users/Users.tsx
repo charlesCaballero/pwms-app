@@ -4,10 +4,7 @@ import dynamic from "next/dynamic";
 import Typography from "@mui/material/Typography";
 import { Suspense } from "react";
 import Router from "next/router";
-import {
-  HeadCell,
-  BooleanCell,
-} from "material-ui-datatable-api-v2/dist/interface";
+import { HeadCell } from "material-ui-datatable-api-v2/dist/interface";
 import { userDetailsQuery } from "@helpers/api-queries";
 import { url } from "@utils/queryUtils";
 

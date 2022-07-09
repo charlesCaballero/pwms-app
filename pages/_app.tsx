@@ -11,7 +11,7 @@ import Loading from "@components/Loader/Loading";
 import { AppProps } from "next/app";
 import { yellow } from "@mui/material/colors";
 
-const AppLayout = dynamic(() => import("@components/layouts/AppLayout"), {
+const AppLayout = dynamic(() => import("@components/Layouts/AppLayout"), {
   suspense: true,
 });
 
