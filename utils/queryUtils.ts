@@ -2,8 +2,8 @@ import axios from "axios";
 import { redirectErrors } from "./authUtils";
 import Cookies from "js-cookie";
 
-// export const url = "http://pwms.api/api";
-export const url = "http://172.22.123.129/api";
+export const url = "http://pwms.api/api";
+// export const url = "http://172.22.123.129/api";
 // export const url = "http://127.0.0.1:8000/api";
 
 export enum Method {

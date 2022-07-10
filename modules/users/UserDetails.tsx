@@ -30,8 +30,9 @@ import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 import RoomPreferencesRoundedIcon from "@mui/icons-material/RoomPreferencesRounded";
-import UserModules from "./UserModules";
-import UserPermissions from "./UserPermissions";
+import UserPrevileges from "./UserPrevileges";
+import UserRoles from "./UserRoles";
+import ChangeStatusDialog from "@components/Dialogs/ChangeStatusDialog";
 
 interface UserDetailsProps {
   userId: string | string[];
@@ -41,6 +42,7 @@ export default function UserDetails(props: UserDetailsProps) {
   const { userId } = props;
   const [userInfo, setUserInfo] = useState<any>({});
   const [tabValue, setTabValue] = useState(0);
+  const [openChangeStatus, setOpenChangeStatus] = useState(false);
 
   const queryUserDetails = useQuery(
     "user-info",
@@ -52,13 +54,16 @@ export default function UserDetails(props: UserDetailsProps) {
     setTabValue(newValue);
   };
 
+  // const handleChangeStatus = () => {};
+
   useEffect(() => {
+    console.log("userID 1: " + userId);
     queryUserDetails.data && setUserInfo(queryUserDetails?.data[0]);
   }, [queryUserDetails.isFetched, queryUserDetails.data]);
 
   useEffect(() => {
-    queryUserDetails.refetch();
-  }, [userId]);
+    userId && queryUserDetails.refetch();
+  }, [userId, userInfo]);
 
   return (
     <Box>
@@ -97,6 +102,7 @@ export default function UserDetails(props: UserDetailsProps) {
                           ":hover": { bgcolor: "success.dark" },
                           boxShadow: 3,
                         }}
+                        onClick={() => setOpenChangeStatus(true)}
                       >
                         <CheckCircleOutlinedIcon
                           fontSize={"large"}
@@ -112,6 +118,7 @@ export default function UserDetails(props: UserDetailsProps) {
                           ":hover": { bgcolor: "error.dark" },
                           boxShadow: 3,
                         }}
+                        onClick={() => setOpenChangeStatus(true)}
                       >
                         <BlockIcon fontSize={"large"} sx={{ color: "white" }} />
                       </IconButton>
@@ -226,14 +233,14 @@ export default function UserDetails(props: UserDetailsProps) {
                 sx={{ fontWeight: "bold", px: 5, fontSize: 12 }}
               />
               <Tab
-                icon={<RoomPreferencesRoundedIcon />}
-                label="Modules"
+                icon={<GppGoodIcon />}
+                label="Previleges"
                 {...a11yProps(1)}
                 sx={{ fontWeight: "bold", px: 5, fontSize: 12 }}
               />
               <Tab
-                icon={<GppGoodIcon />}
-                label="Permissions"
+                icon={<WorkIcon />}
+                label="Roles"
                 {...a11yProps(2)}
                 sx={{ fontWeight: "bold", px: 5, fontSize: 12 }}
               />
@@ -243,19 +250,28 @@ export default function UserDetails(props: UserDetailsProps) {
             Activities
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <UserModules
+            <UserPrevileges
               userId={userInfo?.company_id_number}
               modules={userInfo?.modules}
             />
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
-            <UserPermissions
+            <UserRoles
               userId={userInfo?.company_id_number}
-              permissions={userInfo?.permissions}
+              role={userInfo?.role?.id}
             />
           </TabPanel>
         </Box>
       </Box>
+      <ChangeStatusDialog
+        isOpen={openChangeStatus}
+        onClose={(isSubmitted: boolean) => {
+          isSubmitted && queryUserDetails.refetch();
+          setOpenChangeStatus(!open);
+        }}
+        status={userInfo.status}
+        user={userInfo.company_id_number}
+      />
     </Box>
   );
 }

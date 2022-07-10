@@ -20,6 +20,7 @@ import Loading from "../Loader/Loading";
 import { userModulesQuery } from "@helpers/api-queries";
 import { grey } from "@mui/material/colors";
 import Icon from "@components/DynamicIcon/Icon";
+import Cookie from "js-cookie";
 
 export default function NavigationDrawer(props: SideNavProps) {
   const { drawerWidth, userModules } = props;
@@ -39,7 +40,9 @@ export default function NavigationDrawer(props: SideNavProps) {
         ? (api(
             Method.GET,
             `${userModulesQuery}`,
-            `?modules=${userModules}`
+            userModules.includes("*")
+              ? `?select=all`
+              : `?modules=${userModules}`
           ) as any)
         : null;
     },
@@ -53,8 +56,14 @@ export default function NavigationDrawer(props: SideNavProps) {
 
   useEffect(() => {
     if (userModules) queryModules.refetch();
-    queryModules.data ? setModules(queryModules?.data) : null;
+    if (queryModules.data) {
+      setModules(queryModules?.data);
+    }
   }, [queryModules.data, userModules]);
+
+  useEffect(() => {
+    Cookie.set("mods", JSON.stringify(modules));
+  }, [modules]);
 
   return (
     <Drawer

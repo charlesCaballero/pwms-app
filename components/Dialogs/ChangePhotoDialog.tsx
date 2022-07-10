@@ -6,7 +6,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DialogProps } from "@helpers/interface";
-import { Box } from "@mui/system";
 import { Upload } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
@@ -15,6 +14,7 @@ import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
 import Avatar from "@mui/material/Avatar";
 import Alert from "@mui/material/Alert";
+import { Box } from "@mui/material";
 
 interface ChangeProfileProps extends DialogProps {
   userInitials: string;
