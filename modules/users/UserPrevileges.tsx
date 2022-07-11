@@ -27,17 +27,18 @@ import LoadingButton from "@mui/lab/LoadingButton";
 interface UserPermissionProps {
   userId: string;
   modules: any;
+  update(): void;
 }
 
 export default function UserPrevileges(props: UserPermissionProps) {
-  const { userId, modules } = props;
+  const { userId, modules, update } = props;
   const [currentUserModules, setCurrentUserModules] = useState<any>([]);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
 
   const queryAllModules = useQuery(
     "allModules",
     () => {
-      return api(Method.GET, `${userModulesQuery}`, `?modules=["*"]`) as any;
+      return api(Method.GET, `${userModulesQuery}`, `?select=all`) as any;
     },
     { refetchOnWindowFocus: false }
   );
@@ -75,7 +76,7 @@ export default function UserPrevileges(props: UserPermissionProps) {
         // console.log("result: " + JSON.stringify(result));
         if (result) {
           setAlertOpen(true);
-          queryAllModules.refetch();
+          update();
         }
       },
       onError: () => {},
@@ -116,7 +117,7 @@ export default function UserPrevileges(props: UserPermissionProps) {
         </LoadingButton>
       </Box>
       <Box mx={"-20px"} pt={1}>
-        <TableContainer sx={{ maxHeight: "calc(100vh - 315px)" }}>
+        <TableContainer sx={{ maxHeight: "calc(100vh - 340px)" }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>

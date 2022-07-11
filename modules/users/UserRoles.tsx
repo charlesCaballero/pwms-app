@@ -12,15 +12,55 @@ import {
 } from "@mui/material";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import { rolesQuery } from "@helpers/api-queries";
+import { useMutation, useQuery } from "react-query";
+import { api, Method } from "@utils/queryUtils";
+import { AxiosPromise } from "axios";
+import { userDetailsMutation } from "@helpers/api-mutations";
+import SnackbarAlert from "@components/SnackBar/SnackBarAlert";
 
 interface UserPermissionProps {
   userId: string;
-  role: string;
+  userRole: string;
+  update(): void;
 }
 
 export default function UserRoles(props: UserPermissionProps) {
-  const { userId, role } = props;
-  const [userRole, setUserRole] = useState(role);
+  const { userId, userRole, update } = props;
+  const [myRole, setMyRole] = useState(userRole);
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+
+  const queryAllRoles = useQuery(
+    "allRoles",
+    () => {
+      return api(Method.GET, `${rolesQuery}`, `?select=all`) as any;
+    },
+    { refetchOnWindowFocus: false }
+  );
+
+  const updateUser = useMutation((values: any) => {
+    return api(
+      Method.PUT,
+      `${userDetailsMutation}/${userId}`,
+      values
+    ) as AxiosPromise<any>;
+  });
+
+  const handleSubmit = () => {
+    const values = {
+      role_id: myRole,
+    };
+    updateUser.mutateAsync(values, {
+      onSuccess: (result) => {
+        // console.log("result: " + JSON.stringify(result));
+        if (result) {
+          setAlertOpen(true);
+          update();
+        }
+      },
+      onError: () => {},
+    });
+  };
 
   return (
     <React.Fragment>
@@ -31,7 +71,7 @@ export default function UserRoles(props: UserPermissionProps) {
           color="info"
           sx={{ textTransform: "capitalize", mr: 2 }}
           startIcon={<HistoryRoundedIcon />}
-          onClick={() => setUserRole(role)}
+          onClick={() => setMyRole(userRole)}
         >
           Revert
         </Button>
@@ -40,6 +80,7 @@ export default function UserRoles(props: UserPermissionProps) {
           size="small"
           sx={{ textTransform: "capitalize" }}
           startIcon={<SaveRoundedIcon />}
+          onClick={() => handleSubmit()}
         >
           Save
         </Button>
@@ -54,24 +95,30 @@ export default function UserRoles(props: UserPermissionProps) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* {userPermissionsArr?.map((type: string, index) => {
+              {queryAllRoles?.data?.map((role: any, index) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell>{permissionLabels[index].label}</TableCell>
+                    <TableCell>{role.name}</TableCell>
                     <TableCell>
                       <Checkbox
                         sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                        checked={type === permissionLabels[index].code}
-                        onChange={() => handlePermissionChange(index, "allow")}
+                        checked={role.id === myRole}
+                        onChange={() => setMyRole(role.id)}
                       />
                     </TableCell>
                   </TableRow>
                 );
-              })} */}
+              })}
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
+      <SnackbarAlert
+        type="success"
+        message="Successfully changed user role."
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+      />
     </React.Fragment>
   );
 }

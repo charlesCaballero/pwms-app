@@ -67,11 +67,13 @@ export default function UserDetails(props: UserDetailsProps) {
 
   return (
     <Box>
-      <Breadcrumbs aria-label="breadcrumb">
+      <Breadcrumbs aria-label="breadcrumb" sx={{ fontSize: "small", pb: 2 }}>
         <Link underline="hover" color="inherit" href="/app/users/">
           Users
         </Link>
-        <Typography color="text.primary">User-Details</Typography>
+        <Typography color="text.primary" fontSize={"small"}>
+          User-Details
+        </Typography>
       </Breadcrumbs>
       <Box display={"flex"}>
         <Box mr={1}>
@@ -253,12 +255,14 @@ export default function UserDetails(props: UserDetailsProps) {
             <UserPrevileges
               userId={userInfo?.company_id_number}
               modules={userInfo?.modules}
+              update={() => queryUserDetails.refetch()}
             />
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
             <UserRoles
               userId={userInfo?.company_id_number}
-              role={userInfo?.role?.id}
+              userRole={userInfo?.role?.id}
+              update={() => queryUserDetails.refetch()}
             />
           </TabPanel>
         </Box>

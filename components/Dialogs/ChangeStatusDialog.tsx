@@ -19,6 +19,7 @@ interface ChangeStatusProps extends DialogProps {
 
 export default function ChangeStatusDialog(props: ChangeStatusProps) {
   const { isOpen, onClose, status, user } = props;
+
   const [currentStatus, setCurrentStatus] = React.useState<boolean>(status);
 
   const updateUser = useMutation((values: any) => {
@@ -44,6 +45,11 @@ export default function ChangeStatusDialog(props: ChangeStatusProps) {
       onError: () => {},
     });
   };
+
+  React.useEffect(
+    () => (status ? setCurrentStatus(true) : setCurrentStatus(false)),
+    [status]
+  );
 
   return (
     <React.Fragment>

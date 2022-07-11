@@ -14,7 +14,7 @@ export default function RolesPage() {
     const res = await authRoute;
     // console.log("res: " + res);
     if (res !== undefined) {
-      res ? setIsAllowed(res) : Router.back();
+      res ? setIsAllowed(res) : Router.replace("/app/home");
     }
   })();
 

@@ -74,7 +74,7 @@ export default function Offices() {
     setAction(action);
     setSelection(selections);
     if (action === "delete") setIsDeleteDialogOpen(true);
-    else setIsFormOpen(true);
+    else if (action === "edit") setIsFormOpen(true);
   };
 
   const handleFormClose = (isSubmitted) => {
@@ -157,7 +157,7 @@ export default function Offices() {
           flexGrow={1}
         >
           <Typography component={"h1"} variant="h3">
-            Office
+            Offices
           </Typography>
         </Box>
         <Box

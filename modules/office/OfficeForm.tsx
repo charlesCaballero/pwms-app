@@ -7,7 +7,6 @@ import { useMutation } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
 import { grey } from "@mui/material/colors";
-import { isAllTrue, isInputEmpty } from "@helpers/validate";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
@@ -35,10 +34,14 @@ const validationSchema = Yup.object().shape({
 
 export default function OfficeForm(props: FormProps) {
   const { isOpen, onClose, rowData } = props;
-  const { register, handleSubmit, reset } = useForm<FormValues>();
-  const [officeNameError, setOfficeNameError] = useState<any>({});
-  const [officeAcronymError, setOfficeAcronymError] = useState<any>({});
-  const [officeCodeError, setOfficeCodeError] = useState<any>({});
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: yupResolver(validationSchema),
+  });
 
   const updateOffice = useMutation((values: any) => {
     return api(
@@ -74,41 +77,29 @@ export default function OfficeForm(props: FormProps) {
     } else clearForm();
   }, [rowData]);
 
-  const handleFormSubmit = handleSubmit((values) => {
-    const isNameError = isInputEmpty("Office Name", values.name);
-    const isAcronymError = isInputEmpty("Acronym", values.acronym);
-    const isCodeError = isInputEmpty("Office Code", values.code);
-
-    if (
-      isAllTrue([!isNameError.error, !isAcronymError.error, !isCodeError.error])
-    ) {
-      rowData
-        ? updateOffice.mutateAsync(values, {
-            onSuccess: (result) => {
-              // console.log("result: " + JSON.stringify(result));
-              if (result) {
-                clearForm();
-                onClose(true);
-              }
-            },
-            onError: () => {},
-          })
-        : addOffice.mutateAsync(values, {
-            onSuccess: (result) => {
-              // console.log("result: " + JSON.stringify(result));
-              if (result.data) {
-                clearForm();
-                onClose(true);
-              }
-            },
-            onError: () => {},
-          });
-    }
-
-    setOfficeNameError(isNameError);
-    setOfficeAcronymError(isAcronymError);
-    setOfficeCodeError(isCodeError);
-  });
+  const onSubmit = async (values: FormValues) => {
+    rowData
+      ? await updateOffice.mutateAsync(values, {
+          onSuccess: (result) => {
+            // console.log("result: " + JSON.stringify(result));
+            if (result) {
+              clearForm();
+              onClose(true);
+            }
+          },
+          onError: () => {},
+        })
+      : await addOffice.mutateAsync(values, {
+          onSuccess: (result) => {
+            // console.log("result: " + JSON.stringify(result));
+            if (result.data) {
+              clearForm();
+              onClose(true);
+            }
+          },
+          onError: () => {},
+        });
+  };
 
   return (
     <Dialog
@@ -125,10 +116,10 @@ export default function OfficeForm(props: FormProps) {
         )}
         {rowData ? "Edit Office" : " New Office"}
       </DialogTitle>
-      <Box component={"form"} onSubmit={handleFormSubmit}>
+      <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <FormControl
-            error={officeNameError.error}
+            error={errors?.name !== undefined}
             fullWidth
             variant="standard"
             sx={{ my: 2 }}
@@ -136,7 +127,7 @@ export default function OfficeForm(props: FormProps) {
             <Typography
               variant="subtitle2"
               fontWeight={"bold"}
-              color={officeNameError.error ? "error" : "default"}
+              color={errors?.name !== undefined ? "error" : "default"}
             >
               Office Name
             </Typography>
@@ -150,8 +141,8 @@ export default function OfficeForm(props: FormProps) {
                 pt: 1,
               }}
             />
-            {officeNameError.error ? (
-              <FormHelperText>{officeNameError.message}</FormHelperText>
+            {errors?.name !== undefined ? (
+              <FormHelperText>{errors?.name?.message}</FormHelperText>
             ) : (
               ""
             )}
@@ -159,14 +150,14 @@ export default function OfficeForm(props: FormProps) {
           <Box display={"flex"} sx={{ my: 2 }}>
             <Box flexGrow={1} pr={2}>
               <FormControl
-                error={officeAcronymError.error}
+                error={errors?.acronym !== undefined}
                 fullWidth
                 variant="standard"
               >
                 <Typography
                   variant="subtitle2"
                   fontWeight={"bold"}
-                  color={officeAcronymError.error ? "error" : "default"}
+                  color={errors?.acronym !== undefined ? "error" : "default"}
                 >
                   Acronym
                 </Typography>
@@ -180,8 +171,8 @@ export default function OfficeForm(props: FormProps) {
                     pt: 1,
                   }}
                 />
-                {officeAcronymError.error ? (
-                  <FormHelperText>{officeAcronymError.message}</FormHelperText>
+                {errors?.acronym !== undefined ? (
+                  <FormHelperText>{errors?.acronym?.message}</FormHelperText>
                 ) : (
                   ""
                 )}
@@ -189,14 +180,14 @@ export default function OfficeForm(props: FormProps) {
             </Box>
             <Box flexGrow={1} pl={2}>
               <FormControl
-                error={officeCodeError.error}
+                error={errors?.code !== undefined}
                 fullWidth
                 variant="standard"
               >
                 <Typography
                   variant="subtitle2"
                   fontWeight={"bold"}
-                  color={officeCodeError.error ? "error" : "default"}
+                  color={errors?.code !== undefined ? "error" : "default"}
                 >
                   Office Code
                 </Typography>
@@ -210,8 +201,8 @@ export default function OfficeForm(props: FormProps) {
                     pt: 1,
                   }}
                 />
-                {officeCodeError.error ? (
-                  <FormHelperText>{officeCodeError.message}</FormHelperText>
+                {errors?.code !== undefined ? (
+                  <FormHelperText>{errors?.code?.message}</FormHelperText>
                 ) : (
                   ""
                 )}

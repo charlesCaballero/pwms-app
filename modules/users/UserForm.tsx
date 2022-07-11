@@ -20,8 +20,6 @@ import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -44,9 +42,6 @@ const validationSchema = Yup.object().shape({
   office_id: Yup.string()
     .matches(/^[1-9]+$/, "Please select which office you belong.")
     .required("You forgot to choose the office where you belong."),
-  //   password: Yup.string()
-  //     .nullable()
-  //     .min(6, "Password should at atleast contain 6 characters."),
 });
 
 export default function UserForm(props: FormProps) {
