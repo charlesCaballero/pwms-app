@@ -15,33 +15,12 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 
 interface UserPermissionProps {
   userId: string;
-  permissions: string;
+  role: string;
 }
 
-export default function UserPermissions(props: UserPermissionProps) {
-  const { userId, permissions } = props;
-  const [userPermissionsArr, setUserPermissionsArr] = useState(
-    permissions?.split("")
-  );
-  const permissionLabels = [
-    { code: "r", label: "View Data" },
-    { code: "w", label: "Add Data" },
-    { code: "u", label: "Edit Data" },
-    { code: "d", label: "Delete Data" },
-  ];
-
-  const handlePermissionChange = (index, permit) => {
-    let updatePermission = userPermissionsArr;
-    if (permit !== "deny") {
-      updatePermission[index] = permissionLabels[index].code;
-    } else updatePermission[index] = "-";
-
-    setUserPermissionsArr([...updatePermission]);
-  };
-
-  useEffect(() => {
-    console.log("update: " + userPermissionsArr.toString().replaceAll(",", ""));
-  }, [userPermissionsArr]);
+export default function UserRoles(props: UserPermissionProps) {
+  const { userId, role } = props;
+  const [userRole, setUserRole] = useState(role);
 
   return (
     <React.Fragment>
@@ -52,7 +31,7 @@ export default function UserPermissions(props: UserPermissionProps) {
           color="info"
           sx={{ textTransform: "capitalize", mr: 2 }}
           startIcon={<HistoryRoundedIcon />}
-          onClick={() => setUserPermissionsArr(permissions?.split(""))}
+          onClick={() => setUserRole(role)}
         >
           Revert
         </Button>
@@ -70,13 +49,12 @@ export default function UserPermissions(props: UserPermissionProps) {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: "bold" }}>Permissions</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Allow</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Deny</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Roles</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {userPermissionsArr?.map((type: string, index) => {
+              {/* {userPermissionsArr?.map((type: string, index) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{permissionLabels[index].label}</TableCell>
@@ -87,16 +65,9 @@ export default function UserPermissions(props: UserPermissionProps) {
                         onChange={() => handlePermissionChange(index, "allow")}
                       />
                     </TableCell>
-                    <TableCell>
-                      <Checkbox
-                        sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                        checked={type === "-"}
-                        onChange={() => handlePermissionChange(index, "deny")}
-                      />
-                    </TableCell>
                   </TableRow>
                 );
-              })}
+              })} */}
             </TableBody>
           </Table>
         </TableContainer>

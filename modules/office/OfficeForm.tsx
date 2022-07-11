@@ -18,12 +18,20 @@ import Input from "@mui/material/Input";
 import FormHelperText from "@mui/material/FormHelperText";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 
 type FormValues = {
   name: string;
   acronym: string;
   code: string;
 };
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("You forgot the name of the office."),
+  acronym: Yup.string().required("Office acronym is needed."),
+  code: Yup.string().required("Please specify the office code."),
+});
 
 export default function OfficeForm(props: FormProps) {
   const { isOpen, onClose, rowData } = props;
