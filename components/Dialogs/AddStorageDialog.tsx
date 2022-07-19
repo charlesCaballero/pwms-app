@@ -198,7 +198,6 @@ export default function AddStorageDialog(props: DialogProps) {
                     <IconButton
                       aria-label="delete"
                       color="error"
-                      sx={{ pt: 2 }}
                       disabled={values.box_details.length <= 1}
                       // onClick={() => {
                       //   setValues({
