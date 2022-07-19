@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import { boolean, string } from "yup/lib/locale";
 import { Box, Button } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import AddStorageDialog from "@components/Dialogs/AddStorageDialog";
 
 function createData(
   name: string,
@@ -55,13 +56,24 @@ const thead: TableHeader[] = [
 ];
 
 export default function StorageRequest() {
+  const [openAddBox, setOpenAddBox] = React.useState(false);
+  const [selected, setSelected] = React.useState({});
   return (
     <Box>
       <Box display={"flex"} flexDirection="row-reverse">
-        <Button variant="contained" endIcon={<Add />} sx={{ m: 1 }}>
+        <Button
+          variant="contained"
+          endIcon={<Add />}
+          sx={{ m: 1 }}
+          onClick={() => setOpenAddBox(true)}
+        >
           Add Box
         </Button>
       </Box>
+      <AddStorageDialog
+        isOpen={openAddBox}
+        onClose={() => setOpenAddBox(!openAddBox)}
+      />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>

@@ -57,7 +57,7 @@ export default function UserDetails(props: UserDetailsProps) {
   // const handleChangeStatus = () => {};
 
   useEffect(() => {
-    console.log("userID 1: " + userId);
+    // console.log("userID 1: " + userId);
     queryUserDetails.data && setUserInfo(queryUserDetails?.data[0]);
   }, [queryUserDetails.isFetched, queryUserDetails.data]);
 
