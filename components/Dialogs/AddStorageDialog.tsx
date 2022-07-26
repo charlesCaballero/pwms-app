@@ -6,34 +6,23 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import { DialogProps } from "@helpers/interface";
 import {
+  Alert,
   Collapse,
   Divider,
-  Fade,
-  Grid,
   IconButton,
   Link,
-  Paper,
-  Popper,
-  Tab,
-  Tabs,
   TextField,
 } from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 import { Delete } from "@mui/icons-material";
-import { TabPanel } from "@mui/lab";
-import { styled } from "@mui/material/styles";
 import { useQuery } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { getRetentionsQuery } from "@helpers/api-queries";
+import DocumentDate from "@components/Popper/DocumentDatePopper";
 
 const filter = createFilterOptions();
 interface DocumentDetails {
@@ -51,24 +40,13 @@ interface BoxDetails {
   box_details: DocumentDetails[];
   disposal_date: string;
 }
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 export default function AddStorageDialog(props: DialogProps) {
   const { isOpen, onClose } = props;
-  const [values, setValues] = React.useState<BoxDetails>({
+  const [addDetail, setAddDetail] = React.useState([false]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [currentYear, setCurrentYear] = React.useState(0);
+  const [boxData, setBoxData] = React.useState<BoxDetails>({
     uID: "",
     office_id: "",
     box_code: "",
@@ -91,6 +69,46 @@ export default function AddStorageDialog(props: DialogProps) {
     { refetchOnWindowFocus: false }
   );
 
+  const setDescription = (index, val) => {
+    boxData.box_details[index].description = val;
+    setBoxData({ ...boxData, box_details: boxData.box_details });
+  };
+
+  const handleDocumentDateChange = (date, year, index) => {
+    boxData.box_details[index].document_date = date;
+    setBoxData({ ...boxData, box_details: boxData.box_details });
+    setCurrentYear(year);
+  };
+
+  const handleChangeValue = (selected, index) => {
+    console.log("selected: " + JSON.stringify(selected));
+    console.log("index: " + index);
+    let newSelected = boxData.box_details;
+    if (newSelected[index] !== undefined) {
+      newSelected[index] = {
+        id: index,
+        document_title:
+          selected.series_title_desciption + " (" + selected.dept_title + ")",
+        description: "",
+        rds_number: selected.rds_no + " #" + selected.rds_item_no,
+        retention_period: selected.retention_period,
+        document_date: "",
+      };
+    } else {
+      newSelected.push({
+        id: index,
+        document_title:
+          selected.series_title_desciption + " (" + selected.dept_title + ")",
+        description: "",
+        rds_number: selected.rds_no + " #" + selected.rds_item_no,
+        retention_period: selected.retention_period,
+        document_date: "",
+      });
+    }
+
+    setBoxData({ ...boxData, box_details: [...newSelected] });
+  };
+
   return (
     <React.Fragment>
       <Dialog
@@ -112,14 +130,14 @@ export default function AddStorageDialog(props: DialogProps) {
             name="box_code"
             label="Box Code"
             type="text"
-            // value={values.boxCode}
+            // value={boxData.boxCode}
             // onChange={(event) => {
-            //   setValues({ ...values, boxCode: event.target.value })
+            //   setBoxData({ ...boxData, boxCode: event.target.value })
             // }}
             variant="outlined"
           />
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>
-            {values.box_details.map((row, idx) => {
+            {boxData.box_details.map((row, idx) => {
               return (
                 <React.Fragment key={idx}>
                   <Box display="flex" alignItems={"center"} sx={{ pt: 1 }}>
@@ -172,50 +190,129 @@ export default function AddStorageDialog(props: DialogProps) {
                     <TextField
                       sx={{ mr: 1, width: 120 }}
                       inputProps={{ readOnly: true }}
-                      // value={values.seriesTitle[idx - 1].rdsNumber}
-                      helperText={null}
+                      value={boxData.box_details[idx].rds_number}
                       id="rds_no"
                       name="rds_no"
                       label="RDS No."
-                      // helperText="Read-only"
                     />
                     <TextField
                       sx={{ width: 120, mr: 1 }}
                       inputProps={{ readOnly: true }}
-                      // value={values.seriesTitle[idx - 1].retentionPeriod}
+                      value={boxData.box_details[idx].retention_period}
                       id="retention_period"
                       label="Retention"
                       // helperText="Read-only"
                     />
-                    <TextField
-                      sx={{ width: 250, mr: 1 }}
-                      inputProps={{ readOnly: true }}
-                      // value={values.seriesTitle[idx - 1].retentionPeriod}
-                      id="document_date"
-                      label="Document Date"
-                      // helperText="Read-only"
+                    <DocumentDate
+                      boxDetails={boxData.box_details[idx]}
+                      idx={idx}
+                      anchorEl={anchorEl}
+                      setAnchorEl={(el) => setAnchorEl(el)}
+                      saveDocumentDate={(document_date, year, index) =>
+                        handleDocumentDateChange(document_date, year, index)
+                      }
+                      currentYear={currentYear}
                     />
                     <IconButton
                       aria-label="delete"
                       color="error"
-                      disabled={values.box_details.length <= 1}
-                      // onClick={() => {
-                      //   setValues({
-                      //     ...values,
-                      //     seriesTitle: values.seriesTitle.filter(
-                      //       (row) => row.id !== id
-                      //     ),
-                      //   });
-                      // }}
+                      disabled={boxData.box_details.length <= 1}
+                      onClick={() => {
+                        setBoxData({
+                          ...boxData,
+                          box_details: boxData.box_details.splice(idx, 1),
+                        });
+                      }}
                     >
                       <Delete />
                     </IconButton>
                   </Box>
-
+                  <Link
+                    component="button"
+                    variant="body2"
+                    underline="hover"
+                    color={addDetail[idx] ? "red" : "green"}
+                    onClick={() => {
+                      if (addDetail[idx]) {
+                        setAddDetail(updateArray(addDetail, idx, false));
+                        boxData.box_details[idx].description = "";
+                        setBoxData({
+                          ...boxData,
+                          box_details: boxData.box_details,
+                        });
+                      } else {
+                        setAddDetail(updateArray(addDetail, idx, true));
+                      }
+                    }}
+                  >
+                    {addDetail[idx] ? "Remove Description" : "Add Description"}
+                  </Link>
+                  <Collapse in={addDetail[idx]}>
+                    <TextField
+                      id="outlined-multiline-static"
+                      hiddenLabel
+                      variant="filled"
+                      multiline
+                      rows={3}
+                      fullWidth
+                      value={boxData.box_details[idx].description}
+                      onChange={(event) => {
+                        boxData.box_details[idx].description =
+                          event.target.value;
+                        setBoxData({
+                          ...boxData,
+                          box_details: boxData.box_details,
+                        });
+                      }}
+                      InputProps={{ disableUnderline: true }}
+                    />
+                  </Collapse>
                   <Divider sx={{ mt: 1, mb: 2 }} />
                 </React.Fragment>
               );
             })}
+          </Box>
+          <Box sx={{ pb: 2, textAlign: "center", m: "auto" }}>
+            <Button
+              color="primary"
+              variant="contained"
+              sx={{ mx: 1 }}
+              onClick={() => {
+                setBoxData({
+                  ...boxData,
+                  box_details: boxData.box_details.concat({
+                    id: boxData.box_details.length + 1,
+                    document_title: "",
+                    description: "",
+                    rds_number: "",
+                    retention_period: "",
+                    document_date: "",
+                  }),
+                });
+              }}
+            >
+              Add more
+            </Button>
+          </Box>
+          <Box>
+            <Alert severity="info" sx={{ mb: 1 }}>
+              The document with largest retention period is the basis for the
+              disposal date.
+            </Alert>
+            <TextField
+              autoFocus
+              required
+              fullWidth
+              id="disposal_date"
+              name="disposal_date"
+              label="Disposal Date"
+              type="text"
+              // value={boxData.boxCode}
+              // onChange={(event) => {
+              //   setBoxData({ ...boxData, boxCode: event.target.value })
+              // }}
+              variant="outlined"
+            />
           </Box>
         </DialogContent>
         <DialogActions>
@@ -245,11 +342,12 @@ const getFilteredOptions = (options, params) => {
   return filtered;
 };
 
-const handleChangeValue = (selected, index) => {
-  console.log("selected: " + JSON.stringify(selected));
-  console.log("index: " + index);
-};
+function updateArray(arr, index, value) {
+  let updatedArray = arr;
+  updatedArray[index] = value;
 
+  return [...updatedArray];
+}
 // const DocumentDate = (props) => {
 //     const [open, setOpen] = React.useState(false);
 //     const [val, setVal] = React.useState(0);
@@ -266,7 +364,7 @@ const handleChangeValue = (selected, index) => {
 
 //     return (
 //       <Box>
-//         <TextField label="Document Date" value={props.seriesTitle.documentDate} required inputProps={{ readOnly: true, }} onClick={handleClick()}/>
+//         <TextField label="Document Date" value={props.box_details.document_date} required inputProps={{ readOnly: true, }} onClick={handleClick()}/>
 //         <Popper open={open} anchorEl={props.anchorEl} placement={"bottom"} transition style={{zIndex: 1500}}>
 //           {({ TransitionProps }) => (
 //             <Fade {...TransitionProps} timeout={350}>
