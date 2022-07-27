@@ -73,6 +73,10 @@ export default function StorageRequest() {
       <AddStorageDialog
         isOpen={openAddBox}
         onClose={() => setOpenAddBox(!openAddBox)}
+        getBoxData={(data) => {
+          console.log(JSON.stringify(data));
+          setOpenAddBox(!openAddBox);
+        }}
       />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">

@@ -24,6 +24,21 @@ import { api, Method } from "@utils/queryUtils";
 import { getRetentionsQuery } from "@helpers/api-queries";
 import DocumentDate from "@components/Popper/DocumentDatePopper";
 
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 const filter = createFilterOptions();
 interface DocumentDetails {
   id: number;
@@ -41,11 +56,16 @@ interface BoxDetails {
   disposal_date: string;
 }
 
-export default function AddStorageDialog(props: DialogProps) {
-  const { isOpen, onClose } = props;
+interface StorageDialogProps extends DialogProps {
+  getBoxData(data: any): void;
+}
+
+export default function AddStorageDialog(props: StorageDialogProps) {
+  const { isOpen, onClose, getBoxData } = props;
   const [addDetail, setAddDetail] = React.useState([false]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [currentYear, setCurrentYear] = React.useState(0);
+  const [largestMonth, setLargestMonth] = React.useState(0);
   const [boxData, setBoxData] = React.useState<BoxDetails>({
     uID: "",
     office_id: "",
@@ -69,15 +89,21 @@ export default function AddStorageDialog(props: DialogProps) {
     { refetchOnWindowFocus: false }
   );
 
-  const setDescription = (index, val) => {
-    boxData.box_details[index].description = val;
-    setBoxData({ ...boxData, box_details: boxData.box_details });
+  const handleBoxData = () => {
+    getBoxData(boxData);
   };
 
-  const handleDocumentDateChange = (date, year, index) => {
+  const handleDocumentDateChange = (date, year, largest, index) => {
+    console.log("largest: " + largest);
+
     boxData.box_details[index].document_date = date;
-    setBoxData({ ...boxData, box_details: boxData.box_details });
+    setBoxData({
+      ...boxData,
+      box_details: boxData.box_details,
+      disposal_date: months[largest] + " " + year,
+    });
     setCurrentYear(year);
+    setLargestMonth(largest);
   };
 
   const handleChangeValue = (selected, index) => {
@@ -130,10 +156,10 @@ export default function AddStorageDialog(props: DialogProps) {
             name="box_code"
             label="Box Code"
             type="text"
-            // value={boxData.boxCode}
-            // onChange={(event) => {
-            //   setBoxData({ ...boxData, boxCode: event.target.value })
-            // }}
+            value={boxData.box_code}
+            onChange={(event) => {
+              setBoxData({ ...boxData, box_code: event.target.value });
+            }}
             variant="outlined"
           />
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>
@@ -208,10 +234,16 @@ export default function AddStorageDialog(props: DialogProps) {
                       idx={idx}
                       anchorEl={anchorEl}
                       setAnchorEl={(el) => setAnchorEl(el)}
-                      saveDocumentDate={(document_date, year, index) =>
-                        handleDocumentDateChange(document_date, year, index)
+                      saveDocumentDate={(document_date, year, largest, index) =>
+                        handleDocumentDateChange(
+                          document_date,
+                          year,
+                          largest,
+                          index
+                        )
                       }
                       currentYear={currentYear}
+                      largestMonth={largestMonth}
                     />
                     <IconButton
                       aria-label="delete"
@@ -307,7 +339,7 @@ export default function AddStorageDialog(props: DialogProps) {
               name="disposal_date"
               label="Disposal Date"
               type="text"
-              // value={boxData.boxCode}
+              value={boxData.disposal_date}
               // onChange={(event) => {
               //   setBoxData({ ...boxData, boxCode: event.target.value })
               // }}
@@ -317,6 +349,7 @@ export default function AddStorageDialog(props: DialogProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => onClose(false)}>Close</Button>
+          <Button onClick={() => handleBoxData()}>Close</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

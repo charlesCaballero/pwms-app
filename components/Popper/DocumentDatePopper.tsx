@@ -71,9 +71,11 @@ interface DocumentDateProps {
   saveDocumentDate(
     document_date: string,
     selected_year: number,
+    largest_month: number,
     index: number
   ): void;
   currentYear: number;
+  largestMonth: number;
 }
 
 export default function DocumentDate(props: DocumentDateProps) {
@@ -84,6 +86,7 @@ export default function DocumentDate(props: DocumentDateProps) {
     idx,
     saveDocumentDate,
     currentYear,
+    largestMonth,
   } = props;
   const [open, setOpen] = React.useState(false);
   const [val, setVal] = React.useState(0);
@@ -202,6 +205,12 @@ export default function DocumentDate(props: DocumentDateProps) {
                 <Button
                   size="small"
                   onClick={() => {
+                    let largest = 0;
+                    if (largestMonth < selectedMonths[0])
+                      largest = selectedMonths[0];
+                    if (largestMonth < selectedMonths[1])
+                      largest = selectedMonths[1];
+                    else largest = largestMonth;
                     saveDocumentDate(
                       months[selectedMonths[0]] +
                         "-" +
@@ -209,6 +218,7 @@ export default function DocumentDate(props: DocumentDateProps) {
                         " " +
                         selectedYear,
                       selectedYear,
+                      largest,
                       idx
                     );
                     setOpen(false);
