@@ -66,6 +66,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [currentYear, setCurrentYear] = React.useState(0);
   const [largestMonth, setLargestMonth] = React.useState(0);
+  const [largestRetention, setLargestRetention] = React.useState(0);
   const [boxData, setBoxData] = React.useState<BoxDetails>({
     uID: "",
     office_id: "",
@@ -94,21 +95,23 @@ export default function AddStorageDialog(props: StorageDialogProps) {
   };
 
   const handleDocumentDateChange = (date, year, largest, index) => {
-    console.log("largest: " + largest);
-
-    boxData.box_details[index].document_date = date;
-    setBoxData({
-      ...boxData,
-      box_details: boxData.box_details,
-      disposal_date: months[largest] + " " + year,
-    });
-    setCurrentYear(year);
-    setLargestMonth(largest);
+    console.log("year: " + year);
+    if (parseInt(year) > 0 && !date.includes("undefined")) {
+      boxData.box_details[index].document_date = date;
+      setBoxData({
+        ...boxData,
+        box_details: boxData.box_details,
+        disposal_date:
+          months[largest] + " " + (parseInt(year) + largestRetention),
+      });
+      setCurrentYear(year);
+      setLargestMonth(largest);
+    }
   };
 
   const handleChangeValue = (selected, index) => {
-    console.log("selected: " + JSON.stringify(selected));
-    console.log("index: " + index);
+    // console.log("selected: " + JSON.stringify(selected));
+    // console.log("index: " + index);
     let newSelected = boxData.box_details;
     if (newSelected[index] !== undefined) {
       newSelected[index] = {
@@ -134,6 +137,14 @@ export default function AddStorageDialog(props: StorageDialogProps) {
 
     setBoxData({ ...boxData, box_details: [...newSelected] });
   };
+
+  React.useEffect(() => {
+    let retention_array = [];
+    boxData.box_details.map((details) => {
+      retention_array.push(parseInt(details.retention_period));
+    });
+    setLargestRetention(Math.max(...retention_array));
+  }, [boxData]);
 
   return (
     <React.Fragment>
@@ -179,7 +190,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       renderInput={(params) => (
                         <TextField {...params} label="Document Title" />
                       )}
-                      onChange={(event, newTitle) =>
+                      onChange={(_event, newTitle) =>
                         handleChangeValue(newTitle, idx)
                       }
                       filterOptions={(options, params) =>
@@ -220,13 +231,23 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       id="rds_no"
                       name="rds_no"
                       label="RDS No."
+                      disabled
                     />
                     <TextField
                       sx={{ width: 120, mr: 1 }}
                       inputProps={{ readOnly: true }}
-                      value={boxData.box_details[idx].retention_period}
+                      value={
+                        parseInt(boxData.box_details[idx].retention_period) > 1
+                          ? boxData.box_details[idx].retention_period + " years"
+                          : parseInt(
+                              boxData.box_details[idx].retention_period
+                            ) == 1
+                          ? boxData.box_details[idx].retention_period + " year"
+                          : ""
+                      }
                       id="retention_period"
                       label="Retention"
+                      disabled
                       // helperText="Read-only"
                     />
                     <DocumentDate
@@ -250,9 +271,11 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       color="error"
                       disabled={boxData.box_details.length <= 1}
                       onClick={() => {
+                        boxData.box_details.splice(idx, 1);
+
                         setBoxData({
                           ...boxData,
-                          box_details: boxData.box_details.splice(idx, 1),
+                          box_details: boxData.box_details,
                         });
                       }}
                     >
@@ -340,16 +363,17 @@ export default function AddStorageDialog(props: StorageDialogProps) {
               label="Disposal Date"
               type="text"
               value={boxData.disposal_date}
-              // onChange={(event) => {
-              //   setBoxData({ ...boxData, boxCode: event.target.value })
-              // }}
               variant="outlined"
             />
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => onClose(false)}>Close</Button>
-          <Button onClick={() => handleBoxData()}>Close</Button>
+        <DialogActions sx={{ p: 2 }}>
+          <Button color="inherit" onClick={() => onClose(false)}>
+            Close
+          </Button>
+          <Button variant="contained" onClick={() => handleBoxData()}>
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

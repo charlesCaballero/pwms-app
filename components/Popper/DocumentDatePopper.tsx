@@ -113,7 +113,7 @@ export default function DocumentDate(props: DocumentDateProps) {
 
   const clearDocumentDate = () => {
     setSelectedMonths([]);
-    setSelectedYear(0);
+    setSelectedYear(currentYear);
   };
 
   return (
@@ -186,7 +186,9 @@ export default function DocumentDate(props: DocumentDateProps) {
                           }}
                           sx={{
                             backgroundColor:
-                              selectedYear === year ? "#6aa84f" : "",
+                              selectedYear === year || currentYear === year
+                                ? "#6aa84f"
+                                : "",
                           }}
                         >
                           {year}
@@ -217,7 +219,7 @@ export default function DocumentDate(props: DocumentDateProps) {
                         months[selectedMonths[1]] +
                         " " +
                         selectedYear,
-                      selectedYear,
+                      currentYear > 0 ? currentYear : selectedYear,
                       largest,
                       idx
                     );

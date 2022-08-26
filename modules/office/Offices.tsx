@@ -74,7 +74,7 @@ export default function Offices() {
     setAction(action);
     setSelection(selections);
     if (action === "delete") setIsDeleteDialogOpen(true);
-    else if (action === "edit") setIsFormOpen(true);
+    else if (action === "edit" || action === "add") setIsFormOpen(true);
   };
 
   const handleFormClose = (isSubmitted) => {
