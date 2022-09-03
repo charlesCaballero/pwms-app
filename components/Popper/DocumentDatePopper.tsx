@@ -104,7 +104,7 @@ export default function DocumentDate(props: DocumentDateProps) {
   };
 
   const selectedMonthRange = (month) => {
-    console.log("months: " + month);
+    // console.log("months: " + month);
 
     if (selectedMonths.length <= 1) {
       setSelectedMonths(selectedMonths.concat(month));
@@ -223,6 +223,7 @@ export default function DocumentDate(props: DocumentDateProps) {
                       largest,
                       idx
                     );
+                    clearDocumentDate();
                     setOpen(false);
                   }}
                   variant="contained"

@@ -23,6 +23,7 @@ import { useQuery } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { getRetentionsQuery } from "@helpers/api-queries";
 import DocumentDate from "@components/Popper/DocumentDatePopper";
+import Cookie from "js-cookie";
 
 const months = [
   "January",
@@ -49,7 +50,7 @@ interface DocumentDetails {
   document_date: string;
 }
 interface BoxDetails {
-  uID: string;
+  uID: any;
   office_id: string;
   box_code: string;
   box_details: DocumentDetails[];
@@ -58,15 +59,18 @@ interface BoxDetails {
 
 interface StorageDialogProps extends DialogProps {
   getBoxData(data: any): void;
+  editBoxData: any;
+  boxID: number;
 }
 
 export default function AddStorageDialog(props: StorageDialogProps) {
-  const { isOpen, onClose, getBoxData } = props;
+  const { isOpen, onClose, getBoxData, boxID, editBoxData } = props;
   const [addDetail, setAddDetail] = React.useState([false]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [currentYear, setCurrentYear] = React.useState(0);
   const [largestMonth, setLargestMonth] = React.useState(0);
   const [largestRetention, setLargestRetention] = React.useState(0);
+  const [defaultRDS, setDefaultRDS] = React.useState([]);
   const [boxData, setBoxData] = React.useState<BoxDetails>({
     uID: "",
     office_id: "",
@@ -90,12 +94,41 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     { refetchOnWindowFocus: false }
   );
 
+  const resetValues = () => {
+    setCurrentYear(0);
+    setLargestMonth(0);
+    setLargestRetention(0);
+    setBoxData({
+      uID: "",
+      office_id: "",
+      box_code: "",
+      box_details: [
+        {
+          id: 0,
+          document_title: "",
+          description: "",
+          rds_number: "",
+          retention_period: "",
+          document_date: "",
+        },
+      ],
+      disposal_date: "",
+    });
+  };
+
   const handleBoxData = () => {
+    const officeID = Cookie.get("office_id");
+    setBoxData({
+      ...boxData,
+      uID: boxID + 1,
+      office_id: officeID,
+    });
+    resetValues();
     getBoxData(boxData);
   };
 
   const handleDocumentDateChange = (date, year, largest, index) => {
-    console.log("year: " + year);
+    // console.log("year: " + year);
     if (parseInt(year) > 0 && !date.includes("undefined")) {
       boxData.box_details[index].document_date = date;
       setBoxData({
@@ -115,9 +148,9 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     let newSelected = boxData.box_details;
     if (newSelected[index] !== undefined) {
       newSelected[index] = {
-        id: index,
+        id: selected.id,
         document_title:
-          selected.series_title_desciption + " (" + selected.dept_title + ")",
+          selected.series_title_description + " (" + selected.dept_unit + ")",
         description: "",
         rds_number: selected.rds_no + " #" + selected.rds_item_no,
         retention_period: selected.retention_period,
@@ -125,9 +158,9 @@ export default function AddStorageDialog(props: StorageDialogProps) {
       };
     } else {
       newSelected.push({
-        id: index,
+        id: selected.id,
         document_title:
-          selected.series_title_desciption + " (" + selected.dept_title + ")",
+          selected.series_title_description + " (" + selected.dept_unit + ")",
         description: "",
         rds_number: selected.rds_no + " #" + selected.rds_item_no,
         retention_period: selected.retention_period,
@@ -135,14 +168,33 @@ export default function AddStorageDialog(props: StorageDialogProps) {
       });
     }
 
+    // console.log("newSelected: " + JSON.stringify(newSelected));
+
     setBoxData({ ...boxData, box_details: [...newSelected] });
   };
 
   React.useEffect(() => {
+    // console.log("editBoxData: " + JSON.stringify(editBoxData));
+    if (editBoxData) setBoxData(editBoxData);
+  }, [editBoxData]);
+
+  React.useEffect(() => {
     let retention_array = [];
+    let defaultVal = [];
     boxData.box_details.map((details) => {
       retention_array.push(parseInt(details.retention_period));
+      retentions.data?.find((rds) => {
+        if (rds.id === details.id) {
+          defaultVal.push(rds);
+          return true;
+        }
+        return false;
+      });
     });
+    if (defaultVal !== undefined) setDefaultRDS(defaultVal);
+
+    const date_array = boxData.box_details[0].document_date.split(" ");
+    setCurrentYear(parseInt(date_array[1]));
     setLargestRetention(Math.max(...retention_array));
   }, [boxData]);
 
@@ -154,11 +206,11 @@ export default function AddStorageDialog(props: StorageDialogProps) {
         open={isOpen}
         onClose={() => onClose(false)}
       >
-        <DialogTitle>Add Box</DialogTitle>
+        <DialogTitle>{editBoxData ? "Edit Box" : "Add Box"}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          {/* <DialogContentText>
             You can set my maximum width and whether to adapt or not.
-          </DialogContentText>
+          </DialogContentText> */}
           <TextField
             autoFocus
             required
@@ -172,6 +224,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
               setBoxData({ ...boxData, box_code: event.target.value });
             }}
             variant="outlined"
+            sx={{ mt: 2 }}
           />
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>
             {boxData.box_details.map((row, idx) => {
@@ -183,6 +236,9 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       id={"retentions" + idx}
                       sx={{ flexGrow: 1, mr: 1 }}
                       options={retentions?.data}
+                      value={
+                        defaultRDS[idx] !== undefined ? defaultRDS[idx] : null
+                      }
                       groupBy={(option: any) => option.dept_unit}
                       getOptionLabel={(option: any) =>
                         option.series_title_description
@@ -227,7 +283,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                     <TextField
                       sx={{ mr: 1, width: 120 }}
                       inputProps={{ readOnly: true }}
-                      value={boxData.box_details[idx].rds_number}
+                      value={row.rds_number}
                       id="rds_no"
                       name="rds_no"
                       label="RDS No."
@@ -237,12 +293,10 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       sx={{ width: 120, mr: 1 }}
                       inputProps={{ readOnly: true }}
                       value={
-                        parseInt(boxData.box_details[idx].retention_period) > 1
-                          ? boxData.box_details[idx].retention_period + " years"
-                          : parseInt(
-                              boxData.box_details[idx].retention_period
-                            ) == 1
-                          ? boxData.box_details[idx].retention_period + " year"
+                        parseInt(row.retention_period) > 1
+                          ? row.retention_period + " years"
+                          : parseInt(row.retention_period) == 1
+                          ? row.retention_period + " year"
                           : ""
                       }
                       id="retention_period"
@@ -251,7 +305,8 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       // helperText="Read-only"
                     />
                     <DocumentDate
-                      boxDetails={boxData.box_details[idx]}
+                      boxDetails={row}
+                      // boxDetails={row}
                       idx={idx}
                       anchorEl={anchorEl}
                       setAnchorEl={(el) => setAnchorEl(el)}
@@ -290,7 +345,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                     onClick={() => {
                       if (addDetail[idx]) {
                         setAddDetail(updateArray(addDetail, idx, false));
-                        boxData.box_details[idx].description = "";
+                        row.description = "";
                         setBoxData({
                           ...boxData,
                           box_details: boxData.box_details,
@@ -310,10 +365,9 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       multiline
                       rows={3}
                       fullWidth
-                      value={boxData.box_details[idx].description}
+                      value={row.description}
                       onChange={(event) => {
-                        boxData.box_details[idx].description =
-                          event.target.value;
+                        row.description = event.target.value;
                         setBoxData({
                           ...boxData,
                           box_details: boxData.box_details,
@@ -368,7 +422,13 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button color="inherit" onClick={() => onClose(false)}>
+          <Button
+            color="inherit"
+            onClick={() => {
+              resetValues();
+              onClose(false);
+            }}
+          >
             Close
           </Button>
           <Button variant="contained" onClick={() => handleBoxData()}>
@@ -405,228 +465,3 @@ function updateArray(arr, index, value) {
 
   return [...updatedArray];
 }
-// const DocumentDate = (props) => {
-//     const [open, setOpen] = React.useState(false);
-//     const [val, setVal] = React.useState(0);
-//     const handleTabChange = (event, newValue) => {
-//       setVal(newValue);
-//     };
-
-//     const handleClick = () => (event) => {
-//       props.setAnchorEl(event.currentTarget);
-//       if (open) setOpen(false);
-//       else setOpen(true);
-
-//     };
-
-//     return (
-//       <Box>
-//         <TextField label="Document Date" value={props.box_details.document_date} required inputProps={{ readOnly: true, }} onClick={handleClick()}/>
-//         <Popper open={open} anchorEl={props.anchorEl} placement={"bottom"} transition style={{zIndex: 1500}}>
-//           {({ TransitionProps }) => (
-//             <Fade {...TransitionProps} timeout={350}>
-//               <Paper sx={{p:1,}} elevation={3}>
-//               <Box sx={{ width: '100%' }}>
-//                 <Box sx={{ borderBottom: 1, borderColor: 'divider', }}>
-//                   <Tabs value={val} onChange={handleTabChange} aria-label="basic tabs example" sx={{minHeight:20}}>
-//                     <Tab label="Month" sx={{minHeight:15, fontSize:12, py:0}} />
-//                     <Tab label="Year" sx={{minHeight:15, fontSize:12, py:0}} />
-//                   </Tabs>
-//                 </Box>
-//                 <TabPanel value={val} index={0}>
-//                   <Grid container sx={{ width: 310}} spacing={1}>
-//                   {
-//                     months.map((month,index)=>(
-//                       <Grid key={index} item xs={4}>
-//                         <Paper sx={{
-//                             padding: 0,
-//                             color: 'text.secondary',
-//                             height: 80,
-//                             boxShadow: 0,
-//                             textAlign: 'center',
-//                             border: "1px solid black",
-//                             display: 'flex',
-//                             justifyContent: 'center',
-//                             alignContent: 'center',
-//                             flexDirection: 'column',
-//                             backgroundColor: props.selectedMonths.includes(month)?"#6aa84f":props.inDateRange.includes(month)?"#b6d7a8":""
-//                         }}
-//                           onClick={()=>props.selectedMonthRange(month)}
-//                         >
-//                           {month.substring(0,3)}
-//                         </Paper>
-//                       </Grid>
-//                     ))
-//                   }
-//                   </Grid>
-//                 </TabPanel>
-//                 <TabPanel value={val} index={1} >
-//                   <Grid container sx={{ width: 310}} spacing={1}>
-//                     {
-//                       getYears().map((year,index)=>(
-//                         <Grid key={index} item xs={4}>
-//                           <Paper
-//                             onClick={()=>{props.idx>0?null:props.setSelectedYear(year)}}
-//                             sx={{
-//                                 padding: 0,
-//                                 color: 'text.secondary',
-//                                 height: 80,
-//                                 boxShadow: 0,
-//                                 textAlign: 'center',
-//                                 border: "1px solid black",
-//                                 display: 'flex',
-//                                 justifyContent: 'center',
-//                                 alignContent: 'center',
-//                                 flexDirection: 'column',
-//                                 backgroundColor: props.selectedYear===year?"#6aa84f":""
-//                             }}
-//                           >
-//                             {year}
-//                           </Paper>
-//                         </Grid>
-//                       ))
-//                     }
-//                     </Grid>
-//                 </TabPanel>
-
-//                 </Box>
-//                 <Box display="flex" flexDirection="row-reverse" justifyContent="space-between" paddingTop={1}>
-//                   <Button size="small" onClick={()=> {props.saveDocumentDate(props.idx); setOpen(false);}} variant="contained">Save</Button>
-//                   <Button size="small" onClick={()=> props.clearDocumentDate(props.idx)} variant="text" color="warning">Clear</Button>
-//                 </Box>
-//               </Paper>
-//             </Fade>
-//           )}
-//         </Popper>
-//       </Box>
-//     )
-//   }
-
-// Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-const top100Films = [
-  { title: "The Shawshank Redemption", year: 1994 },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: "The Dark Knight", year: 2008 },
-  { title: "12 Angry Men", year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: "Pulp Fiction", year: 1994 },
-  {
-    title: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-  },
-  { title: "The Good, the Bad and the Ugly", year: 1966 },
-  { title: "Fight Club", year: 1999 },
-  {
-    title: "The Lord of the Rings: The Fellowship of the Ring",
-    year: 2001,
-  },
-  {
-    title: "Star Wars: Episode V - The Empire Strikes Back",
-    year: 1980,
-  },
-  { title: "Forrest Gump", year: 1994 },
-  { title: "Inception", year: 2010 },
-  {
-    title: "The Lord of the Rings: The Two Towers",
-    year: 2002,
-  },
-  { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { title: "Goodfellas", year: 1990 },
-  { title: "The Matrix", year: 1999 },
-  { title: "Seven Samurai", year: 1954 },
-  {
-    title: "Star Wars: Episode IV - A New Hope",
-    year: 1977,
-  },
-  { title: "City of God", year: 2002 },
-  { title: "Se7en", year: 1995 },
-  { title: "The Silence of the Lambs", year: 1991 },
-  { title: "It's a Wonderful Life", year: 1946 },
-  { title: "Life Is Beautiful", year: 1997 },
-  { title: "The Usual Suspects", year: 1995 },
-  { title: "Léon: The Professional", year: 1994 },
-  { title: "Spirited Away", year: 2001 },
-  { title: "Saving Private Ryan", year: 1998 },
-  { title: "Once Upon a Time in the West", year: 1968 },
-  { title: "American History X", year: 1998 },
-  { title: "Interstellar", year: 2014 },
-  { title: "Casablanca", year: 1942 },
-  { title: "City Lights", year: 1931 },
-  { title: "Psycho", year: 1960 },
-  { title: "The Green Mile", year: 1999 },
-  { title: "The Intouchables", year: 2011 },
-  { title: "Modern Times", year: 1936 },
-  { title: "Raiders of the Lost Ark", year: 1981 },
-  { title: "Rear Window", year: 1954 },
-  { title: "The Pianist", year: 2002 },
-  { title: "The Departed", year: 2006 },
-  { title: "Terminator 2: Judgment Day", year: 1991 },
-  { title: "Back to the Future", year: 1985 },
-  { title: "Whiplash", year: 2014 },
-  { title: "Gladiator", year: 2000 },
-  { title: "Memento", year: 2000 },
-  { title: "The Prestige", year: 2006 },
-  { title: "The Lion King", year: 1994 },
-  { title: "Apocalypse Now", year: 1979 },
-  { title: "Alien", year: 1979 },
-  { title: "Sunset Boulevard", year: 1950 },
-  {
-    title:
-      "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-    year: 1964,
-  },
-  { title: "The Great Dictator", year: 1940 },
-  { title: "Cinema Paradiso", year: 1988 },
-  { title: "The Lives of Others", year: 2006 },
-  { title: "Grave of the Fireflies", year: 1988 },
-  { title: "Paths of Glory", year: 1957 },
-  { title: "Django Unchained", year: 2012 },
-  { title: "The Shining", year: 1980 },
-  { title: "WALL·E", year: 2008 },
-  { title: "American Beauty", year: 1999 },
-  { title: "The Dark Knight Rises", year: 2012 },
-  { title: "Princess Mononoke", year: 1997 },
-  { title: "Aliens", year: 1986 },
-  { title: "Oldboy", year: 2003 },
-  { title: "Once Upon a Time in America", year: 1984 },
-  { title: "Witness for the Prosecution", year: 1957 },
-  { title: "Das Boot", year: 1981 },
-  { title: "Citizen Kane", year: 1941 },
-  { title: "North by Northwest", year: 1959 },
-  { title: "Vertigo", year: 1958 },
-  {
-    title: "Star Wars: Episode VI - Return of the Jedi",
-    year: 1983,
-  },
-  { title: "Reservoir Dogs", year: 1992 },
-  { title: "Braveheart", year: 1995 },
-  { title: "M", year: 1931 },
-  { title: "Requiem for a Dream", year: 2000 },
-  { title: "Amélie", year: 2001 },
-  { title: "A Clockwork Orange", year: 1971 },
-  { title: "Like Stars on Earth", year: 2007 },
-  { title: "Taxi Driver", year: 1976 },
-  { title: "Lawrence of Arabia", year: 1962 },
-  { title: "Double Indemnity", year: 1944 },
-  {
-    title: "Eternal Sunshine of the Spotless Mind",
-    year: 2004,
-  },
-  { title: "Amadeus", year: 1984 },
-  { title: "To Kill a Mockingbird", year: 1962 },
-  { title: "Toy Story 3", year: 2010 },
-  { title: "Logan", year: 2017 },
-  { title: "Full Metal Jacket", year: 1987 },
-  { title: "Dangal", year: 2016 },
-  { title: "The Sting", year: 1973 },
-  { title: "2001: A Space Odyssey", year: 1968 },
-  { title: "Singin' in the Rain", year: 1952 },
-  { title: "Toy Story", year: 1995 },
-  { title: "Bicycle Thieves", year: 1948 },
-  { title: "The Kid", year: 1921 },
-  { title: "Inglourious Basterds", year: 2009 },
-  { title: "Snatch", year: 2000 },
-  { title: "3 Idiots", year: 2009 },
-  { title: "Monty Python and the Holy Grail", year: 1975 },
-];

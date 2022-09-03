@@ -6,28 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { boolean, string } from "yup/lib/locale";
-import { Box, Button } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
+import { Add, Delete, Edit, Print } from "@mui/icons-material";
 import AddStorageDialog from "@components/Dialogs/AddStorageDialog";
-
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
+import BoxLabelDialog from "@components/Dialogs/BoxLabelDialog";
 
 type ColumnType = string | number | boolean;
 
@@ -35,10 +17,15 @@ interface TableHeader {
   label: string;
   type: ColumnType;
 }
+type TableActions = "add" | "edit" | "delete";
 
 const thead: TableHeader[] = [
   {
     label: "Box Code",
+    type: "string",
+  },
+  {
+    label: "RDS #",
     type: "string",
   },
   {
@@ -57,7 +44,10 @@ const thead: TableHeader[] = [
 
 export default function StorageRequest() {
   const [openAddBox, setOpenAddBox] = React.useState(false);
-  const [selected, setSelected] = React.useState({});
+  const [boxes, setBoxes] = React.useState([]);
+  const [action, setAction] = React.useState<TableActions>("add");
+  const [editIndex, setEditIndex] = React.useState(0);
+  const [showLabel, setShowLabel] = React.useState(false);
   return (
     <Box>
       <Box display={"flex"} flexDirection="row-reverse">
@@ -72,10 +62,29 @@ export default function StorageRequest() {
       </Box>
       <AddStorageDialog
         isOpen={openAddBox}
-        onClose={() => setOpenAddBox(!openAddBox)}
-        getBoxData={(data) => {
-          console.log(JSON.stringify(data));
+        onClose={() => {
           setOpenAddBox(!openAddBox);
+          setAction("add");
+        }}
+        getBoxData={(data) => {
+          // console.log(JSON.stringify(data));
+          if (action === "edit") {
+            boxes[editIndex] = data;
+          } else {
+            let addedBox = boxes;
+            addedBox.push(data);
+            // console.log(JSON.stringify(addedBox));
+            setBoxes([...addedBox]);
+          }
+          setOpenAddBox(!openAddBox);
+        }}
+        boxID={boxes.length}
+        editBoxData={action === "edit" ? boxes[editIndex] : null}
+      />
+      <BoxLabelDialog
+        isOpen={showLabel}
+        onClose={() => {
+          setShowLabel(false);
         }}
       />
       <TableContainer component={Paper}>
@@ -96,20 +105,107 @@ export default function StorageRequest() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="right">{row.calories}</TableCell>
-                <TableCell align="right">{row.fat}</TableCell>
-                <TableCell align="right">{row.carbs}</TableCell>
-                <TableCell align="right">{row.protein}</TableCell>
-              </TableRow>
-            ))}
+            {boxes.map((box, count) =>
+              box.box_details.map((detail, cnt) => {
+                return (
+                  <TableRow
+                    key={box.box_code + count + "-" + cnt}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    {cnt < 1 && (
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        rowSpan={box.box_details.length}
+                        sx={{ verticalAlign: "top" }}
+                      >
+                        {box.box_code}
+                      </TableCell>
+                    )}
+                    <TableCell
+                      align="left"
+                      sx={{
+                        p: 1,
+                        whiteSpace: "pre-line",
+                        verticalAlign: "top",
+                        border: cnt != box.box_details.length - 1 && "none",
+                      }}
+                    >
+                      {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
+                        detail.rds_number}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      sx={{
+                        p: 1,
+                        whiteSpace: "pre-line",
+                        verticalAlign: "top",
+                        border: cnt != box.box_details.length - 1 && "none",
+                      }}
+                    >
+                      {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
+                        detail.document_title +
+                        "\r\n" +
+                        detail.description}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      sx={{
+                        p: 1,
+                        whiteSpace: "pre-line",
+                        verticalAlign: "top",
+                        border: cnt != box.box_details.length - 1 && "none",
+                      }}
+                    >
+                      {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
+                        detail.document_date}
+                    </TableCell>
+                    {cnt < 1 && (
+                      <TableCell
+                        align="right"
+                        rowSpan={box.box_details.length}
+                        sx={{ verticalAlign: "top" }}
+                      >
+                        {box.disposal_date}
+                      </TableCell>
+                    )}
+                    {cnt < 1 && (
+                      <TableCell
+                        align="right"
+                        rowSpan={box.box_details.length}
+                        sx={{ verticalAlign: "top" }}
+                      >
+                        <Tooltip title="Print box label">
+                          <IconButton
+                            color="warning"
+                            onClick={() => setShowLabel(true)}
+                          >
+                            <Print />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit">
+                          <IconButton
+                            color="info"
+                            onClick={() => {
+                              setEditIndex(count);
+                              setOpenAddBox(true);
+                              setAction("edit");
+                            }}
+                          >
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton color="error">
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>

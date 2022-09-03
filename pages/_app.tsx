@@ -50,11 +50,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         {pathName.includes("auth") ||
         pathName.includes("error") ||
         pathName === "/" ? (
-          <Component {...pageProps} />
+          <Component {...pageProps} id={"root"} />
         ) : (
           <Suspense fallback={<Loading isOpen />}>
             <AppLayout>
-              <Component {...pageProps} />
+              <Component {...pageProps} id={"root"} />
             </AppLayout>
           </Suspense>
         )}
