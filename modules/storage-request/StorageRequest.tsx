@@ -47,6 +47,7 @@ export default function StorageRequest() {
   const [boxes, setBoxes] = React.useState([]);
   const [action, setAction] = React.useState<TableActions>("add");
   const [editIndex, setEditIndex] = React.useState(0);
+  const [printIndex, setPrintIndex] = React.useState(0);
   const [showLabel, setShowLabel] = React.useState(false);
   return (
     <Box>
@@ -86,6 +87,7 @@ export default function StorageRequest() {
         onClose={() => {
           setShowLabel(false);
         }}
+        boxData={boxes[printIndex]}
       />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -125,7 +127,7 @@ export default function StorageRequest() {
                     <TableCell
                       align="left"
                       sx={{
-                        p: 1,
+                        p: box.box_details.length > 1 ? 1 : 2,
                         whiteSpace: "pre-line",
                         verticalAlign: "top",
                         border: cnt != box.box_details.length - 1 && "none",
@@ -137,7 +139,7 @@ export default function StorageRequest() {
                     <TableCell
                       align="left"
                       sx={{
-                        p: 1,
+                        p: box.box_details.length > 1 ? 1 : 2,
                         whiteSpace: "pre-line",
                         verticalAlign: "top",
                         border: cnt != box.box_details.length - 1 && "none",
@@ -151,7 +153,7 @@ export default function StorageRequest() {
                     <TableCell
                       align="left"
                       sx={{
-                        p: 1,
+                        p: box.box_details.length > 1 ? 1 : 2,
                         whiteSpace: "pre-line",
                         verticalAlign: "top",
                         border: cnt != box.box_details.length - 1 && "none",
@@ -178,7 +180,10 @@ export default function StorageRequest() {
                         <Tooltip title="Print box label">
                           <IconButton
                             color="warning"
-                            onClick={() => setShowLabel(true)}
+                            onClick={() => {
+                              setPrintIndex(count);
+                              setShowLabel(true);
+                            }}
                           >
                             <Print />
                           </IconButton>

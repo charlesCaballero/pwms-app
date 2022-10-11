@@ -40,6 +40,8 @@ const months = [
   "December",
 ];
 
+const officeID = Cookie.get("office_id");
+
 const filter = createFilterOptions();
 interface DocumentDetails {
   id: number;
@@ -67,13 +69,13 @@ export default function AddStorageDialog(props: StorageDialogProps) {
   const { isOpen, onClose, getBoxData, boxID, editBoxData } = props;
   const [addDetail, setAddDetail] = React.useState([false]);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [currentYear, setCurrentYear] = React.useState(0);
-  const [largestMonth, setLargestMonth] = React.useState(0);
+  const [currentYear, setCurrentYear] = React.useState(-1);
+  const [largestMonth, setLargestMonth] = React.useState(-1);
   const [largestRetention, setLargestRetention] = React.useState(0);
   const [defaultRDS, setDefaultRDS] = React.useState([]);
   const [boxData, setBoxData] = React.useState<BoxDetails>({
     uID: "",
-    office_id: "",
+    office_id: officeID,
     box_code: "",
     box_details: [
       {
@@ -99,8 +101,8 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     setLargestMonth(0);
     setLargestRetention(0);
     setBoxData({
-      uID: "",
-      office_id: "",
+      uID: boxID + 1,
+      office_id: officeID,
       box_code: "",
       box_details: [
         {
@@ -117,25 +119,25 @@ export default function AddStorageDialog(props: StorageDialogProps) {
   };
 
   const handleBoxData = () => {
-    const officeID = Cookie.get("office_id");
-    setBoxData({
-      ...boxData,
-      uID: boxID + 1,
-      office_id: officeID,
-    });
-    resetValues();
     getBoxData(boxData);
+    resetValues();
   };
 
   const handleDocumentDateChange = (date, year, largest, index) => {
     // console.log("year: " + year);
+    let permanent = false;
+    boxData.box_details.forEach((detail) => {
+      if (Object.values(detail).includes("Permanent")) permanent = true;
+    });
+
     if (parseInt(year) > 0 && !date.includes("undefined")) {
       boxData.box_details[index].document_date = date;
       setBoxData({
         ...boxData,
         box_details: boxData.box_details,
-        disposal_date:
-          months[largest] + " " + (parseInt(year) + largestRetention),
+        disposal_date: permanent
+          ? "Permanent"
+          : months[largest] + " " + (parseInt(year) + largestRetention),
       });
       setCurrentYear(year);
       setLargestMonth(largest);
@@ -145,44 +147,70 @@ export default function AddStorageDialog(props: StorageDialogProps) {
   const handleChangeValue = (selected, index) => {
     // console.log("selected: " + JSON.stringify(selected));
     // console.log("index: " + index);
-    let newSelected = boxData.box_details;
-    if (newSelected[index] !== undefined) {
-      newSelected[index] = {
-        id: selected.id,
-        document_title:
-          selected.series_title_description + " (" + selected.dept_unit + ")",
-        description: "",
-        rds_number: selected.rds_no + " #" + selected.rds_item_no,
-        retention_period: selected.retention_period,
-        document_date: "",
-      };
-    } else {
-      newSelected.push({
-        id: selected.id,
-        document_title:
-          selected.series_title_description + " (" + selected.dept_unit + ")",
-        description: "",
-        rds_number: selected.rds_no + " #" + selected.rds_item_no,
-        retention_period: selected.retention_period,
-        document_date: "",
+    if (selected) {
+      let newSelected = boxData.box_details;
+      if (newSelected[index] !== undefined) {
+        newSelected[index] = {
+          id: selected.id,
+          document_title:
+            selected.series_title_description + " (" + selected.dept_unit + ")",
+          description: "",
+          rds_number: selected.rds_no + " #" + selected.rds_item_no,
+          retention_period: selected.retention_period,
+          document_date: "",
+        };
+      } else {
+        newSelected.push({
+          id: selected.id,
+          document_title:
+            selected.series_title_description + " (" + selected.dept_unit + ")",
+          description: "",
+          rds_number: selected.rds_no + " #" + selected.rds_item_no,
+          retention_period: selected.retention_period,
+          document_date: "",
+        });
+      }
+
+      // console.log("newSelected: " + JSON.stringify(newSelected));
+
+      let permanent = false;
+      newSelected.forEach((detail) => {
+        if (Object.values(detail).includes("Permanent")) permanent = true;
+      });
+      setBoxData({
+        ...boxData,
+        box_details: [...newSelected],
+        disposal_date: permanent ? "Permanent" : "",
       });
     }
-
-    // console.log("newSelected: " + JSON.stringify(newSelected));
-
-    setBoxData({ ...boxData, box_details: [...newSelected] });
   };
 
   React.useEffect(() => {
     // console.log("editBoxData: " + JSON.stringify(editBoxData));
-    if (editBoxData) setBoxData(editBoxData);
+    if (editBoxData) {
+      setBoxData(editBoxData);
+    }
   }, [editBoxData]);
 
   React.useEffect(() => {
     let retention_array = [];
     let defaultVal = [];
+    let permanent = false;
+    let months_array = [];
+
     boxData.box_details.map((details) => {
       retention_array.push(parseInt(details.retention_period));
+      const doc_date = details.document_date.split(" ");
+      if (doc_date[0].includes("-")) {
+        const doc_months = doc_date[0].split("-");
+        months_array.push(months.indexOf(doc_months[0]));
+        months_array.push(months.indexOf(doc_months[1]));
+      } else {
+        months_array.push(months.indexOf(doc_date[0]));
+      }
+      setLargestMonth(Math.max(...months_array));
+
+      if (Object.values(details).includes("Permanent")) permanent = true;
       retentions.data?.find((rds) => {
         if (rds.id === details.id) {
           defaultVal.push(rds);
@@ -196,6 +224,16 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     const date_array = boxData.box_details[0].document_date.split(" ");
     setCurrentYear(parseInt(date_array[1]));
     setLargestRetention(Math.max(...retention_array));
+    if (currentYear >= 0) {
+      setBoxData({
+        ...boxData,
+        disposal_date: permanent
+          ? "Permanent"
+          : months[Math.max(...months_array)] +
+            " " +
+            (parseInt(date_array[1]) + largestRetention),
+      });
+    }
   }, [boxData]);
 
   return (
@@ -297,7 +335,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                           ? row.retention_period + " years"
                           : parseInt(row.retention_period) == 1
                           ? row.retention_period + " year"
-                          : ""
+                          : row.retention_period
                       }
                       id="retention_period"
                       label="Retention"

@@ -19,8 +19,12 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog(props: DialogProps) {
-  const { isOpen, onClose } = props;
+interface BoxDalogProps extends DialogProps {
+  boxData: any;
+}
+
+export default function FullScreenDialog(props: BoxDalogProps) {
+  const { isOpen, onClose, boxData } = props;
 
   return (
     <div>
@@ -45,7 +49,7 @@ export default function FullScreenDialog(props: DialogProps) {
             </IconButton>
           </Toolbar>
         </AppBar>
-        <BoxLabel />
+        <BoxLabel data={boxData} />
       </Dialog>
     </div>
   );
