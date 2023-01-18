@@ -7,9 +7,17 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Box, Button, IconButton, Tooltip } from "@mui/material";
-import { Add, Delete, Edit, Print } from "@mui/icons-material";
+import { Add, Delete, Edit, Print, Save } from "@mui/icons-material";
 import AddStorageDialog from "@components/Dialogs/AddStorageDialog";
 import BoxLabelDialog from "@components/Dialogs/BoxLabelDialog";
+import ConfirmRequestDialog from "@components/Dialogs/ConfirmRequestDialog";
+import { useMutation } from "react-query";
+import { api, Method } from "@utils/queryUtils";
+import { AxiosPromise } from "axios";
+import {
+  inventoryMutation,
+  storageRequestMutation,
+} from "@helpers/api-mutations";
 
 type ColumnType = string | number | boolean;
 
@@ -42,16 +50,63 @@ const thead: TableHeader[] = [
   },
 ];
 
+interface InventoryProps {
+  office_id: number;
+  box_code: any;
+  box_details: any;
+  disposal_date: any;
+  locationg: string;
+  status: string;
+}
+
 export default function StorageRequest() {
   const [openAddBox, setOpenAddBox] = React.useState(false);
+  const [openConfirm, setOpenConfirm] = React.useState(false);
   const [boxes, setBoxes] = React.useState([]);
   const [action, setAction] = React.useState<TableActions>("add");
   const [editIndex, setEditIndex] = React.useState(0);
   const [printIndex, setPrintIndex] = React.useState(0);
   const [showLabel, setShowLabel] = React.useState(false);
+
+  const inventory = useMutation((data: any) => {
+    return api(Method.POST, `${inventoryMutation}`, data) as AxiosPromise<any>;
+  });
+
+  const storageRequest = useMutation(() => {
+    return api(Method.POST, `${storageRequestMutation}`) as AxiosPromise<any>;
+  });
+
+  const handleSave = async (data: InventoryProps[]) => {
+    await inventory.mutate(data, {
+      onSuccess: (result) => {
+        if (result) {
+          console.log("result: " + JSON.stringify(result));
+
+          // Router.push("/");
+          // setAnchorEl(null);
+        }
+      },
+      onError: (error) => {
+        console.log("Error: " + error);
+      },
+    });
+  };
+
   return (
     <Box>
       <Box display={"flex"} flexDirection="row-reverse">
+        <Button
+          variant="contained"
+          color="secondary"
+          endIcon={<Save />}
+          sx={{ m: 1 }}
+          onClick={() => {
+            console.log("boxes: " + JSON.stringify(boxes));
+            setOpenConfirm(true);
+          }}
+        >
+          Save
+        </Button>
         <Button
           variant="contained"
           endIcon={<Add />}
@@ -88,6 +143,12 @@ export default function StorageRequest() {
           setShowLabel(false);
         }}
         boxData={boxes[printIndex]}
+      />
+      <ConfirmRequestDialog
+        isOpen={openConfirm}
+        onClose={(save) => (save ? handleSave(boxes) : setOpenConfirm(false))}
+        request={"storage"}
+        action={"save"}
       />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">

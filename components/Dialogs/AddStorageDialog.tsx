@@ -52,7 +52,7 @@ interface DocumentDetails {
   document_date: string;
 }
 interface BoxDetails {
-  uID: any;
+  // uID: any;
   office_id: string;
   box_code: string;
   box_details: DocumentDetails[];
@@ -74,7 +74,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
   const [largestRetention, setLargestRetention] = React.useState(0);
   const [defaultRDS, setDefaultRDS] = React.useState([]);
   const [boxData, setBoxData] = React.useState<BoxDetails>({
-    uID: "",
+    // uID: "",
     office_id: officeID,
     box_code: "",
     box_details: [
@@ -101,7 +101,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     setLargestMonth(0);
     setLargestRetention(0);
     setBoxData({
-      uID: boxID + 1,
+      // uID: boxID + 1,
       office_id: officeID,
       box_code: "",
       box_details: [

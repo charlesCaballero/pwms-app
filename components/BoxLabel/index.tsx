@@ -1,10 +1,10 @@
 import React from "react";
+import Cookies from "js-cookie";
 import {
   Page,
   Text,
   Document,
   StyleSheet,
-  Image,
   Font,
   PDFViewer,
   View,
@@ -17,6 +17,7 @@ interface LabelProps {
 
 export default function Pdf(props: LabelProps) {
   const { data } = props;
+  const office_name = Cookies.get("office_name");
   console.log("data: " + JSON.stringify(data));
 
   return (
@@ -30,10 +31,10 @@ export default function Pdf(props: LabelProps) {
             }}
           >
             <Text style={styles.box_label}>BOX LABEL # {data.box_code}</Text>
-            <Text style={styles.department}>{data.office_id}</Text>
+            <Text style={styles.department}>{office_name}</Text>
             {/* <Text style={styles.document}>{"1. VOUCHER TRANSMITTAL"}</Text> */}
             {/* {"RDS-A #1" + " BDVS#	B15-1909-00003" + " Oct-Dec 2021"} */}
-            <View style={{ height: "406px" }}>
+            <View style={{ height: "395px" }}>
               <Row items={data.box_details} />
             </View>
             <Text style={styles.box_label}>
@@ -58,18 +59,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 35,
   },
   box_label: {
-    fontSize: 25,
+    fontSize: 30,
     textAlign: "right",
     borderBottom: "1px solid black",
     borderTop: "1px solid black",
     fontFamily: "Times-Roman",
-    fontWeight: 300,
+    fontWeight: "bold",
+    paddingRight: 8,
   },
   department: {
     fontSize: 25,
     textAlign: "left",
     borderBottom: "1px solid black",
     fontFamily: "Times-Roman",
+    paddingLeft: 8,
   },
   document: {
     fontSize: 25,
