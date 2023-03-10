@@ -26,6 +26,7 @@ grunt bump
 - [Prettier](https://prettier.io/)
 - [js-cookie](https://github.com/js-cookie/js-cookie)
 - [React Hook Form](https://react-hook-form.com/)
+- [React PDF Renderer](https://www.npmjs.com/package/@react-pdf/renderer)
 - [Yup Form Validation](https://www.npmjs.com/package/yup)
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
