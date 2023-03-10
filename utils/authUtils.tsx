@@ -4,7 +4,7 @@ import { logoutMutation } from "@helpers/api-mutations";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
 import { useQuery } from "react-query";
-import { userDetailsQuery, userModulesQuery } from "@helpers/api-queries";
+import { userDetailsQuery } from "@helpers/api-queries";
 
 export const redirectErrors = (status) => {
   if (status === 401) {

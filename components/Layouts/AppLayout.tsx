@@ -50,7 +50,10 @@ export default function AppLayout({ children }) {
   });
 
   useEffect(() => {
-    queryUserDetails.data ? setUserData(queryUserDetails?.data[0]) : null;
+    if (queryUserDetails.data) {
+      setUserData(queryUserDetails?.data[0]);
+      Cookies.set("office_name", queryUserDetails?.data[0].office?.name);
+    }
   }, [queryUserDetails.isFetched, queryUserDetails.data]);
 
   const handlePopOverClose = () => {

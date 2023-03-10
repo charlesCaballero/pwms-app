@@ -20,20 +20,23 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 import AppLogo from "@assets/images/pwms-logo-2.png";
 import { useForm } from "react-hook-form";
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 import { LoginFormProps } from "@helpers/interface";
 
 const validationSchema = Yup.object().shape({
   company_id_number: Yup.string()
-    .required('You forgot to give your id number.')
-    .matches(/^[0-9]+$/, "Your id number should not contain any letter or symbol")
-    .min(8, 'Id number should be 8 digits')
+    .required("You forgot to give your id number.")
+    .matches(
+      /^[0-9]+$/,
+      "Your id number should not contain any letter or symbol"
+    )
+    .min(8, "Id number should be 8 digits")
     .max(8, "Id number can't exceed 8 digits"),
-  password: Yup.string().required("Your password is empty.").min(6, "Password should at atleast contain 6 characters."),
+  password: Yup.string()
+    .required("Your password is empty.")
+    .min(6, "Password should at atleast contain 6 characters."),
 });
-
-
 
 function Copyright(props: any) {
   return (
@@ -62,9 +65,12 @@ function Copyright(props: any) {
 }
 
 export default function Login() {
-
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormProps>({
-    resolver: yupResolver(validationSchema)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormProps>({
+    resolver: yupResolver(validationSchema),
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<any>(false);
@@ -82,11 +88,12 @@ export default function Login() {
         } else {
           Cookies.set("token", result?.data.data.token);
           Cookies.set("user_id", result?.data.data.user_id);
+          Cookies.set("office_id", result?.data.data.office_id);
           Router.push("/app/home");
         }
       },
     });
-  }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -108,7 +115,12 @@ export default function Login() {
         <Typography component="h1" variant="h5" pt={3}>
           Log in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          sx={{ mt: 1 }}
+        >
           {loginError ? <Alert severity="error">{loginError}</Alert> : ""}
           <TextField
             margin="normal"
