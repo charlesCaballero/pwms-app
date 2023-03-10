@@ -7,3 +7,4 @@ export const officeMutation = "app/office";
 export const roleMutation = "app/role";
 export const inventoryMutation = "app/inventory";
 export const storageRequestMutation = "app/request/storage";
+export const disposalRequestMutation = "app/request/disposal";
