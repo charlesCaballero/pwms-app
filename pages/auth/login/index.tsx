@@ -1,5 +1,9 @@
 import Loading from "@components/Loader/Loading";
+<<<<<<< HEAD
 import Container from "@mui/material/Container";
+=======
+import { Container } from "@mui/material";
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 

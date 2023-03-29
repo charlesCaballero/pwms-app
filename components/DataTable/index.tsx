@@ -1,4 +1,5 @@
 import * as React from "react";
+<<<<<<< HEAD
 /**
  * Material Components Used
  */
@@ -128,12 +129,81 @@ export default function DataTable(props: DataTableProps) {
 
   const [showRowActionButtons, setShowRowActionButtons] =
     React.useState<boolean>(false);
+=======
+import { DataObject, DeleteRounded, Edit, Feed } from "@mui/icons-material";
+import {
+  Box,
+  Checkbox,
+  Fade,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TablePagination,
+  TableRow,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import DataTableHeader from "./DataTableHeader";
+import DataTableToolBar from "./DataTableToolBar";
+import {
+  ActiveColumns,
+  FilterFields,
+  FilterType,
+  HeadCell,
+  Order,
+} from "@helpers/interface";
+import DataLoading from "./DataLoading";
+
+interface DataTableProps {
+  header: Array<HeadCell>;
+  rows: any[];
+  rowsPerPage: number;
+  page: number;
+  rowsCount: number;
+  setPage(page: number): void;
+  setRowsPerPage(limit: number): void;
+  onRowEdit?(row: Object): void;
+  onRowDelete?(row: Object): void;
+  onRowInfo?(row: Object): void;
+  onColumnSort?(order: Order, column: string): void;
+  searchString?(str: string): void;
+  isDataLoading?: boolean;
+  onFilter?(filters: FilterType[]): void;
+  onMultipleDelete?(selected: string[]): void;
+}
+
+export default function DataTable(props: DataTableProps) {
+  const {
+    rows,
+    header,
+    page,
+    rowsPerPage,
+    setPage,
+    setRowsPerPage,
+    rowsCount,
+    onRowEdit,
+    onRowDelete,
+    onRowInfo,
+    onColumnSort,
+    searchString,
+    isDataLoading,
+    onFilter,
+    onMultipleDelete,
+  } = props;
+  const [showRowActionButtons, setShowRowActionButtons] =
+    React.useState<boolean>(false);
+  const [enableSelection, setEnableSelection] = React.useState<boolean>(false);
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<any>("");
   const [selected, setSelected] = React.useState<string[]>([]);
   const [dense, setDense] = React.useState(false);
   const [activeColumns, setActiveColumns] = React.useState<any>([]);
   const [filters, setFilters] = React.useState<FilterType[]>([]);
+<<<<<<< HEAD
   const [data, setdata] = React.useState<any>([]);
   const [page, setPage] = React.useState<number>(0);
   const [limit, setLimit] = React.useState<number>(5);
@@ -192,6 +262,8 @@ export default function DataTable(props: DataTableProps) {
       querydata.refetch();
     }
   }, [refetch]);
+=======
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 
   const handleRequestSort = (
     _event: React.MouseEvent<unknown>,
@@ -204,7 +276,11 @@ export default function DataTable(props: DataTableProps) {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
+<<<<<<< HEAD
       const newSelecteds = data.map((n) => n.id);
+=======
+      const newSelecteds = rows.map((n) => n.id);
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
       setSelected(newSelecteds);
       return;
     }
@@ -238,7 +314,11 @@ export default function DataTable(props: DataTableProps) {
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+<<<<<<< HEAD
     setLimit(parseInt(event.target.value, 10));
+=======
+    setRowsPerPage(parseInt(event.target.value, 10));
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
     setPage(0);
   };
 
@@ -294,11 +374,16 @@ export default function DataTable(props: DataTableProps) {
   };
 
   const handleMultipleDelete = () => {
+<<<<<<< HEAD
     // disableSelection ? onMultipleDelete(selected) : null;
+=======
+    onMultipleDelete !== undefined ? onMultipleDelete(selected) : null;
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
   };
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
+<<<<<<< HEAD
   // Avoid a layout jump when reaching the last page with empty data.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * limit - rowsCount + 1) : 0;
@@ -306,22 +391,48 @@ export default function DataTable(props: DataTableProps) {
   React.useMemo(() => {
     let arr: Array<ActiveColumns> = [];
     header.map((head: HeadCell) => {
+=======
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rowsCount + 1) : 0;
+
+  React.useMemo(() => {
+    let arr: Array<ActiveColumns> = [];
+    header.map((head) => {
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
       arr.push({
         id: head.id,
         active: true,
         label: head.label,
+<<<<<<< HEAD
         from: head.from,
         boolean: head.boolean,
+=======
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
       });
     });
     setActiveColumns([...arr]);
     setShowRowActionButtons(
+<<<<<<< HEAD
       !disableRowEdit || !disableRowDelete || !disableRowInfo
     );
   }, []);
 
   React.useEffect(() => {
     disableFilter ? setFilters(filters) : null;
+=======
+      onRowEdit !== undefined || onRowDelete !== undefined
+    );
+    setEnableSelection(onMultipleDelete !== undefined);
+  }, []);
+
+  React.useEffect(() => {
+    onColumnSort?.(order, orderBy);
+  }, [order, orderBy]);
+
+  React.useEffect(() => {
+    onFilter !== undefined ? onFilter(filters) : null;
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
   }, [filters]);
 
   return (
@@ -334,15 +445,23 @@ export default function DataTable(props: DataTableProps) {
           onDenseChange={() => setDense(!dense)}
           activeColumns={activeColumns}
           onChangeActiveColumn={(id) => handleChangeActiveColumn(id)}
+<<<<<<< HEAD
           searchString={(str) => setSearchString(str)}
+=======
+          searchString={(str) => searchString?.(str)}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
           filters={[...filters]}
           onFilterChange={(value, field, column) =>
             handleFilterChange(value, field, column)
           }
           onAddFilter={() => handleAddFilter()}
           onDeleteFilter={(column) => handleDeleteFilter(column)}
+<<<<<<< HEAD
           noFilter={disableFilter}
           noPrint={disablePrint}
+=======
+          noFilter={onFilter === undefined}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
           onMultipleDelete={() => handleMultipleDelete()}
         />
         <TableContainer>
@@ -357,13 +476,20 @@ export default function DataTable(props: DataTableProps) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
+<<<<<<< HEAD
               rowCount={data.length}
               headCells={header}
               enableSelection={!disableSelection}
+=======
+              rowCount={rows.length}
+              headCells={header}
+              enableSelection={enableSelection}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
               actionButtons={showRowActionButtons}
               activeColumns={activeColumns}
             />
             <TableBody>
+<<<<<<< HEAD
               {querydata.isLoading ? (
                 <React.Fragment>
                   <TableRow sx={{ width: "100%" }}>
@@ -392,6 +518,18 @@ export default function DataTable(props: DataTableProps) {
                 ""
               )}
               {data.length <= 0 && !querydata.isLoading ? (
+=======
+              {isDataLoading ? (
+                <DataLoading
+                  columnCount={
+                    showRowActionButtons ? header.length + 1 : header.length
+                  }
+                />
+              ) : (
+                ""
+              )}
+              {rows.length <= 0 && !isDataLoading ? (
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                 <TableRow>
                   <TableCell
                     colSpan={
@@ -399,7 +537,11 @@ export default function DataTable(props: DataTableProps) {
                     }
                     align={"center"}
                   >
+<<<<<<< HEAD
                     <Fade in={data.length <= 0} timeout={600}>
+=======
+                    <Fade in={rows.length <= 0} timeout={600}>
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                       <Box
                         display={"flex"}
                         flexDirection={"column"}
@@ -408,6 +550,7 @@ export default function DataTable(props: DataTableProps) {
                       >
                         <DataObject color="error" sx={{ fontSize: 80 }} />
                         <Typography fontSize={15}>
+<<<<<<< HEAD
                           Your query returned empty. {queryError}
                         </Typography>
                         {queryError ? (
@@ -419,6 +562,10 @@ export default function DataTable(props: DataTableProps) {
                             Your query returned empty.
                           </Typography>
                         )}
+=======
+                          Your query returned empty.
+                        </Typography>
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                       </Box>
                     </Fade>
                   </TableCell>
@@ -426,22 +573,36 @@ export default function DataTable(props: DataTableProps) {
               ) : (
                 ""
               )}
+<<<<<<< HEAD
               {[...data].map((row: any, index) => {
+=======
+              {[...rows].map((row: any, index) => {
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                 const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
                 return (
                   <TableRow
                     hover
                     onClick={(event) =>
+<<<<<<< HEAD
                       !disableSelection ? handleClick(event, row.id) : null
                     }
                     role={!disableSelection ? "checkbox" : "list"}
+=======
+                      enableSelection ? handleClick(event, row.id) : null
+                    }
+                    role={enableSelection ? "checkbox" : "list"}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                     aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.id}
                     selected={isItemSelected}
                   >
+<<<<<<< HEAD
                     {!disableSelection ? (
+=======
+                    {enableSelection ? (
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                       <TableCell padding="checkbox">
                         <Checkbox
                           color="primary"
@@ -460,17 +621,22 @@ export default function DataTable(props: DataTableProps) {
                         .map((item: any) => item.active);
                       return (
                         <TableCell
+<<<<<<< HEAD
                           key={
                             headCell.from
                               ? headCell.from + "-" + headCell.id
                               : headCell.id
                           }
+=======
+                          key={headCell.id}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                           align={headCell.numeric ? "right" : "left"}
                           padding={headCell.disablePadding ? "none" : "normal"}
                           sx={{
                             display: active[0] ? "" : "none",
                           }}
                         >
+<<<<<<< HEAD
                           {headCell.from ? (
                             row[headCell.from][headCell.id]
                           ) : headCell.boolean && row[headCell.id] ? (
@@ -490,18 +656,29 @@ export default function DataTable(props: DataTableProps) {
                           ) : (
                             row[headCell.id]
                           )}
+=======
+                          {row[headCell.id]}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                         </TableCell>
                       );
                     })}
                     {showRowActionButtons ? (
                       <TableCell>
                         <Box display={"flex"}>
+<<<<<<< HEAD
                           {!disableRowEdit ? (
+=======
+                          {onRowEdit !== undefined ? (
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                             <Tooltip title="Edit">
                               <IconButton
                                 color="info"
                                 size={dense ? "small" : "medium"}
+<<<<<<< HEAD
                                 onClick={() => getSelection("edit", row)}
+=======
+                                onClick={() => onRowEdit?.(row)}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                               >
                                 <Edit fontSize={dense ? "small" : "inherit"} />
                               </IconButton>
@@ -509,12 +686,20 @@ export default function DataTable(props: DataTableProps) {
                           ) : (
                             ""
                           )}
+<<<<<<< HEAD
                           {!disableRowDelete ? (
+=======
+                          {onRowDelete !== undefined ? (
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                             <Tooltip title="Delete">
                               <IconButton
                                 color="error"
                                 size={dense ? "small" : "medium"}
+<<<<<<< HEAD
                                 onClick={() => getSelection("delete", row)}
+=======
+                                onClick={() => onRowDelete?.(row)}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                               >
                                 <DeleteRounded
                                   fontSize={dense ? "small" : "inherit"}
@@ -524,12 +709,20 @@ export default function DataTable(props: DataTableProps) {
                           ) : (
                             ""
                           )}
+<<<<<<< HEAD
                           {!disableRowInfo ? (
+=======
+                          {onRowInfo !== undefined ? (
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                             <Tooltip title="View All Related Info">
                               <IconButton
                                 color="success"
                                 size={dense ? "small" : "medium"}
+<<<<<<< HEAD
                                 onClick={() => getSelection("view", row)}
+=======
+                                onClick={() => onRowInfo?.(row)}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
                               >
                                 <Feed fontSize={dense ? "small" : "inherit"} />
                               </IconButton>
@@ -562,7 +755,11 @@ export default function DataTable(props: DataTableProps) {
           rowsPerPageOptions={[5, 10, 25, 50, 100]}
           component="div"
           count={rowsCount}
+<<<<<<< HEAD
           rowsPerPage={limit}
+=======
+          rowsPerPage={rowsPerPage}
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
@@ -571,6 +768,7 @@ export default function DataTable(props: DataTableProps) {
     </Box>
   );
 }
+<<<<<<< HEAD
 
 /**
  * DataTable Toolbar
@@ -1036,3 +1234,5 @@ const DataTableHeader = (props: EnhancedTableProps) => {
     </TableHead>
   );
 };
+=======
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983

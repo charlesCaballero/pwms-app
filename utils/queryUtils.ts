@@ -2,9 +2,15 @@ import axios from "axios";
 import { redirectErrors } from "./authUtils";
 import Cookies from "js-cookie";
 
+<<<<<<< HEAD
 // export const url = "http://pwms.api/api";
 export const url = "http://172.22.123.129/api";
 //export const url = "http://172.22.123.129:8081/api";
+=======
+export const url = "http://pwms.api/api";
+// export const url = "http://172.22.123.129/api";
+// export const url = "http://127.0.0.1:8000/api";
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 
 export enum Method {
   GET = "get",
@@ -42,13 +48,21 @@ export const api = (method: Method, endpoint: string, input?: any) => {
         ? {
             Authorization: `Bearer ${Cookies.get("token")}`,
             Accept: "application/json",
+<<<<<<< HEAD
             "Content-Type": input?.photo
+=======
+            "Content-Type": input.photo
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
               ? "multipart/form-data"
               : "application/json",
           }
         : {
             Accept: "application/json",
+<<<<<<< HEAD
             "Content-Type": input?.photo
+=======
+            "Content-Type": input.photo
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
               ? "multipart/form-data"
               : "application/json",
             Authorization: `Bearer`,

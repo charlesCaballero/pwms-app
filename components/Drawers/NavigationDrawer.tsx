@@ -1,26 +1,28 @@
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
+import {
+  Box,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import LanIcon from "@mui/icons-material/Lan";
+import MailIcon from "@mui/icons-material/Mail";
 import AppLogo from "@assets/images/pwms-logo-alt-2.png";
 import AppText from "@assets/images/pwms-logo-text.png";
 import Image from "next/image";
 import Router, { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
+import { grey } from "@mui/material/colors";
 import { api, Method } from "@utils/queryUtils";
 import { SideNavProps } from "@helpers/interface";
 import Loading from "../Loader/Loading";
 import { userModulesQuery } from "@helpers/api-queries";
-import { grey } from "@mui/material/colors";
-import Icon from "@components/DynamicIcon/Icon";
-import Cookie from "js-cookie";
 
 export default function NavigationDrawer(props: SideNavProps) {
   const { drawerWidth, userModules } = props;
@@ -40,9 +42,7 @@ export default function NavigationDrawer(props: SideNavProps) {
         ? (api(
             Method.GET,
             `${userModulesQuery}`,
-            userModules.includes("*")
-              ? `?select=all`
-              : `?modules=${userModules}`
+            `?modules=${userModules}`
           ) as any)
         : null;
     },
@@ -56,14 +56,8 @@ export default function NavigationDrawer(props: SideNavProps) {
 
   useEffect(() => {
     if (userModules) queryModules.refetch();
-    if (queryModules.data) {
-      setModules(queryModules?.data);
-    }
+    queryModules.data ? setModules(queryModules?.data) : null;
   }, [queryModules.data, userModules]);
-
-  useEffect(() => {
-    Cookie.set("mods", JSON.stringify(modules));
-  }, [modules]);
 
   return (
     <Drawer
@@ -97,7 +91,7 @@ export default function NavigationDrawer(props: SideNavProps) {
       <Divider />
       <List>
         {modules?.map((module) => (
-          <ListItem key={module.id} sx={{ m: 0, py: 0.5, px: 1 }}>
+          <ListItem key={module.id}>
             <ListItemButton
               sx={{
                 borderRadius: "8px",
@@ -110,33 +104,27 @@ export default function NavigationDrawer(props: SideNavProps) {
               <ListItemIcon
                 sx={{
                   color:
-                    module.reference === pathName
-                      ? "primary.main"
-                      : "info.main",
+                    module.reference === pathName ? "primary.main" : "inherit",
                 }}
               >
-                <Icon name={module.icon} size={20} />
+                {module.icon === "office" ? <LanIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText
                 primary={
                   <Typography
                     color={
-                      module.reference === pathName
-                        ? "primary.main"
-                        : "grey.600"
+                      module.reference === pathName ? "primary.main" : "inherit"
                     }
                     fontWeight="bold"
-                    fontSize={"small"}
                   >
                     {module.name}
                   </Typography>
                 }
-                sx={{ marginLeft: "-20px" }}
+                sx={{ marginLeft: "-15px" }}
               />
             </ListItemButton>
           </ListItem>
         ))}
-        <ListItem sx={{ height: 50 }}></ListItem>
       </List>
       <Loading isOpen={loading} />
     </Drawer>

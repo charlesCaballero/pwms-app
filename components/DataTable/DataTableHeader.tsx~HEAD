@@ -1,4 +1,4 @@
-import { EnhancedTableProps } from "@helpers/interface";
+// import { ActiveColumns, Order } from "@helpers/interface";
 import {
   Box,
   Checkbox,
@@ -9,6 +9,21 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { visuallyHidden } from "@mui/utils";
+import { ActiveColumns, Order } from "@helpers/interface";
+import React from "react";
+
+export interface EnhancedTableProps {
+  numSelected: number;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  order: Order;
+  orderBy: string;
+  rowCount: number;
+  headCells: any[];
+  enableSelection: boolean;
+  actionButtons: boolean;
+  activeColumns: Array<ActiveColumns>;
+}
 
 export default function DataTableHeader(props: EnhancedTableProps) {
   const {
@@ -29,7 +44,7 @@ export default function DataTableHeader(props: EnhancedTableProps) {
     };
 
   return (
-    <TableHead sx={{ bgcolor: grey[200] }}>
+    <TableHead sx={{ bgcolor: grey[300] }}>
       <TableRow>
         {enableSelection ? (
           <TableCell padding="checkbox">
@@ -53,7 +68,9 @@ export default function DataTableHeader(props: EnhancedTableProps) {
 
           return (
             <TableCell
-              key={headCell.id}
+              key={
+                headCell.from ? headCell.from + "-" + headCell.id : headCell.id
+              }
               align={headCell.numeric ? "right" : "left"}
               padding={headCell.disablePadding ? "none" : "normal"}
               sortDirection={orderBy === headCell.id ? order : false}

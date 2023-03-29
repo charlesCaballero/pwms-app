@@ -5,12 +5,17 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DeleteDialogProps } from "@helpers/interface";
+<<<<<<< HEAD
 import Delete from "@mui/icons-material/Delete";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
+=======
+import { Alert, AlertTitle, Box, Input, Typography } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 import { grey } from "@mui/material/colors";
 
 export default function DeleteDialog(props: DeleteDialogProps) {
@@ -43,8 +48,13 @@ export default function DeleteDialog(props: DeleteDialogProps) {
       <DialogContent>
         <Alert severity="error">
           <AlertTitle>
+<<<<<<< HEAD
             You are about to <strong>delete</strong> a record with the following
             data:
+=======
+            You are about to <strong>delete</strong> a record with the
+            following data:
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
           </AlertTitle>
           <pre>{JSON.stringify(rowData, null, 2)}</pre>
         </Alert>

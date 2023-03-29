@@ -3,16 +3,31 @@ import { Box, Button, Typography } from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import DataTable from "@components/templates/DataTable";
-import DeleteDialog from "@components/elements/Dialogs/DeleteDialog";
 import { AxiosPromise } from "axios";
-import SnackbarAlert from "@components/elements/SnackBar/SnackBarAlert";
+import dynamic from "next/dynamic";
 import {
   Actions,
-  OrderSetting,
+  OrderType,
   PageLayoutProps,
   SnackBarData,
 } from "@helpers/interface";
+import { FilterType } from "material-ui-datatable-api/dist/table-interface";
+
+const DataTable = dynamic(() => import("material-ui-datatable-api"), {
+  suspense: false,
+});
+// const DataTable = dynamic(() => import("@components/DataTable"), {
+//   suspense: false,
+// });
+const DeleteDialog = dynamic(() => import("@components/Dialogs/DeleteDialog"), {
+  suspense: true,
+});
+const SnackbarAlert = dynamic(
+  () => import("@components/SnackBar/SnackBarAlert"),
+  {
+    suspense: true,
+  }
+);
 
 export default function PageLayout(props: PageLayoutProps) {
   const { pageTitle, dataQuery, dataMutation, tableHeader } = props;
@@ -23,10 +38,13 @@ export default function PageLayout(props: PageLayoutProps) {
   const [rowsCount, setRowsCount] = useState<number>(0);
   const [rowData, setRowData] = useState<any>(null);
   const [isDeleteDailogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [orderSettings, setOrderSettings] = useState<OrderSetting>({
+  const [searchString, setSearchString] = useState<string>("");
+  const [filters, setFilters] = useState<FilterType[]>([]);
+  const [orderSettings, setOrderSettings] = useState<OrderType>({
     order: "asc",
     column: "",
   });
+
   const [snackbarData, setSnackBarData] = useState<SnackBarData>({
     isOpen: false,
     message: "",
@@ -40,7 +58,10 @@ export default function PageLayout(props: PageLayoutProps) {
       (await api(
         Method.GET,
         `${dataQuery}`,
-        `?page=${page}&limit=${limit}&order=${orderSettings.order}&orderBy=${orderSettings.column}`
+        `?page=${page}&limit=${limit}` +
+          `&search=${searchString}` +
+          `&order=${orderSettings.order}&orderBy=${orderSettings.column}` +
+          `&filters=${JSON.stringify(filters)}`
       )) as any,
     { refetchOnWindowFocus: false }
   );
@@ -151,8 +172,10 @@ export default function PageLayout(props: PageLayoutProps) {
   }, [querydata.data]);
 
   useEffect(() => {
+    if (filters !== undefined && filters.length > 0) setSearchString("");
+
     querydata.refetch();
-  }, [page, limit, orderSettings]);
+  }, [page, limit, orderSettings, searchString, filters]);
 
   return (
     <Box pt={1}>
@@ -176,7 +199,7 @@ export default function PageLayout(props: PageLayoutProps) {
         >
           <Button
             variant="contained"
-            sx={{ height: 40, my: 2 }}
+            sx={{ height: 40, my: 1 }}
             onClick={() => handleFormOpen()}
           >
             Add {pageTitle.slice(0, -1)}
@@ -186,8 +209,6 @@ export default function PageLayout(props: PageLayoutProps) {
       <DataTable
         header={tableHeader}
         rows={data}
-        actionButtons={true}
-        enableSelection={false}
         page={page}
         setPage={(newPage) => setPage(newPage)}
         rowsPerPage={limit}
@@ -195,9 +216,15 @@ export default function PageLayout(props: PageLayoutProps) {
         rowsCount={rowsCount}
         onRowEdit={(row) => handleRowEdit(row)}
         onRowDelete={(id) => handleRowDelete(id)}
+        onRowInfo={() => {}}
         onColumnSort={(order, column) => handleColumnSort(order, column)}
+        // onMultipleDelete={(selected) => handleMultipleDelete(selected)}
+        searchString={(str) => setSearchString(str)}
+        isDataLoading={querydata.isLoading}
+        onFilter={(filters) => {
+          setFilters([...filters]);
+        }}
       />
-
       <DeleteDialog
         isOpen={isDeleteDailogOpen}
         onClose={(isDeleted) => handleDeleteDialogClose(isDeleted)}

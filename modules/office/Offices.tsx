@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { officeMutation } from "@helpers/api-mutations";
 import { officesQuery } from "@helpers/api-queries";
 import Box from "@mui/material/Box";
@@ -30,6 +31,12 @@ const SnackbarAlert = dynamic(
 const OfficeForm = dynamic(() => import("@modules/office/OfficeForm"), {
   suspense: true,
 });
+=======
+import { Box } from "@mui/material";
+import PageLayout from "@components/layouts/PageLayout";
+import { officeMutation } from "@helpers/api-mutations";
+import { officesQuery } from "@helpers/api-queries";
+>>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 
 const tableHeader = [
   {
