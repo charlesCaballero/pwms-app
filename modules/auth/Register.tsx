@@ -1,39 +1,56 @@
-import {
-  Alert,
-  Avatar,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  CssBaseline,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  Link,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  TextField,
-  Typography,
-} from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
-import { registerMutation } from "helpers/api/mutations";
+import { registerMutation } from "@helpers/api-mutations";
 import { AxiosPromise } from "axios";
-import {
-  isInputNumber,
-  isInputEmpty,
-  isInputEmail,
-  isInputPassword,
-  isAllTrue,
-} from "helpers/validate";
 import { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import app from "@helpers/app-version.json";
 import Router from "next/router";
-import AlertDialog from "@components/elements/Dialogs/AlertDialog";
+import AlertDialog from "@components/Dialogs/AlertDialog";
 import AppLogo from "@assets/images/pwms-logo-2.png";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { RegisterFormProps } from "@helpers/interface";
+import { getOfficesQuery } from "@helpers/api-queries";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Avatar from "@mui/material/Avatar";
+import Grid from "@mui/material/Grid";
+import Alert from "@mui/material/Alert";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormHelperText from "@mui/material/FormHelperText";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+
+const validationSchema = Yup.object().shape({
+  company_id_number: Yup.string()
+    .required("You forgot to give your id number.")
+    .matches(
+      /^[0-9]+$/,
+      "Your id number should not contain any letter or symbol"
+    )
+    .min(8, "Id number should be 8 digits")
+    .max(8, "Id number can't exceed 8 digits"),
+  first_name: Yup.string().required("Your first name is empty."),
+  last_name: Yup.string().required("Your last name is empty."),
+  email: Yup.string()
+    .email("Please provide a valid email.")
+    .required("You forgot to provide an email."),
+  office_id: Yup.string()
+    .matches(/^[1-9]+$/, "Please select which office you belong.")
+    .required("You forgot to choose the office where you belong."),
+  password: Yup.string()
+    .required("Your password is empty.")
+    .min(6, "Password should at atleast contain 6 characters."),
+});
 
 function Copyright(props: any) {
   return (
@@ -62,70 +79,50 @@ function Copyright(props: any) {
 }
 
 export default function Register() {
-  const [officeID, setOfficeID] = useState("");
-  const [idError, setIdError] = useState<any>({});
-  const [firstNameError, setFirstNameError] = useState<any>({});
-  const [lastNameError, setLastNameError] = useState<any>({});
-  const [emailError, setEmailError] = useState<any>({});
-  const [passwordError, setPasswordError] = useState<any>({});
-  const [officeIdError, setOfficeIdError] = useState<any>({});
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormProps>({
+    resolver: yupResolver(validationSchema),
+    defaultValues: { office_id: "1" },
+  });
+
   const [showPassword, setShowPassword] = useState(false);
-  const [registrationError, setRegistrationError] = useState(false);
+  const [registrationError, setRegistrationError] = useState("");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const register = useMutation((data: any) => {
+  const registerUser = useMutation((data: any) => {
     return api(Method.POST, registerMutation, data) as AxiosPromise<any>;
   });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    data.append("office_id", officeID);
-    const isIdError = isInputNumber(
-      "ID Number",
-      data.get("company_id_number"),
-      8
-    );
-    const isfirstNameError = isInputEmpty("First Name", data.get("first_name"));
-    const islastNameError = isInputEmpty("Last Name", data.get("last_name"));
-    const isemailError = isInputEmail(data.get("email"));
-    const ispasswordError = isInputPassword(data.get("password"));
-    const isofficeIdError = isInputEmpty("Office", data.get("office_id"));
+  const officeList = useQuery(
+    "result",
+    async () => (await api(Method.GET, `${getOfficesQuery}`)) as any,
+    { refetchOnWindowFocus: false }
+  );
 
-    if (
-      isAllTrue([
-        !isIdError.error,
-        !isfirstNameError.error,
-        !islastNameError.error,
-        !isemailError.error,
-        !ispasswordError.error,
-        !isofficeIdError.error,
-      ])
-    ) {
-      register.mutateAsync(data, {
-        onSuccess: () => {
-          console.log("employee: " + JSON.stringify(data));
+  const onSubmit = async (data: RegisterFormProps) => {
+    await registerUser.mutate(data, {
+      onSuccess: (result: any) => {
+        // console.log("result: " + JSON.stringify(result));
+        if (result.status === "Error") {
+          setRegistrationError(result.message);
+        } else {
           setIsAlertOpen(true);
-        },
-        onError: () => {
-          setRegistrationError(true);
-        },
-      });
-    } else {
-      setIdError(isIdError);
-      setFirstNameError(isfirstNameError);
-      setLastNameError(islastNameError);
-      setOfficeIdError(isofficeIdError);
-      setEmailError(isemailError);
-      setPasswordError(ispasswordError);
-    }
-  };
-
-  const handleOfficeChange = (event: SelectChangeEvent) => {
-    setOfficeID(event.target.value as string);
+        }
+      },
+      onError: (result: any) => {
+        setRegistrationError(result.message);
+        reset(data);
+      },
+    });
   };
 
   const onCloseSuccessAlert = () => {
+    console.log("im called.. yehey!!");
+
     setIsAlertOpen(false);
     Router.push("/auth/login");
   };
@@ -141,20 +138,25 @@ export default function Register() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ height: 100, width:100 }} variant={'square'}
-        alt="PWMS Logo"
-        src={AppLogo.src}>
-        </Avatar>
+        <Avatar
+          sx={{ height: 100, width: 100 }}
+          variant={"square"}
+          alt="PWMS Logo"
+          src={AppLogo.src}
+        ></Avatar>
         <Typography component="h1" variant="h5" pt={3}>
           Register
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box
+          component="form"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{ mt: 3 }}
+        >
           <Grid container spacing={2}>
             {registrationError ? (
               <Grid item xs={12}>
-                <Alert severity="error">
-                  An error was encoutered while registering. Please try again.
-                </Alert>
+                <Alert severity="error">{registrationError}</Alert>
               </Grid>
             ) : (
               ""
@@ -165,22 +167,24 @@ export default function Register() {
                 fullWidth
                 id="company-id-number"
                 label="ID Number"
-                name="company_id_number"
-                error={idError.error}
-                helperText={idError.message}
+                {...register("company_id_number")}
+                error={
+                  errors.company_id_number !== undefined ||
+                  registrationError.length > 0
+                }
+                helperText={errors.company_id_number?.message}
                 autoFocus
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                autoComplete="given-name"
-                name="first_name"
                 required
                 fullWidth
                 id="first-name"
                 label="First Name"
-                error={firstNameError.error}
-                helperText={firstNameError.message}
+                {...register("first_name")}
+                error={errors.first_name !== undefined}
+                helperText={errors.first_name?.message}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -189,10 +193,10 @@ export default function Register() {
                 fullWidth
                 id="last-name"
                 label="Last Name"
-                name="last_name"
                 autoComplete="family-name"
-                error={lastNameError.error}
-                helperText={lastNameError.message}
+                {...register("last_name")}
+                error={errors.last_name !== undefined}
+                helperText={errors.last_name?.message}
               />
             </Grid>
             <Grid item xs={12}>
@@ -201,31 +205,35 @@ export default function Register() {
                 fullWidth
                 id="email"
                 label="Email Address"
-                name="email"
                 autoComplete="email"
-                error={emailError.error}
-                helperText={emailError.message}
+                {...register("email")}
+                error={errors.email !== undefined}
+                helperText={errors.email?.message}
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth error={officeIdError.error}>
+              <FormControl fullWidth error={errors.office_id !== undefined}>
                 <InputLabel required id="office-id" color="success">
                   Office
                 </InputLabel>
                 <Select
                   labelId="office-id-select-label"
                   id="office-id-select"
-                  value={officeID}
                   label="Office"
-                  onChange={handleOfficeChange}
+                  defaultValue="1"
                   required
+                  {...register("office_id")}
                 >
-                  <MenuItem value={1}>ITMS</MenuItem>
-                  <MenuItem value={2}>GSU</MenuItem>
-                  <MenuItem value={3}>Thirty</MenuItem>
+                  {officeList.data?.map((office) => {
+                    return (
+                      <MenuItem key={office.id} value={office.id}>
+                        {office.name + " (" + office.acronym + ")"}
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
-                {officeIdError.error ? (
-                  <FormHelperText>{officeIdError.message}</FormHelperText>
+                {errors.office_id !== undefined ? (
+                  <FormHelperText>{errors.office_id?.message}</FormHelperText>
                 ) : (
                   ""
                 )}
@@ -240,8 +248,9 @@ export default function Register() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="new-password"
-                error={passwordError.error}
-                helperText={passwordError.message}
+                {...register("password")}
+                error={errors.password !== undefined}
+                helperText={errors.password?.message}
               />
             </Grid>
             <Grid item xs={12}>

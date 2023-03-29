@@ -1,15 +1,21 @@
-import { AppProps } from "next/app";
 import Head from "next/head";
-import { FC } from "react";
+import { FC, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { yellow } from "@mui/material/colors";
-import AppLayout from "@components/layouts/app/AppLayout";
 import { useRouter } from "next/router";
 import "@fontsource/inter/variable-full.css";
-import AppLogo from "@assets/images/pwms-logo-2.png";
-// import "@fontsource/nunito/";
+import FavIcon from "@assets/images/pwms-logo-alt-2.png";
+import dynamic from "next/dynamic";
+import Loading from "@components/Loader/Loading";
+import { AppProps } from "next/app";
+import { yellow } from "@mui/material/colors";
+
+const AppLayout = dynamic(() => import("@components/Layouts/AppLayout"), {
+  suspense: true,
+});
+
+// Client-side cache, shared for the whole session of the user in the browser.
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const queryClient = new QueryClient();
@@ -39,14 +45,18 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       <ThemeProvider theme={theme}>
         <Head>
           <title>PWMS</title>
-          <link rel="shortcut icon" href={AppLogo.src} />
+          <link rel="shortcut icon" href={FavIcon.src} />
         </Head>
-        {pathName.includes("auth") || pathName.includes("error") ? (
-          <Component {...pageProps} />
+        {pathName.includes("auth") ||
+        pathName.includes("error") ||
+        pathName === "/" ? (
+          <Component {...pageProps} id={"root"} />
         ) : (
-          <AppLayout>
-            <Component {...pageProps} />
-          </AppLayout>
+          <Suspense fallback={<Loading isOpen />}>
+            <AppLayout>
+              <Component {...pageProps} id={"root"} />
+            </AppLayout>
+          </Suspense>
         )}
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />

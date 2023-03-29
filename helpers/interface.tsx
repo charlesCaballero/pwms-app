@@ -1,9 +1,39 @@
-import { ReactElement } from "react";
+import { HeadCell, Order } from "material-ui-datatable-api-v2/dist/interface";
+import { AppProps } from "next/app";
 
-export type Actions = "edit" | "add" | "delete" | null;
+export interface WithCacheAppProps extends AppProps {
+  emotionCache: any;
+}
+
+export interface LoadingProp {
+  isOpen: boolean;
+}
+
+export interface LoginFormProps {
+  company_id_number: number;
+  password: string;
+}
+
+export interface RegisterFormProps {
+  company_id_number: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  office_id: string;
+  password: string;
+}
+
+export type Actions =
+  | "edit"
+  | "add"
+  | "delete"
+  | "view"
+  | "multiple-delete"
+  | null;
+
 export interface SideNavProps {
   drawerWidth: number;
-  userModules: string;
+  userModules?: string;
 }
 
 export interface PageLayoutProps {
@@ -11,69 +41,12 @@ export interface PageLayoutProps {
   dataQuery: any;
   dataMutation: any;
   tableHeader: HeadCell[];
+  disableAdd?: boolean;
 }
 
-export interface HeadCell {
-  disablePadding: boolean;
-  id: string;
-  label: string;
-  numeric: boolean;
-}
-
-export interface OrderSetting {
+export interface OrderType {
   order: Order;
   column: string;
-}
-
-export interface DataTableProps {
-  header: Array<HeadCell>;
-  rows: any[];
-  rowsPerPage: number;
-  page: number;
-  actionButtons?: boolean;
-  enableSelection?: boolean;
-  rowsCount: number;
-  setPage(page: number): any;
-  setRowsPerPage(limit: number): any;
-  onRowEdit?(row: Object): any;
-  onRowDelete?(row: Object): any;
-  onColumnSort?(order: Order, column: string): void;
-}
-
-export interface ActiveColumns {
-  id: string;
-  active: boolean;
-  label: string;
-}
-
-export interface EnhancedTableToolbarProps {
-  numSelected: number;
-  dense: boolean;
-  onDenseChange: any;
-  activeColumns: Array<ActiveColumns>;
-  onChangeActiveColumn(id: string): void;
-}
-export interface HideShowColumnProps {
-  anchorEl: any;
-  onClose(): void;
-  id: string;
-  columns: Array<ActiveColumns>;
-  onChangeActiveColumn(id: string): void;
-}
-
-export type Order = "asc" | "desc";
-
-export interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-  headCells: any[];
-  enableSelection: boolean;
-  actionButtons: boolean;
-  activeColumns: Array<ActiveColumns>;
 }
 
 type DialogType = "info" | "warning" | "error";
@@ -112,3 +85,22 @@ export interface SnackBarProps extends DialogProps {
   vertical?: Vertical;
   horizontal?: Horizontal;
 }
+
+export interface PopoverProps {
+  anchorEl: any;
+  onClose(): void;
+  id: string;
+}
+
+//from datatable package
+// export type BooleanCell = [true: string, false: string];
+// export interface HeadCell {
+//   disablePadding: boolean;
+//   id: string;
+//   label: string;
+//   numeric: boolean;
+//   from?: string;
+//   boolean?: BooleanCell;
+// }
+
+// export declare type Order = "asc" | "desc";
