@@ -1,36 +1,22 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
-<<<<<<< HEAD
-=======
 import TextField from "@mui/material/TextField";
->>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DialogProps } from "@helpers/interface";
-<<<<<<< HEAD
-import { Upload } from "@mui/icons-material";
-import { useForm } from "react-hook-form";
-=======
 import { Box } from "@mui/system";
 import { Alert, Avatar, Typography } from "@mui/material";
 import { Upload } from "@mui/icons-material";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
->>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 import { useMutation } from "react-query";
 import { changePhotoMutation } from "@helpers/api-mutations";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
-<<<<<<< HEAD
-import Avatar from "@mui/material/Avatar";
-import Alert from "@mui/material/Alert";
-import { Box } from "@mui/material";
-=======
->>>>>>> 7d72df272bd091455348f46a566f25d3ed838983
 
 interface ChangeProfileProps extends DialogProps {
   userInitials: string;
