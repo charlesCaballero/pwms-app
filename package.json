@@ -1,9 +1,9 @@
 {
   "name": "pwms-v2-app",
-  "version": "2.2.9",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
-    "dev": "next dev ",
+    "dev": "next dev -H 172.22.123.129 -p 8080",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
