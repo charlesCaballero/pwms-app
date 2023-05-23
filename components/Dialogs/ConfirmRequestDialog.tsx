@@ -1,4 +1,5 @@
 import { DialogProps } from "@helpers/interface";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Dialog,
   DialogTitle,
@@ -13,10 +14,11 @@ type Actions = "delete" | "save";
 interface ConfirmRequestDialog extends DialogProps {
   request: Requests;
   action: Actions;
+  isLoading?: boolean;
 }
 
 export default function ConfirmRequestDialog(props: ConfirmRequestDialog) {
-  const { isOpen, onClose, request, action } = props;
+  const { isOpen, onClose, request, action, isLoading=false } = props;
 
   return (
     <div>
@@ -46,24 +48,26 @@ export default function ConfirmRequestDialog(props: ConfirmRequestDialog) {
             Cancel
           </Button>
           {action === "delete" ? (
-            <Button
+            <LoadingButton
               variant="contained"
               color="error"
               onClick={() => onClose(true)}
               autoFocus
+              loading={isLoading}
             >
               Continue
-            </Button>
+            </LoadingButton>
           ) : action === "save" ? (
-            <Button
+            <LoadingButton
               // type={"submit"}
+              loading={isLoading}
               onClick={() => onClose(true)}
               color={request === "disposal" ? "error" : "secondary"}
               variant="contained"
               form="saveForm"
             >
               Save
-            </Button>
+            </LoadingButton>
           ) : (
             ""
           )}

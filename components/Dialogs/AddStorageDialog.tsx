@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
+// import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DialogProps } from "@helpers/interface";
 import {
@@ -23,7 +23,6 @@ import { useQuery } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { getRetentionsQuery } from "@helpers/api-queries";
 import DocumentDate from "@components/Popper/DocumentDatePopper";
-import Cookie from "js-cookie";
 
 const months = [
   "January",
@@ -40,39 +39,43 @@ const months = [
   "December",
 ];
 
-const officeID = Cookie.get("office_id");
 
 const filter = createFilterOptions();
 interface DocumentDetails {
   id: number;
   document_title: string;
-  description: string;
   rds_number: string;
   retention_period: string;
   document_date: string;
 }
 interface BoxDetails {
   // uID: any;
-  office_id: string;
-  box_code: string;
+  office_id: number;
+  box_code: any;
   box_details: DocumentDetails[];
   disposal_date: string;
+  remarks: string;
 }
 
 interface StorageDialogProps extends DialogProps {
   getBoxData(data: any): void;
   editBoxData: any;
-  boxID: number;
+  officeID: number;
+  newBoxCode: string;
 }
 
 export default function AddStorageDialog(props: StorageDialogProps) {
-  const { isOpen, onClose, getBoxData, boxID, editBoxData } = props;
+  const { isOpen, onClose, getBoxData, editBoxData, officeID, newBoxCode } = props;
   const [addDetail, setAddDetail] = React.useState([false]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [currentYear, setCurrentYear] = React.useState(-1);
   const [largestMonth, setLargestMonth] = React.useState(-1);
   const [largestRetention, setLargestRetention] = React.useState(0);
   const [defaultRDS, setDefaultRDS] = React.useState([]);
+  
+
+
+
   const [boxData, setBoxData] = React.useState<BoxDetails>({
     // uID: "",
     office_id: officeID,
@@ -81,12 +84,12 @@ export default function AddStorageDialog(props: StorageDialogProps) {
       {
         id: 0,
         document_title: "",
-        description: "",
         rds_number: "",
         retention_period: "",
         document_date: "",
       },
     ],
+    remarks: "",
     disposal_date: "",
   });
 
@@ -103,17 +106,17 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     setBoxData({
       // uID: boxID + 1,
       office_id: officeID,
-      box_code: "",
+      box_code: newBoxCode,
       box_details: [
         {
           id: 0,
           document_title: "",
-          description: "",
           rds_number: "",
           retention_period: "",
           document_date: "",
         },
       ],
+      remarks: "",
       disposal_date: "",
     });
   };
@@ -154,7 +157,6 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           id: selected.id,
           document_title:
             selected.series_title_description + " (" + selected.dept_unit + ")",
-          description: "",
           rds_number: selected.rds_no + " #" + selected.rds_item_no,
           retention_period: selected.retention_period,
           document_date: "",
@@ -164,7 +166,6 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           id: selected.id,
           document_title:
             selected.series_title_description + " (" + selected.dept_unit + ")",
-          description: "",
           rds_number: selected.rds_no + " #" + selected.rds_item_no,
           retention_period: selected.retention_period,
           document_date: "",
@@ -224,7 +225,11 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     const date_array = boxData.box_details[0].document_date.split(" ");
     setCurrentYear(parseInt(date_array[1]));
     setLargestRetention(Math.max(...retention_array));
+    
     if (currentYear >= 0) {
+      // const disposalYear = 
+      // console.log("currentYear: "+ currentYear);
+      
       setBoxData({
         ...boxData,
         disposal_date: permanent
@@ -234,7 +239,17 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             (parseInt(date_array[1]) + largestRetention),
       });
     }
+
   }, [boxData]);
+
+  React.useEffect(()=>{
+    // console.log("newBoxCode: "+newBoxCode);
+    
+    setBoxData({
+        ...boxData,
+        box_code: newBoxCode,
+      });
+  },[newBoxCode])
 
   return (
     <React.Fragment>
@@ -258,10 +273,12 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             label="Box Code"
             type="text"
             value={boxData.box_code}
-            onChange={(event) => {
-              setBoxData({ ...boxData, box_code: event.target.value });
-            }}
+            // value={newBoxCode.data}
+            // onChange={(event) => {
+            //   setBoxData({ ...boxData, box_code: event.target.value });
+            // }}
             variant="outlined"
+            disabled
             sx={{ mt: 2 }}
           />
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>
@@ -369,51 +386,14 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                         setBoxData({
                           ...boxData,
                           box_details: boxData.box_details,
+                          disposal_date: boxData.box_details[0].document_date.split(" ").pop.toString(),
                         });
                       }}
                     >
                       <Delete />
                     </IconButton>
                   </Box>
-                  <Link
-                    component="button"
-                    variant="body2"
-                    underline="hover"
-                    color={addDetail[idx] ? "red" : "green"}
-                    onClick={() => {
-                      if (addDetail[idx]) {
-                        setAddDetail(updateArray(addDetail, idx, false));
-                        row.description = "";
-                        setBoxData({
-                          ...boxData,
-                          box_details: boxData.box_details,
-                        });
-                      } else {
-                        setAddDetail(updateArray(addDetail, idx, true));
-                      }
-                    }}
-                  >
-                    {addDetail[idx] ? "Remove Description" : "Add Description"}
-                  </Link>
-                  <Collapse in={addDetail[idx]}>
-                    <TextField
-                      id="outlined-multiline-static"
-                      hiddenLabel
-                      variant="filled"
-                      multiline
-                      rows={3}
-                      fullWidth
-                      value={row.description}
-                      onChange={(event) => {
-                        row.description = event.target.value;
-                        setBoxData({
-                          ...boxData,
-                          box_details: boxData.box_details,
-                        });
-                      }}
-                      InputProps={{ disableUnderline: true }}
-                    />
-                  </Collapse>
+                  
                   <Divider sx={{ mt: 1, mb: 2 }} />
                 </React.Fragment>
               );
@@ -430,7 +410,6 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                   box_details: boxData.box_details.concat({
                     id: boxData.box_details.length + 1,
                     document_title: "",
-                    description: "",
                     rds_number: "",
                     retention_period: "",
                     document_date: "",
@@ -442,7 +421,25 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             </Button>
           </Box>
           <Box>
-            <Alert severity="info" sx={{ mb: 1 }}>
+              <TextField
+                id="remarks"
+                name="remarks"
+                label="Remarks"
+                variant="outlined"
+                multiline
+                rows={3}
+                fullWidth
+                value={boxData.remarks}
+                onChange={(event) => {
+                  setBoxData({
+                    ...boxData,
+                    remarks: event.target.value,
+                  });
+                }}
+              />
+          </Box>
+          <Box>
+            <Alert severity="info" sx={{ my: 1 }}>
               The document with largest retention period is the basis for the
               disposal date.
             </Alert>

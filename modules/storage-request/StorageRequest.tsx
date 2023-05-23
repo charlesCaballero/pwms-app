@@ -11,15 +11,20 @@ import { Add, Delete, Edit, Print, Save } from "@mui/icons-material";
 import AddStorageDialog from "@components/Dialogs/AddStorageDialog";
 import BoxLabelDialog from "@components/Dialogs/BoxLabelDialog";
 import ConfirmRequestDialog from "@components/Dialogs/ConfirmRequestDialog";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
 import {
   inventoryMutation,
-  storageRequestMutation,
 } from "@helpers/api-mutations";
+import RequestFormDialog from "@components/Dialogs/RequestFormDialog";
+import DeleteDialog from "@components/Dialogs/DeleteDialog";
+import Cookie from "js-cookie";
+import { getNewBoxCodeQuery } from "@helpers/api-queries";
 
 type ColumnType = string | number | boolean;
+const officeID = Cookie.get("office_id");
+
 
 interface TableHeader {
   label: string;
@@ -45,6 +50,10 @@ const thead: TableHeader[] = [
     type: "string",
   },
   {
+    label: "Remarks",
+    type: "string",
+  },
+  {
     label: "Disposal Date",
     type: "string",
   },
@@ -63,25 +72,47 @@ export default function StorageRequest() {
   const [openAddBox, setOpenAddBox] = React.useState(false);
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [boxes, setBoxes] = React.useState([]);
+  const [requestDetails, setRequestDetails] = React.useState([]);
   const [action, setAction] = React.useState<TableActions>("add");
-  const [editIndex, setEditIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [printIndex, setPrintIndex] = React.useState(0);
   const [showLabel, setShowLabel] = React.useState(false);
+  const [openRequestForm, setOpenRequestForm] = React.useState(false);
+  const [openDeleteConfirm, setOpenDeleteConfirm] = React.useState(false);
+  const [adjustedBoxCode, setAdjustedBoxCode] = React.useState("");
+
 
   const inventory = useMutation((data: any) => {
     return api(Method.POST, `${inventoryMutation}`, data) as AxiosPromise<any>;
   });
 
-  const storageRequest = useMutation(() => {
-    return api(Method.POST, `${storageRequestMutation}`) as AxiosPromise<any>;
-  });
+  const newBoxCode = useQuery(
+    "new-box-code",
+    async () => (await api(Method.GET, `${getNewBoxCodeQuery}/${officeID}`)) as any,
+    { refetchOnWindowFocus: false }
+  );
+
+  // const storageRequest = useMutation(() => {
+  //   return api(Method.POST, `${storageRequestMutation}`) as AxiosPromise<any>;
+  // });
+  const handleDeleteBox = (isTrue) => {
+    console.log("delete: "+ JSON.stringify(boxes[selectedIndex]));
+    if(isTrue){
+      boxes.splice(selectedIndex,1);
+      setOpenDeleteConfirm(false);
+    }
+  }
 
   const handleSave = async (data: InventoryProps[]) => {
     await inventory.mutate(data, {
       onSuccess: (result) => {
         if (result) {
-          console.log("result: " + JSON.stringify(result));
-
+          console.log("result: " + JSON.stringify(result.data));
+          if (result.status === 200) {
+            setOpenConfirm(false);
+            setOpenRequestForm(true);
+            setRequestDetails(result.data);
+          }
           // Router.push("/");
           // setAnchorEl(null);
         }
@@ -101,7 +132,7 @@ export default function StorageRequest() {
           endIcon={<Save />}
           sx={{ m: 1 }}
           onClick={() => {
-            console.log("boxes: " + JSON.stringify(boxes));
+            // console.log("boxes: " + JSON.stringify(boxes));
             setOpenConfirm(true);
           }}
         >
@@ -111,7 +142,13 @@ export default function StorageRequest() {
           variant="contained"
           endIcon={<Add />}
           sx={{ m: 1 }}
-          onClick={() => setOpenAddBox(true)}
+          onClick={() => {
+            const getArray = newBoxCode.data?.split("-");
+            console.log("getArray: "+getArray);
+            setAdjustedBoxCode(getArray?getArray[0]+"-"+getArray[1]+"-"+(parseInt(getArray[2])+boxes.length).toString().padStart(3,'0'):newBoxCode.data);
+            setOpenAddBox(true); 
+          }}
+
         >
           Add Box
         </Button>
@@ -125,7 +162,7 @@ export default function StorageRequest() {
         getBoxData={(data) => {
           // console.log(JSON.stringify(data));
           if (action === "edit") {
-            boxes[editIndex] = data;
+            boxes[selectedIndex] = data;
           } else {
             let addedBox = boxes;
             addedBox.push(data);
@@ -134,8 +171,9 @@ export default function StorageRequest() {
           }
           setOpenAddBox(!openAddBox);
         }}
-        boxID={boxes.length}
-        editBoxData={action === "edit" ? boxes[editIndex] : null}
+        editBoxData={action === "edit" ? boxes[selectedIndex] : null}
+        newBoxCode={adjustedBoxCode}
+        officeID={officeID}
       />
       <BoxLabelDialog
         isOpen={showLabel}
@@ -144,11 +182,27 @@ export default function StorageRequest() {
         }}
         boxData={boxes[printIndex]}
       />
+      <RequestFormDialog
+        isOpen={openRequestForm}
+        onClose={() => {
+          setOpenRequestForm(false);
+          setBoxes([]);
+          newBoxCode.refetch();
+        }}
+        type={"storage"}
+        data={requestDetails}
+      />
       <ConfirmRequestDialog
         isOpen={openConfirm}
         onClose={(save) => (save ? handleSave(boxes) : setOpenConfirm(false))}
         request={"storage"}
         action={"save"}
+      />
+      <DeleteDialog
+        isOpen={openDeleteConfirm}
+        onClose={(isTrue)=>handleDeleteBox(isTrue)}
+        rowData={boxes[selectedIndex]}
+        isStrict={false}
       />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -207,9 +261,7 @@ export default function StorageRequest() {
                       }}
                     >
                       {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
-                        detail.document_title +
-                        "\r\n" +
-                        detail.description}
+                        detail.document_title }
                     </TableCell>
                     <TableCell
                       align="left"
@@ -223,6 +275,15 @@ export default function StorageRequest() {
                       {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
                         detail.document_date}
                     </TableCell>
+                    {cnt < 1 && (
+                      <TableCell
+                        align="left"
+                        rowSpan={box.box_details.length}
+                        sx={{ verticalAlign: "top" }}
+                      >
+                        {box.remarks}
+                      </TableCell>
+                    )}
                     {cnt < 1 && (
                       <TableCell
                         align="right"
@@ -253,7 +314,7 @@ export default function StorageRequest() {
                           <IconButton
                             color="info"
                             onClick={() => {
-                              setEditIndex(count);
+                              setSelectedIndex(count);
                               setOpenAddBox(true);
                               setAction("edit");
                             }}
@@ -262,7 +323,14 @@ export default function StorageRequest() {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Delete">
-                          <IconButton color="error">
+                          <IconButton 
+                            color="error"
+                            onClick={() => {
+                              setSelectedIndex(count);
+                              setOpenDeleteConfirm(true);
+                              setAction("delete");
+                            }}
+                            >
                             <Delete />
                           </IconButton>
                         </Tooltip>

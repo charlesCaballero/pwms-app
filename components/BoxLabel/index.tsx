@@ -34,8 +34,12 @@ export default function Pdf(props: LabelProps) {
             <Text style={styles.department}>{office_name}</Text>
             {/* <Text style={styles.document}>{"1. VOUCHER TRANSMITTAL"}</Text> */}
             {/* {"RDS-A #1" + " BDVS#	B15-1909-00003" + " Oct-Dec 2021"} */}
-            <View style={{ height: "395px" }}>
+            <View style={{ }}>
               <Row items={data.box_details} />
+            </View>
+            <View >
+              <Text style={{padding: '8 8 0 8',fontWeight:'bold'}}>Remarks:</Text>
+              <Text style={{padding: '5 20 0 20'}}>{data.remarks}</Text>
             </View>
             <Text style={styles.box_label}>
               Disaposal Date: {data.disposal_date}

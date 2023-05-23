@@ -1,6 +1,9 @@
 export const getOfficesQuery = "get/offices";
 export const getRetentionsQuery = "get/retentions";
+export const getNewBoxCodeQuery = "get/inventory/boxcode";
 export const userDetailsQuery = "app/user";
 export const userModulesQuery = "app/module";
 export const officesQuery = "app/office";
 export const rolesQuery = "app/role";
+export const returnsQuery = "app/request/return";
+export const searchInventoryQuery = "search/inventory";

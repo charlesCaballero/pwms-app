@@ -11,6 +11,8 @@ const styles = StyleSheet.create({
   },
   title: {
     width: "60%",
+    paddingLeft: "1px", 
+    paddingRight: "1px", 
   },
   description: {
     width: "100%",
@@ -30,12 +32,7 @@ const Row = ({ items }) => {
         <Text style={styles.xyz}>{item.rds_number}</Text>
         <Text style={styles.xyz}>{item.document_date}</Text>
       </View>
-      <View
-        key={item.id + "-description"}
-        style={{ paddingLeft: "40px", paddingRight: "20px" }}
-      >
-        <Text style={styles.description}>{item.description}</Text>
-      </View>
+      
     </Fragment>
   ));
   return rows;

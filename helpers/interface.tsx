@@ -1,6 +1,23 @@
 import { HeadCell, Order } from "material-ui-datatable-api-v2/dist/interface";
 import { AppProps } from "next/app";
 
+export interface TableHeader {
+  label: string;
+  type: ColumnType;
+  name: string;
+  subname?: string;
+}
+
+type CopyType = "Original copy" | "Photocopy" | string;
+
+export interface SelectedFormat {
+    inventory_id: any;
+    box_code: string;
+    remarks: string;
+    type: CopyType;
+    location: string;
+}
+
 export interface WithCacheAppProps extends AppProps {
   emotionCache: any;
 }
@@ -22,6 +39,8 @@ export interface RegisterFormProps {
   office_id: string;
   password: string;
 }
+
+export type ColumnType = string | number | boolean;
 
 export type Actions =
   | "edit"
@@ -71,6 +90,7 @@ export interface DeleteDialogProps extends DialogProps {
 }
 
 type SnackBarType = "success" | "error" | "info" | "warning";
+
 export interface SnackBarData {
   type: SnackBarType;
   message: string;

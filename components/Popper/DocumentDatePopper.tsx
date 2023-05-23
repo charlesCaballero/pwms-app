@@ -213,12 +213,12 @@ export default function DocumentDate(props: DocumentDateProps) {
                     if (largestMonth < selectedMonths[1])
                       largest = selectedMonths[1];
                     else largest = largestMonth;
+
+                    let docDate = selectedMonths[0]===selectedMonths[1]?
+                                  months[selectedMonths[0]] + " " + selectedYear:
+                                  months[selectedMonths[0]] + "-" + months[selectedMonths[1]] + " " + selectedYear;
                     saveDocumentDate(
-                      months[selectedMonths[0]] +
-                        "-" +
-                        months[selectedMonths[1]] +
-                        " " +
-                        selectedYear,
+                      docDate,
                       currentYear > 0 ? currentYear : selectedYear,
                       largest,
                       idx
