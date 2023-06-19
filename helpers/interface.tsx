@@ -1,4 +1,4 @@
-import { HeadCell, Order } from "material-ui-datatable-api-v2/dist/interface";
+// import { HeadCell, Order } from "material-ui-datatable-api-v2/dist/interface";
 import { AppProps } from "next/app";
 
 export interface TableHeader {
@@ -6,6 +6,9 @@ export interface TableHeader {
   type: ColumnType;
   name: string;
   subname?: string;
+  remarks?:string;
+  datatype?:DataTypes;
+  from?: string;
 }
 
 type CopyType = "Original copy" | "Photocopy" | string;
@@ -113,14 +116,18 @@ export interface PopoverProps {
 }
 
 //from datatable package
-// export type BooleanCell = [true: string, false: string];
-// export interface HeadCell {
-//   disablePadding: boolean;
-//   id: string;
-//   label: string;
-//   numeric: boolean;
-//   from?: string;
-//   boolean?: BooleanCell;
-// }
+export type BooleanCell = [true: string, false: string];
+export type DataTypes = "json" | "date";
+export interface HeadCell {
+  disablePadding: boolean;
+  id: string;
+  label: string;
+  numeric: boolean;
+  from?: string;
+  boolean?: BooleanCell;
+  datatype?: DataTypes;//for json and date type of data
+  concat?: string; //used to concat one column to original id
+  remarks?: string // for adding remarks value to a specific cell
+}
 
-// export declare type Order = "asc" | "desc";
+export declare type Order = "asc" | "desc";

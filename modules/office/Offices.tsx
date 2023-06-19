@@ -7,16 +7,16 @@ import { useMutation } from "react-query";
 import dynamic from "next/dynamic";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { Suspense, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { AxiosPromise } from "axios";
 import { Actions, SnackBarData } from "@helpers/interface";
 
-// const DataTable = dynamic(() => import("@components/DataTable"), {
-//   suspense: true,
-// });
-const DataTable = dynamic(() => import("material-ui-datatable-api-v2"), {
+const DataTable = dynamic(() => import("@components/DataTable"), {
   suspense: true,
 });
+// const DataTable = dynamic(() => import("material-ui-datatable-api-v2"), {
+//   suspense: true,
+// });
 
 const DeleteDialog = dynamic(() => import("@components/Dialogs/DeleteDialog"), {
   suspense: true,
@@ -55,8 +55,10 @@ const tableHeader = [
 export default function Offices() {
   const [isDeleteDailogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [refetch, setRefetch] = useState<boolean>(false);
   const [selection, setSelection] = useState<any>();
   const [action, setAction] = useState<Actions>(null);
+  const [dataTableLoading, setDataTableLoading] = useState<boolean>(false);
   const [snackbarData, setSnackBarData] = useState<SnackBarData>({
     isOpen: false,
     message: "",
@@ -78,11 +80,10 @@ export default function Offices() {
   };
 
   const handleFormClose = (isSubmitted) => {
-    if (isSubmitted) {
-      handleRefetch(true);
-    } else {
+    if (!isSubmitted) {
       setAction(null);
     }
+    else setRefetch(true);
     setIsFormOpen(false);
   };
 
@@ -91,7 +92,8 @@ export default function Offices() {
       deleteRow.mutateAsync(null, {
         onSuccess: (result) => {
           if (result) {
-            handleRefetch(true);
+            
+            setRefetch(true);
             setAction("delete");
           }
         },
@@ -101,6 +103,7 @@ export default function Offices() {
             message: JSON.stringify(error),
             type: "error",
           });
+          showSnackbar();
         },
       });
     }
@@ -117,7 +120,8 @@ export default function Offices() {
     setAction(null);
   };
 
-  const handleRefetch = (fetch) => {
+  const showSnackbar = () => {
+    
     if (action === "edit") {
       setSnackBarData({
         isOpen: true,
@@ -143,8 +147,12 @@ export default function Offices() {
         type: "error",
       });
     }
-    return fetch;
+    setRefetch(false);
   };
+
+  React.useEffect(()=>{
+    showSnackbar();
+  },[refetch,dataTableLoading]);
 
   return (
     <Box pt={2}>
@@ -183,7 +191,8 @@ export default function Offices() {
           getSelection={(action, selections) => {
             handleFormOpen(action, selections);
           }}
-          refetch={(fetch) => handleRefetch(fetch)}
+          refetch={refetch}
+          loadingState={(isLoading)=> setDataTableLoading(isLoading)}
           disablePrint={true}
         />
       </Suspense>

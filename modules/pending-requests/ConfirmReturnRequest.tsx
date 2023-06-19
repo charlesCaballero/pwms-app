@@ -3,16 +3,16 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import dynamic from "next/dynamic";
-import { useMutation, useQuery } from 'react-query';
+import { useMutation } from 'react-query';
 import { Method, api, url } from '@utils/queryUtils';
-import { disposalQuery } from '@helpers/api-queries';
+import { returnsQuery } from '@helpers/api-queries';
 import Cookies from "js-cookie";
 import ConfirmRequestDialog from '@components/Dialogs/ConfirmRequestDialog';
 import DataTable from '@components/DataTable';
 import { AxiosPromise } from 'axios';
-import { disposalRequestMutation } from '@helpers/api-mutations';
-import RequestFormDialog from '@components/Dialogs/RequestFormDialog';
+import { returnRequestMutation } from '@helpers/api-mutations';
 import { HeadCell, SnackBarData } from '@helpers/interface';
+import RequestDetails from '@components/Dialogs/PendingRequestDetails';
 
 // const DataTable = dynamic(() => import("material-ui-datatable-api-v2"), {
 //     suspense: true,
@@ -25,86 +25,75 @@ const SnackbarAlert = dynamic(
     }
   );
 
-const tableHeader:HeadCell[] = [
+const tableHeader: HeadCell[] = [
     {
-      id: "box_code",
+      id: "form_no",
       numeric: false,
       disablePadding: false,
-      label: "Box Code",
+      label: "Request Form No.",
     },
     {
-      id: "rds_number",
+      id: "user_name",
       numeric: false,
       disablePadding: false,
-      label: "RDS #",
-      from: "box_details",
-      datatype: 'json'
+      label: "End User",
     },
     {
-      id: "document_title",
+      id: "acronym",
       numeric: false,
       disablePadding: false,
-      label: "Document Title and Description",
-      from: "box_details",
-      datatype: 'json',
-      remarks: 'remarks'
+      label: "Dept/Unit",
+      from:'office'
     },
     {
-      id: "document_date",
+      id: "created_at",
       numeric: false,
       disablePadding: false,
-      label: "Document Date",
-      from: "box_details",
-      datatype: 'json'
+      label: "Date Created",
+      datatype: "date",
     },
     {
-      id: "disposal_date",
+      id: "status",
       numeric: false,
       disablePadding: false,
-      label: "Disposal Date",
-      
-    },
-    {
-      id: "location",
-      numeric: false,
-      disablePadding: false,
-      label: "Location",
+      label: "Status",
 
     },
 ];
 
-export default function DisposalRequest(){
+export default function ConfirmReturnRequest(){
 
     const [selected, setSelected] = React.useState([]);
     const [openConfirm, setOpenConfirm] = React.useState(false);
-    const [openRequestForm, setOpenRequestForm] = React.useState(false);
+    const [openRequestDetails, setOpenRequestDetails] = React.useState(false);
     const [refetch, setRefetch] = React.useState(false);
-    const [requestDetails, setRequestDetails] = React.useState([]);
+    // const [remarks,setRemarks] = React.useState('');
     const [snackbarData, setSnackBarData] = React.useState<SnackBarData>({
         isOpen: false,
         message: "",
         type: "error",
       });
 
-    const disposal = useMutation((data: any) => {
-        return api(Method.POST, `${disposalRequestMutation}`, data) as AxiosPromise<any>;
+    const updateReturnRequest = useMutation((data: any) => {
+        return api(Method.PUT, `${returnRequestMutation}/${selected['form_no']}`, data) as AxiosPromise<any>;
     });
 
-    const handleFormOpen = (data) => {
+    const handleDetailsOpen = (data) => {
         // console.log("data: "+ JSON.stringify(data));
         setSelected(data);
-        setOpenConfirm(true);
+        setOpenRequestDetails(true);
     }
 
     const handleSaveRequest = async() => {
-        await disposal.mutate(selected, {
-            onSuccess: (result) => {
+      // selected['remarks'] = remarks;
+        await updateReturnRequest.mutate(selected, {
+            onSuccess: (result:any) => {
               if (result) {
-                console.log("result: " + JSON.stringify(result.data));
-                if (result.data.code === 200) {
+                // console.log("result: " + JSON.stringify(result.code));
+                if (result.code === 200) {
                   setOpenConfirm(false);
-                  setOpenRequestForm(true);
-                  setRequestDetails(result.data);
+                  setOpenRequestDetails(false);
+                  handleRefetch();
                 }
               }
             },
@@ -118,7 +107,7 @@ export default function DisposalRequest(){
         setRefetch(true);
         setSnackBarData({
         isOpen: true,
-        message: "Request is successfully created. The list just got updated.",
+        message: "Request is now posted as ongoing request.",
         type: "success",
         });
         
@@ -138,18 +127,15 @@ export default function DisposalRequest(){
                 <Box sx={ { display: 'flex', m: '20px' } } justifyContent = "center">
                     <DataTable
                         header={ tableHeader }
-                        dataQuery = { url + "/" + disposalQuery
-                        }
+                        dataQuery = { url + "/" + returnsQuery + "/retrieved"}
                         token = { Cookies.get("token") }
                         getSelection = {(_, selections) => {
-                            handleFormOpen(selections);
+                            handleDetailsOpen(selections);
                         }}
                         disablePrint = { true}
-                        disableSelection = { false}
                         disableRowDelete = {true}
                         disableRowEdit = {true}
-                        disableRowInfo={true}
-                        setMultipleSelection = { "Dispose"}
+                        disableToolbar={true}
                         refetch={refetch}
                         emptyState={
                           <Grid 
@@ -161,12 +147,12 @@ export default function DisposalRequest(){
                           >
                             <Box >
                             <img
-                                src='/empty_states/empty-box.png'
+                                src='/empty_states/empty-state.png'
                                 width="400px"
                                 alt="empty list"
                             />
                             <Typography variant="h5" component="h6" color="#00c69d" align="center" >
-                            Nothing to dispose.
+                            No Pending Request
                             </Typography>
                             <Box sx={{
                                     display: 'flex',
@@ -187,19 +173,16 @@ export default function DisposalRequest(){
             <ConfirmRequestDialog
                 isOpen={openConfirm}
                 onClose={(save) => (save ? handleSaveRequest() : setOpenConfirm(false))}
-                request={"return"}
-                action={"save"}
-                isLoading={disposal.isLoading}
+                request={"confirm"}
+                action={"continue"}
+                isLoading={updateReturnRequest.isLoading}
             />
-            <RequestFormDialog
-            isOpen={openRequestForm}
-            onClose={() => {
-            setOpenRequestForm(false);
-            setSelected([]);
-            handleRefetch();
-            }}
-            type={"disposal"}
-            data={requestDetails}
+            <RequestDetails 
+                isOpen={openRequestDetails}
+                onClose={(isSubmitted)=>isSubmitted?setOpenConfirm(true): setOpenRequestDetails(false)}
+                data={selected}
+                type={'return'}
+                // getRemarks={(val)=>setRemarks(val)}
             />
             <SnackbarAlert
                 isOpen={snackbarData.isOpen}

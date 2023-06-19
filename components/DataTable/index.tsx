@@ -1,73 +1,77 @@
-import * as React from "react";
+import * as React from 'react';
 /**
  * Material Components Used
  */
-import Box from "@mui/material/Box";
-import Checkbox from "@mui/material/Checkbox";
-import Fade from "@mui/material/Fade";
-import IconButton from "@mui/material/IconButton";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
-import axios from "axios";
-import LinearProgress from "@mui/material/LinearProgress";
-import Toolbar from "@mui/material/Toolbar";
-import Badge from "@mui/material/Badge";
-import Button from "@mui/material/Button";
-import InputAdornment from "@mui/material/InputAdornment";
-import Popover from "@mui/material/Popover";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import Switch from "@mui/material/Switch";
-import ListItemText from "@mui/material/ListItemText";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import { alpha } from "@mui/material";
-import Input from "@mui/material/Input";
-import TableHead from "@mui/material/TableHead";
-import TableSortLabel from "@mui/material/TableSortLabel";
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Fade from '@mui/material/Fade';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import axios from 'axios';
+import LinearProgress from '@mui/material/LinearProgress';
+import Toolbar from '@mui/material/Toolbar';
+import Badge from '@mui/material/Badge';
+import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
+import Popover from '@mui/material/Popover';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import Switch from '@mui/material/Switch';
+import ListItemText from '@mui/material/ListItemText';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import { alpha } from '@mui/material';
+import Input from '@mui/material/Input';
+import TableHead from '@mui/material/TableHead';
+import TableSortLabel from '@mui/material/TableSortLabel';
 
 /**
  * Material Icons Used
  */
-import Delete from "@mui/icons-material/Delete";
-import Add from "@mui/icons-material/Add";
-import Search from "@mui/icons-material/Search";
-import Print from "@mui/icons-material/Print";
-import FilterList from "@mui/icons-material/FilterList";
-import FilterAlt from "@mui/icons-material/FilterAlt";
-import ViewColumn from "@mui/icons-material/ViewColumn";
-import ViewComfyAlt from "@mui/icons-material/ViewComfyAlt";
-import ViewCompactAlt from "@mui/icons-material/ViewCompactAlt";
-import Edit from "@mui/icons-material/Edit";
-import Feed from "@mui/icons-material/Feed";
-import CheckCircle from "@mui/icons-material/CheckCircleOutlineRounded";
-import DoDisturb from "@mui/icons-material/DoDisturbAltRounded";
-import DataObject from "@mui/icons-material/DataObject";
-import DeleteRounded from "@mui/icons-material/DeleteRounded";
+import Delete from '@mui/icons-material/Delete';
+import Archive from '@mui/icons-material/Archive';
+import Add from '@mui/icons-material/Add';
+import Search from '@mui/icons-material/Search';
+import Print from '@mui/icons-material/Print';
+import FilterList from '@mui/icons-material/FilterList';
+import FilterAlt from '@mui/icons-material/FilterAlt';
+import ViewColumn from '@mui/icons-material/ViewColumn';
+import ViewComfyAlt from '@mui/icons-material/ViewComfyAlt';
+import ViewCompactAlt from '@mui/icons-material/ViewCompactAlt';
+import Edit from '@mui/icons-material/Edit';
+import Feed from '@mui/icons-material/Feed';
+import CheckCircle from '@mui/icons-material/CheckCircleOutlineRounded';
+import DoDisturb from '@mui/icons-material/DoDisturbAltRounded';
+import DataObject from '@mui/icons-material/DataObject';
+import DeleteRounded from '@mui/icons-material/DeleteRounded';
 /**
  * Others
  */
-import { grey } from "@mui/material/colors";
-import { visuallyHidden } from "@mui/utils";
-import { useQuery } from "react-query";
-import { BooleanCell, HeadCell, Order } from "@helpers/interface";
+import { grey } from '@mui/material/colors';
+import { visuallyHidden } from '@mui/utils';
+// import { BooleanCell, HeadCell, Order } from './interface';
+import { useQuery } from 'react-query';
+import { Inventory2, Task } from '@mui/icons-material';
+import { BooleanCell, HeadCell, Order } from '@helpers/interface';
 
-declare type FilterOperators =
-  | "contains"
-  | "matches with"
-  | "starts with"
-  | "ends with"
-  | "is empty"
-  | "not empty";
+type FilterOperators =
+  | 'contains'
+  | 'matches with'
+  | 'starts with'
+  | 'ends with'
+  | 'is empty'
+  | 'not empty';
+
 interface FilterType {
   column: string;
   operator: FilterOperators;
@@ -78,6 +82,7 @@ interface PopoverProps {
   onClose(): void;
   id: string;
 }
+
 interface ActiveColumns {
   id: string;
   active: boolean;
@@ -85,7 +90,8 @@ interface ActiveColumns {
   from?: string;
   boolean?: BooleanCell;
 }
-declare type FilterFields = "column" | "operator" | "value";
+
+type FilterFields = 'column' | 'operator' | 'value';
 
 interface FilterProps extends PopoverProps {
   header: HeadCell[];
@@ -95,41 +101,59 @@ interface FilterProps extends PopoverProps {
   onDeleteFilter(column: string): void;
 }
 
-type TableActions = "edit" | "view" | "delete" | "multiple-delete";
+type TableActions = 'edit' | 'view' | 'delete' | 'multiple-delete' | null;
+type MultipleSelectionType =
+  | 'Return'
+  | 'Dispose'
+  | 'Delete'
+  | 'Store'
+  | 'Signed'
+  | 'Recieved';
+
+type EmptyState = string | JSX.Element | JSX.Element[];
+
 interface DataTableProps {
   header: Array<HeadCell>;
   dataQuery: string;
-  cookie?: string;
+  token?: string;
   disableRowEdit?: boolean;
   disableRowDelete?: boolean;
   disableRowInfo?: boolean;
   disableSelection?: boolean;
   disableFilter?: boolean;
   disablePrint?: boolean;
+  setMultipleSelection?: MultipleSelectionType;
   getSelection?(action: TableActions, row: object[]): void;
-  refetch?(fetch: boolean): boolean;
+  loadingState?(isLoading:boolean): void;
+  refetch?: boolean;
+  emptyState?: EmptyState;
+  disableToolbar?:boolean;
 }
-export type Actions = "edit" | "add" | "delete" | null;
 
 export default function DataTable(props: DataTableProps) {
   const {
     header,
     dataQuery,
-    getSelection,
-    cookie,
+    getSelection=()=>{},
+    loadingState=()=>{},
+    token,
     disableRowEdit = false,
     disableRowDelete = false,
     disableRowInfo = false,
     disableSelection = true,
     disableFilter = false,
     disablePrint = false,
+    setMultipleSelection = 'Delete',
     refetch,
+    emptyState,
+    disableToolbar=false,
   } = props;
 
-  const [showRowActionButtons, setShowRowActionButtons] =
-    React.useState<boolean>(false);
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<any>("");
+  const [showRowActionButtons, setShowRowActionButtons] = React.useState<
+    boolean
+  >(false);
+  const [order, setOrder] = React.useState<Order>('asc');
+  const [orderBy, setOrderBy] = React.useState<any>('');
   const [selected, setSelected] = React.useState<string[]>([]);
   const [dense, setDense] = React.useState(false);
   const [activeColumns, setActiveColumns] = React.useState<any>([]);
@@ -138,14 +162,14 @@ export default function DataTable(props: DataTableProps) {
   const [page, setPage] = React.useState<number>(0);
   const [limit, setLimit] = React.useState<number>(5);
   const [rowsCount, setRowsCount] = React.useState<number>(0);
-  const [searchString, setSearchString] = React.useState<string>("");
-  const [queryError, setQueryError] = React.useState<string>("");
+  const [searchString, setSearchString] = React.useState<string>('');
+  const [queryError, setQueryError] = React.useState<string>('');
 
   const querydata = useQuery(
-    "result",
+    'result',
     async () =>
       (await axios({
-        method: "GET",
+        method: 'GET',
         url:
           `${dataQuery}` +
           `?page=${page}&limit=${limit}` +
@@ -158,16 +182,16 @@ export default function DataTable(props: DataTableProps) {
           `&order=${order}&orderBy=${orderBy}` +
           `&filters=${JSON.stringify(filters)}`,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "*",
-          "Access-Control-Allow-Headers": "*",
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: cookie ? `Bearer ${cookie}` : "Bearer",
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': '*',
+          'Access-Control-Allow-Headers': '*',
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: token ? `Bearer ${token}` : 'Bearer',
         },
       })
-        .then((response) => response.data)
-        .catch((err) => {
+        .then((response: any) => response.data)
+        .catch((err: any) => {
           setQueryError(err.response.message);
           // return null;
         })) as any,
@@ -178,17 +202,22 @@ export default function DataTable(props: DataTableProps) {
     if (querydata.data) {
       setdata([...querydata?.data.data]);
       setRowsCount(querydata?.data.rows);
-      refetch(false);
+      // refetch?.(false);
     }
   }, [querydata.data]);
 
+  React.useEffect(()=>{
+    loadingState(querydata.isLoading);
+  },[querydata.isLoading])
+
   React.useEffect(() => {
-    if (!disableFilter && filters.length > 0) setSearchString("");
+    if (!disableFilter && filters.length > 0) setSearchString('');
     querydata.refetch();
   }, [page, limit, order, orderBy, searchString, filters]);
 
   React.useEffect(() => {
     if (refetch) {
+      setSelected([]);
       querydata.refetch();
     }
   }, [refetch]);
@@ -197,14 +226,14 @@ export default function DataTable(props: DataTableProps) {
     _event: React.MouseEvent<unknown>,
     property: any
   ) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = data.map((n) => n.id);
+      const newSelecteds = data.map((n: any) => n.id);
       setSelected(newSelecteds);
       return;
     }
@@ -255,16 +284,16 @@ export default function DataTable(props: DataTableProps) {
   const handleAddFilter = () => {
     let newFilter = filters;
     let unFilteredColumns: any[] = [];
-    header.forEach((head) => unFilteredColumns.push(head.id));
-    newFilter.forEach((obj) => {
+    header.forEach(head => unFilteredColumns.push(head.id));
+    newFilter.forEach(obj => {
       unFilteredColumns.forEach((value, index) => {
         if (obj.column === value) unFilteredColumns.splice(index, 1);
       });
     });
     newFilter.push({
       column: unFilteredColumns[0],
-      operator: "contains",
-      value: "",
+      operator: 'contains',
+      value: '',
     });
     setFilters([...newFilter]);
   };
@@ -285,8 +314,8 @@ export default function DataTable(props: DataTableProps) {
     let newFilter = filters;
     newFilter.forEach((obj, index) => {
       if (obj.column === column) {
-        if (field === "column") newFilter[index].column = value;
-        else if (field === "operator") newFilter[index].operator = value;
+        if (field === 'column') newFilter[index].column = value;
+        else if (field === 'operator') newFilter[index].operator = value;
         else newFilter[index].value = value;
       }
     });
@@ -294,7 +323,15 @@ export default function DataTable(props: DataTableProps) {
   };
 
   const handleMultipleDelete = () => {
-    // disableSelection ? onMultipleDelete(selected) : null;
+    const selectedRows = [];
+    selected.map((index)=>{
+      data.map((value)=>{
+        if (value.id===index){
+          selectedRows.push(value);
+        }
+      })
+    })
+    getSelection("multiple-delete", selectedRows) ;
   };
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
@@ -316,40 +353,69 @@ export default function DataTable(props: DataTableProps) {
     });
     setActiveColumns([...arr]);
     setShowRowActionButtons(
-      !disableRowEdit || !disableRowDelete || !disableRowInfo
+      disableRowEdit && disableRowDelete && disableRowInfo
     );
   }, []);
 
   React.useEffect(() => {
-    disableFilter ? setFilters(filters) : null;
+    disableFilter && setFilters(filters);
   }, [filters]);
 
+  const setNewCellData = (from,id)=> {
+    return (
+      <List sx={{pt:0}}>
+        {
+          JSON.parse(from).map((val,index)=>{
+            const numbering = JSON.parse(from).length>1?(index+1)+". ":'';
+            return (
+              <ListItem sx={{pt:0}} key={"newCellData"+index}>
+                {numbering.concat(val[id])}
+              </ListItem>
+            )
+          })
+        }
+      </List>
+    );
+  }
+
+  function getFormattedDate(val) {
+    const date = new Date(val);
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+  
+    return month + '/' + day + '/' + year;
+  }
+
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2 }}>
+        {!disableToolbar&&
         <DataTableToolBar
           header={header}
           numSelected={selected.length}
           dense={dense}
           onDenseChange={() => setDense(!dense)}
           activeColumns={activeColumns}
-          onChangeActiveColumn={(id) => handleChangeActiveColumn(id)}
-          searchString={(str) => setSearchString(str)}
+          onChangeActiveColumn={id => handleChangeActiveColumn(id)}
+          searchString={str => setSearchString(str)}
           filters={[...filters]}
           onFilterChange={(value, field, column) =>
             handleFilterChange(value, field, column)
           }
           onAddFilter={() => handleAddFilter()}
-          onDeleteFilter={(column) => handleDeleteFilter(column)}
+          onDeleteFilter={column => handleDeleteFilter(column)}
           noFilter={disableFilter}
           noPrint={disablePrint}
           onMultipleDelete={() => handleMultipleDelete()}
+          multipleSelectionType={setMultipleSelection}
         />
+        }
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? "small" : "medium"}
+            size={dense ? 'small' : 'medium'}
           >
             <DataTableHeader
               numSelected={selected.length}
@@ -364,67 +430,77 @@ export default function DataTable(props: DataTableProps) {
               activeColumns={activeColumns}
             />
             <TableBody>
-              {querydata.isLoading ? (
+              {querydata.isLoading || querydata.isFetching &&(
                 <React.Fragment>
-                  <TableRow sx={{ width: "100%" }}>
+                  <TableRow sx={{ width: '100%' }}>
                     <TableCell
                       colSpan={
-                        showRowActionButtons ? header.length + 1 : header.length
+                        !showRowActionButtons ? header.length + 1 : header.length
                       }
-                      sx={{ p: 0, borderBottom: "none" }}
+                      sx={{ p: 0, borderBottom: 'none' }}
                     >
                       <LinearProgress />
                     </TableCell>
                   </TableRow>
-                  <TableRow sx={{ width: "100%" }}>
+                  <TableRow sx={{ width: '100%' }}>
                     <TableCell
                       colSpan={
-                        showRowActionButtons ? header.length + 1 : header.length
+                        !showRowActionButtons ? header.length + 1 : header.length
                       }
-                      sx={{ p: 3, borderBottom: "none" }}
-                      align={"center"}
+                      sx={{ p: 3, borderBottom: 'none' }}
+                      align={'center'}
                     >
                       Please wait. Loading..
                     </TableCell>
                   </TableRow>
                 </React.Fragment>
-              ) : (
-                ""
-              )}
-              {data.length <= 0 && !querydata.isLoading ? (
+              ) }
+              {data.length <= 0 && (!querydata.isLoading || !querydata.isFetching) && (
                 <TableRow>
                   <TableCell
                     colSpan={
-                      showRowActionButtons ? header.length + 1 : header.length
+                      !showRowActionButtons ? header.length + 1 : header.length
                     }
-                    align={"center"}
+                    align={'center'}
                   >
                     <Fade in={data.length <= 0} timeout={600}>
                       <Box
-                        display={"flex"}
-                        flexDirection={"column"}
+                        display={'flex'}
+                        flexDirection={'column'}
                         p={2}
-                        alignItems={"center"}
+                        alignItems={'center'}
                       >
-                        <DataObject color="error" sx={{ fontSize: 80 }} />
-                        <Typography fontSize={15}>
-                          Your query returned empty. {queryError}
-                        </Typography>
-                        {queryError ? (
-                          <Typography fontSize={15}>
-                            Error: {queryError}
-                          </Typography>
-                        ) : (
-                          <Typography fontSize={15}>
-                            Your query returned empty.
-                          </Typography>
-                        )}
+                        {
+                          emptyState?
+                          (
+                            <React.Fragment>
+                              {emptyState}
+                            </React.Fragment>
+                          )
+                          :
+                          (
+                            <React.Fragment>
+                              <DataObject color="error" sx={{ fontSize: 80 }} />
+                              <Typography fontSize={15}>
+                                Your query returned empty. {queryError}
+                              </Typography>
+                              {queryError ? (
+                                <Typography fontSize={15}>
+                                  Error: {queryError}
+                                </Typography>
+                              ) : (
+                                <Typography fontSize={15}>
+                                  An error occured while fetching the data you need.
+                                </Typography>
+                              )}
+                            </React.Fragment>
+                          )
+                        }
+                        
                       </Box>
                     </Fade>
                   </TableCell>
                 </TableRow>
-              ) : (
-                ""
               )}
               {[...data].map((row: any, index) => {
                 const isItemSelected = isSelected(row.id);
@@ -432,29 +508,27 @@ export default function DataTable(props: DataTableProps) {
                 return (
                   <TableRow
                     hover
-                    onClick={(event) =>
+                    onClick={event =>
                       !disableSelection ? handleClick(event, row.id) : null
                     }
-                    role={!disableSelection ? "checkbox" : "list"}
+                    role={!disableSelection ? 'checkbox' : 'list'}
                     aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.id}
                     selected={isItemSelected}
                   >
-                    {!disableSelection ? (
-                      <TableCell padding="checkbox">
+                    {!disableSelection &&(
+                      <TableCell padding="checkbox" sx={{verticalAlign: 'top', py:1}}>
                         <Checkbox
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
-                            "aria-labelledby": labelId,
+                            'aria-labelledby': labelId,
                           }}
                         />
                       </TableCell>
-                    ) : (
-                      ""
-                    )}
-                    {header.map((headCell) => {
+                    ) }
+                    {header.map(headCell => {
                       const active = activeColumns
                         .filter((item: any) => item.id === headCell.id)
                         .map((item: any) => item.active);
@@ -462,86 +536,107 @@ export default function DataTable(props: DataTableProps) {
                         <TableCell
                           key={
                             headCell.from
-                              ? headCell.from + "-" + headCell.id
+                              ? headCell.from + '-' + headCell.id
                               : headCell.id
                           }
-                          align={headCell.numeric ? "right" : "left"}
-                          padding={headCell.disablePadding ? "none" : "normal"}
+                          align={headCell.numeric ? 'right' : 'left'}
+                          padding={headCell.disablePadding ? 'none' : 'normal'}
                           sx={{
-                            display: active[0] ? "" : "none",
+                            display: active[0] ? '' : 'none',
+                            verticalAlign: 'top',
                           }}
                         >
-                          {headCell.from ? (
-                            row[headCell.from][headCell.id]
-                          ) : headCell.boolean && row[headCell.id] ? (
-                            <Chip
-                              icon={<CheckCircle />}
-                              label={headCell.boolean[0]}
-                              color="success"
-                              size={dense ? "small" : "medium"}
-                            />
-                          ) : headCell.boolean && !row[headCell.id] ? (
-                            <Chip
-                              icon={<DoDisturb />}
-                              label={headCell.boolean[1]}
-                              color="error"
-                              size={dense ? "small" : "medium"}
-                            />
-                          ) : (
-                            row[headCell.id]
-                          )}
+                          {
+                            headCell.from ? (
+                              headCell.datatype==='json'?
+                              row[headCell.from]&&setNewCellData(row[headCell.from],[headCell.id]):
+                              headCell.datatype==='date'?
+                              row[headCell.from]&&getFormattedDate(row[headCell.from][headCell.id]):
+                              row[headCell.from]&&row[headCell.from][headCell.id]
+                            ) : headCell.boolean && row[headCell.id] ? (
+                              <Chip
+                                icon={<CheckCircle />}
+                                label={headCell.boolean[0]}
+                                color="success"
+                                size={dense ? 'small' : 'medium'}
+                              />
+                            ) : headCell.boolean && !row[headCell.id] ? (
+                              <Chip
+                                icon={<DoDisturb />}
+                                label={headCell.boolean[1]}
+                                color="error"
+                                size={dense ? 'small' : 'medium'}
+                              />
+                            ) : (
+                              headCell.datatype==='date'?getFormattedDate(row[headCell.id]):row[headCell.id]
+                            )
+                          }
+                          {
+                            (headCell.remarks && row[headCell.remarks]) && 
+                            (
+                            <Box sx={{px:2}}>
+                            <Typography sx={{fontWeight:'bold'}} variant="body2" component="h1">
+                              Remarks:
+                            </Typography>
+                            <Typography sx={{whiteSpace:'pre-wrap'}} variant="body2" component="p">
+                              {row[headCell.remarks]}
+                            </Typography>
+                            </Box>
+                            )
+                          }
+                          {
+                          headCell.concat&&(headCell.from?" "+row[headCell.from][headCell.concat]:" "+row[headCell.concat])
+                          }
                         </TableCell>
                       );
                     })}
-                    {showRowActionButtons ? (
+                    {!showRowActionButtons && (
                       <TableCell>
-                        <Box display={"flex"}>
+                        <Box display={'flex'}>
                           {!disableRowEdit ? (
                             <Tooltip title="Edit">
                               <IconButton
                                 color="info"
-                                size={dense ? "small" : "medium"}
-                                onClick={() => getSelection("edit", row)}
+                                size={dense ? 'small' : 'medium'}
+                                onClick={() => getSelection?.('edit', row)}
                               >
-                                <Edit fontSize={dense ? "small" : "inherit"} />
+                                <Edit fontSize={dense ? 'small' : 'inherit'} />
                               </IconButton>
                             </Tooltip>
                           ) : (
-                            ""
+                            ''
                           )}
                           {!disableRowDelete ? (
                             <Tooltip title="Delete">
                               <IconButton
                                 color="error"
-                                size={dense ? "small" : "medium"}
-                                onClick={() => getSelection("delete", row)}
+                                size={dense ? 'small' : 'medium'}
+                                onClick={() => getSelection?.('delete', row)}
                               >
                                 <DeleteRounded
-                                  fontSize={dense ? "small" : "inherit"}
+                                  fontSize={dense ? 'small' : 'inherit'}
                                 />
                               </IconButton>
                             </Tooltip>
                           ) : (
-                            ""
+                            ''
                           )}
                           {!disableRowInfo ? (
                             <Tooltip title="View All Related Info">
                               <IconButton
                                 color="success"
-                                size={dense ? "small" : "medium"}
-                                onClick={() => getSelection("view", row)}
+                                size={dense ? 'small' : 'medium'}
+                                onClick={() => getSelection?.('view', row)}
                               >
-                                <Feed fontSize={dense ? "small" : "inherit"} />
+                                <Feed fontSize={dense ? 'small' : 'inherit'} />
                               </IconButton>
                             </Tooltip>
                           ) : (
-                            ""
+                            ''
                           )}
                         </Box>
                       </TableCell>
-                    ) : (
-                      ""
-                    )}
+                    ) }
                   </TableRow>
                 );
               })}
@@ -589,6 +684,7 @@ interface EnhancedTableToolbarProps {
   onDeleteFilter(column: string): void;
   noFilter: boolean;
   noPrint: boolean;
+  multipleSelectionType: MultipleSelectionType;
   onMultipleDelete(): void;
 }
 
@@ -618,18 +714,18 @@ const HideShowColumn = (props: HideShowColumnProps) => {
       anchorEl={anchorEl}
       onClose={onClose}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
+        vertical: 'bottom',
+        horizontal: 'right',
       }}
       transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
+        vertical: 'top',
+        horizontal: 'right',
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+      <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
         <nav aria-label="main mailbox folders">
           <List>
-            {columns?.map((column) => {
+            {columns?.map(column => {
               return (
                 <ListItem key={column.id} disablePadding>
                   <ListItemButton
@@ -637,7 +733,7 @@ const HideShowColumn = (props: HideShowColumnProps) => {
                   >
                     <Switch
                       checked={column.active}
-                      inputProps={{ "aria-label": "controlled" }}
+                      inputProps={{ 'aria-label': 'controlled' }}
                     />
                     <ListItemText primary={column.label} />
                   </ListItemButton>
@@ -663,12 +759,12 @@ const Filter = (props: FilterProps) => {
     onDeleteFilter,
   } = props;
   const operators = [
-    "contains",
-    "matches with",
-    "starts with",
-    "ends with",
-    "is empty",
-    "not empty",
+    'contains',
+    'matches with',
+    'starts with',
+    'ends with',
+    'is empty',
+    'not empty',
   ];
 
   const open = Boolean(anchorEl);
@@ -680,32 +776,32 @@ const Filter = (props: FilterProps) => {
       anchorEl={anchorEl}
       onClose={onClose}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
+        vertical: 'bottom',
+        horizontal: 'right',
       }}
       transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
+        vertical: 'top',
+        horizontal: 'right',
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: 500, bgcolor: "background.paper" }}>
+      <Box sx={{ width: '100%', maxWidth: 500, bgcolor: 'background.paper' }}>
         <nav aria-label="filter menu">
-          <Typography variant="body1" fontWeight={"bold"} px={2} pt={2}>
-            {filters.length <= 0 ? "No Filters" : "Filters"}
+          <Typography variant="body1" fontWeight={'bold'} px={2} pt={2}>
+            {filters.length <= 0 ? 'No Filters' : 'Filters'}
           </Typography>
           <List>
             {filters?.map((filter: FilterType) => {
               return (
-                <ListItem key={filter.column} sx={{ display: "flex" }}>
+                <ListItem key={filter.column} sx={{ display: 'flex' }}>
                   <TextField
                     id="filter-column"
                     select
                     label="Column"
                     value={filter.column}
-                    onChange={(event) =>
+                    onChange={event =>
                       onFilterChange(
                         event.target.value,
-                        "column",
+                        'column',
                         filter.column
                       )
                     }
@@ -718,7 +814,7 @@ const Filter = (props: FilterProps) => {
                         value={column.id}
                         disabled={
                           filter.column !== column.id &&
-                          filters.some((el) => el.column === column.id)
+                          filters.some(el => el.column === column.id)
                         }
                       >
                         {column.label}
@@ -730,10 +826,10 @@ const Filter = (props: FilterProps) => {
                     select
                     label="Operators"
                     value={filter.operator}
-                    onChange={(event) =>
+                    onChange={event =>
                       onFilterChange(
                         event.target.value,
-                        "operator",
+                        'operator',
                         filter.column
                       )
                     }
@@ -750,8 +846,8 @@ const Filter = (props: FilterProps) => {
                     id="filter-value"
                     label="Value"
                     value={filter.value}
-                    onChange={(event) =>
-                      onFilterChange(event.target.value, "value", filter.column)
+                    onChange={event =>
+                      onFilterChange(event.target.value, 'value', filter.column)
                     }
                     variant="standard"
                     fullWidth
@@ -774,7 +870,7 @@ const Filter = (props: FilterProps) => {
             size="small"
             onClick={() => onAddFilter()}
             disabled={filters.length === header.length}
-            variant={filters.length <= 0 ? "contained" : "text"}
+            variant={filters.length <= 0 ? 'contained' : 'text'}
             sx={{ mx: 2, mb: 2 }}
           >
             Add <Add />
@@ -801,13 +897,16 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
     noFilter,
     noPrint,
     onMultipleDelete,
+    multipleSelectionType,
   } = props;
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
-  const [anchorElFilter, setAnchorElFilter] =
-    React.useState<HTMLButtonElement | null>(null);
-  const [subString, setSubString] = React.useState<string>("");
+  const [
+    anchorElFilter,
+    setAnchorElFilter,
+  ] = React.useState<HTMLButtonElement | null>(null);
+  const [subString, setSubString] = React.useState<string>('');
 
   const handleOpenFilterMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElFilter(event.currentTarget);
@@ -830,7 +929,7 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
-          bgcolor: (theme) =>
+          bgcolor: theme =>
             alpha(
               theme.palette.primary.main,
               theme.palette.action.activatedOpacity
@@ -840,7 +939,7 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: "1 1 100%" }}
+          sx={{ flex: '1 1 100%' }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -848,11 +947,11 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
           {numSelected} selected
         </Typography>
       ) : (
-        <Box sx={{ flex: "1 1 100%" }}>
+        <Box sx={{ flex: '1 1 100%' }}>
           <Input
             sx={{ width: 300 }}
             placeholder="Search"
-            inputProps={{ "aria-label": "description" }}
+            inputProps={{ 'aria-label': 'description' }}
             onChange={(event: any) => setSubString(event.target.value)}
             endAdornment={
               <InputAdornment position="end">
@@ -874,13 +973,31 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
         <Button
           onClick={onMultipleDelete}
           variant="contained"
-          color="error"
-          startIcon={<Delete />}
+          color={
+            multipleSelectionType === 'Return'
+              ? 'warning'
+              : multipleSelectionType === 'Dispose' ||
+                multipleSelectionType === 'Delete'
+              ? 'error'
+              : 'success'
+          }
+          startIcon={
+            multipleSelectionType === 'Return' ? (
+              <Archive />
+            ) : multipleSelectionType === 'Dispose' ||
+              multipleSelectionType === 'Delete' ? (
+              <Delete />
+            ) : multipleSelectionType === 'Store' ? (
+              <Inventory2 />
+            ) : (
+              <Task />
+            )
+          }
         >
-          Delete
+          {multipleSelectionType}
         </Button>
       ) : (
-        <Box display={"flex"}>
+        <Box display={'flex'}>
           {!noPrint && (
             <Tooltip title="Print Table">
               <IconButton>
@@ -897,7 +1014,7 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
                 <Badge
                   badgeContent={filters?.length}
                   color="secondary"
-                  sx={{ fontWeight: "bold" }}
+                  sx={{ fontWeight: 'bold' }}
                 >
                   {filters!.length <= 0 ? <FilterList /> : <FilterAlt />}
                 </Badge>
@@ -912,7 +1029,7 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
               <ViewColumn />
             </IconButton>
           </Tooltip>
-          <Tooltip title={dense ? "Wide Padding" : "Compact Padding"}>
+          <Tooltip title={dense ? 'Wide Padding' : 'Compact Padding'}>
             <IconButton onClick={onDenseChange}>
               {dense ? <ViewComfyAlt /> : <ViewCompactAlt />}
             </IconButton>
@@ -924,12 +1041,12 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
         id="hide-show-menu"
         onClose={handlePopOverClose}
         columns={activeColumns}
-        onChangeActiveColumn={(id) => onChangeActiveColumn(id)}
+        onChangeActiveColumn={id => onChangeActiveColumn(id)}
       />
 
       <Filter
         anchorEl={anchorElFilter}
-        id={"filter-menu"}
+        id={'filter-menu'}
         onClose={handlePopOverClose}
         filters={filters!}
         header={header}
@@ -937,7 +1054,7 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
           onFilterChange(value, field, column)
         }
         onAddFilter={() => onAddFilter()}
-        onDeleteFilter={(column) => onDeleteFilter(column)}
+        onDeleteFilter={column => onDeleteFilter(column)}
       />
     </Toolbar>
   );
@@ -946,7 +1063,7 @@ const DataTableToolBar = (props: EnhancedTableToolbarProps) => {
 /**
  * DataTable Header
  */
-export interface EnhancedTableProps {
+interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -972,10 +1089,11 @@ const DataTableHeader = (props: EnhancedTableProps) => {
     actionButtons,
     activeColumns,
   } = props;
-  const createSortHandler =
-    (property: any) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
+  const createSortHandler = (property: any) => (
+    event: React.MouseEvent<unknown>
+  ) => {
+    onRequestSort(event, property);
+  };
 
   return (
     <TableHead sx={{ bgcolor: grey[300] }}>
@@ -988,50 +1106,50 @@ const DataTableHeader = (props: EnhancedTableProps) => {
               checked={rowCount > 0 && numSelected === rowCount}
               onChange={onSelectAllClick}
               inputProps={{
-                "aria-label": "select all desserts",
+                'aria-label': 'select all desserts',
               }}
             />
           </TableCell>
         ) : (
-          ""
+          ''
         )}
-        {headCells.map((headCell) => {
+        {headCells.map(headCell => {
           const active = activeColumns
-            .filter((item) => item.id === headCell.id)
-            .map((item) => item.active);
+            .filter(item => item.id === headCell.id)
+            .map(item => item.active);
 
           return (
             <TableCell
               key={
-                headCell.from ? headCell.from + "-" + headCell.id : headCell.id
+                headCell.from ? headCell.from + '-' + headCell.id : headCell.id
               }
-              align={headCell.numeric ? "right" : "left"}
-              padding={headCell.disablePadding ? "none" : "normal"}
+              align={headCell.numeric ? 'right' : 'left'}
+              padding={headCell.disablePadding ? 'none' : 'normal'}
               sortDirection={orderBy === headCell.id ? order : false}
               sx={{
-                fontWeight: "bold",
+                fontWeight: 'bold',
                 fontSize: 15,
-                display: active[0] ? "" : "none",
+                display: active[0] ? '' : 'none',
               }}
             >
               <TableSortLabel
                 active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : "asc"}
+                direction={orderBy === headCell.id ? order : 'asc'}
                 onClick={createSortHandler(headCell.id)}
               >
                 {headCell.label}
                 {orderBy === headCell.id ? (
                   <Box component="span" sx={visuallyHidden}>
-                    {order === "desc"
-                      ? "sorted descending"
-                      : "sorted ascending"}
+                    {order === 'desc'
+                      ? 'sorted descending'
+                      : 'sorted ascending'}
                   </Box>
                 ) : null}
               </TableSortLabel>
             </TableCell>
           );
         })}
-        {actionButtons ? <TableCell align="left"></TableCell> : ""}
+        {!actionButtons && <TableCell align="left"></TableCell>}
       </TableRow>
     </TableHead>
   );

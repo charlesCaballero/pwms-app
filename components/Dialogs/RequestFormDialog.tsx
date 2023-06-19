@@ -11,6 +11,8 @@ import { TransitionProps } from '@mui/material/transitions';
 import { DialogProps } from '@helpers/interface';
 import RequestForStorage from '@request_forms/RequestForStorage';
 import RequestForWithdrawal from '@request_forms/RequestForWithdrawal';
+import RequestForReturn from '@request_forms/RequestForReturn';
+import RequestForDisposal from '@request_forms/RequestForDisposal';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -56,8 +58,10 @@ export default function RequestFormDialog(props: RequestProps) {
             </Button>
           </Toolbar>
         </AppBar>
-        {type==="storage"?<RequestForStorage data={data}/>: null}
-        {type==="withdrawal"?<RequestForWithdrawal data={data}/>: null}
+        {type==="storage"&&<RequestForStorage data={data}/>}
+        {type==="withdrawal"&&<RequestForWithdrawal data={data}/>}
+        {type==="return"&&<RequestForReturn data={data}/>}
+        {type==="disposal"&&<RequestForDisposal data={data}/>}
       </Dialog>
     </div>
   );

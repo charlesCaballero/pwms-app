@@ -9,8 +9,8 @@ import {
   Button,
 } from "@mui/material";
 
-type Requests = "storage" | "withdrawal" | "return" | "disposal";
-type Actions = "delete" | "save";
+type Requests = "storage" | "withdrawal" | "return" | "disposal" | "confirm" | "close";
+type Actions = "delete" | "save" | "continue";
 interface ConfirmRequestDialog extends DialogProps {
   request: Requests;
   action: Actions;
@@ -30,11 +30,16 @@ export default function ConfirmRequestDialog(props: ConfirmRequestDialog) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Save and continue?"}
+          {request === "confirm"?"Confirm Request?":"Save and continue?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {"Save " +
+            {
+            request === "confirm"?
+            "By continuing this action, you are confirming that you have recieved the request form with complete signatures in the signatory."
+            :request === "close"?
+            "By continuing this action, you are confirming that you have successfully completed the request for the selected record. "
+            :"Save " +
               (request === "return" || request === "disposal"
                 ? "selected"
                 : "current list of") +
@@ -68,9 +73,18 @@ export default function ConfirmRequestDialog(props: ConfirmRequestDialog) {
             >
               Save
             </LoadingButton>
-          ) : (
-            ""
-          )}
+          ) : action === "continue" ? (
+            <LoadingButton
+              // type={"submit"}
+              loading={isLoading}
+              onClick={() => onClose(true)}
+              color={request === "disposal" ? "error" : "secondary"}
+              variant="contained"
+              form="saveForm"
+            >
+              Continue
+            </LoadingButton>
+          ):null}
         </DialogActions>
       </Dialog>
     </div>

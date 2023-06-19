@@ -8,4 +8,5 @@ export const roleMutation = "app/role";
 export const inventoryMutation = "app/inventory";
 export const storageRequestMutation = "app/request/storage";
 export const withdrawalRequestMutation = "app/request/withdrawal";
+export const returnRequestMutation = "app/request/return";
 export const disposalRequestMutation = "app/request/disposal";

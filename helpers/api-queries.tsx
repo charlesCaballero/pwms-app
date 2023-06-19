@@ -1,9 +1,14 @@
 export const getOfficesQuery = "get/offices";
 export const getRetentionsQuery = "get/retentions";
 export const getNewBoxCodeQuery = "get/inventory/boxcode";
+export const getAuth = "get/auth";
 export const userDetailsQuery = "app/user";
 export const userModulesQuery = "app/module";
 export const officesQuery = "app/office";
 export const rolesQuery = "app/role";
+export const inventoryQuery = "app/inventory";
+export const storageQuery = "app/request/storage";
+export const withdrawalQuery = "app/request/withdrawal";
 export const returnsQuery = "app/request/return";
+export const disposalQuery = "app/request/disposal";
 export const searchInventoryQuery = "search/inventory";

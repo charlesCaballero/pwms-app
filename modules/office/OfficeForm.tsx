@@ -16,9 +16,9 @@ import Typography from "@mui/material/Typography";
 import Input from "@mui/material/Input";
 import FormHelperText from "@mui/material/FormHelperText";
 import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 type FormValues = {
   name: string;
@@ -33,7 +33,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function OfficeForm(props: FormProps) {
-  const { isOpen, onClose, rowData } = props;
+  const { isOpen, onClose, rowData, } = props;
   const {
     register,
     reset,
@@ -211,12 +211,13 @@ export default function OfficeForm(props: FormProps) {
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => handleFormClose()} color={"inherit"}>
+              
+          <LoadingButton loading={addOffice.isLoading || updateOffice.isLoading} onClick={() => handleFormClose()} color={"inherit"}>
             Cancel
-          </Button>
-          <Button type="submit" variant={"contained"}>
+          </LoadingButton>
+          <LoadingButton loading={addOffice.isLoading || updateOffice.isLoading} type="submit" variant={"contained"}>
             Save
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </Box>
     </Dialog>
