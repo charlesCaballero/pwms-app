@@ -278,7 +278,9 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             //   setBoxData({ ...boxData, box_code: event.target.value });
             // }}
             variant="outlined"
-            disabled
+            InputProps={{
+              readOnly: true,
+            }}
             sx={{ mt: 2 }}
           />
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>

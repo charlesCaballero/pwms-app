@@ -57,15 +57,15 @@ export default function RequestForStorage (props) {
           </View>
           <View style={styles.flex}>
             <View style={{width: '10%'}}>
-              <Text ></Text>
+              <Text >GLADYS A. ELTANAL</Text>
             </View>
             <View style={{width: '90%'}}>
-              <Text >Admin/GSU</Text>
+              <Text >Head, GSU</Text>
             </View>
           </View>
           
           <Text style={styles.salutation}>Sir/Ma'am,</Text>
-          <Text style={styles.letterBody}>Please archive the following records.</Text>
+          <Text style={styles.letterBody}>Please archive the following records:</Text>
           <Text style={styles.horizontalLine}> </Text>
           {/* Table Header */}
           

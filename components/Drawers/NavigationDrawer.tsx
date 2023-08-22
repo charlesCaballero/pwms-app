@@ -8,7 +8,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import AppLogo from "@assets/images/pwms-logo-alt-2.png";
+import AppLogo from "@assets/images/pwms-logo-alt-3.png";
 import AppText from "@assets/images/pwms-logo-text.png";
 import Image from "next/image";
 import Router, { useRouter } from "next/router";

@@ -18,7 +18,7 @@ import { AxiosPromise } from "axios";
 import { useMutation } from "react-query";
 import Cookies from "js-cookie";
 import Router from "next/router";
-import AppLogo from "@assets/images/pwms-logo-2.png";
+import AppLogo from "@assets/images/pwms-logo-3.png";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
