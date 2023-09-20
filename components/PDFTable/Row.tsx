@@ -1,36 +1,38 @@
 import React, { Fragment } from "react";
-import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { Text, View, 
+  Font,
+  StyleSheet } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    alignItems: "center",
-    paddingTop: "20px",
-    paddingLeft: "20px",
-    paddingRight: "20px",
+    paddingTop: "10px",
   },
   title: {
     width: "60%",
-    paddingLeft: "1px", 
-    paddingRight: "1px", 
+    paddingRight: "10px", 
   },
   description: {
     width: "100%",
   },
-  xyz: {
+  rds: {
+    width: "15%",
+  },
+  documentdate: {
     width: "20%",
   },
 });
 
+
 const Row = ({ items }) => {
-  console.log("items: " + JSON.stringify(items));
+  // console.log("items: " + JSON.stringify(items));
 
   const rows = items.map((item) => (
     <Fragment>
       <View style={styles.row} key={item.id}>
         <Text style={styles.title}>{item.document_title}</Text>
-        <Text style={styles.xyz}>{item.rds_number}</Text>
-        <Text style={styles.xyz}>{item.document_date}</Text>
+        <Text style={styles.rds}>{item.rds_number}</Text>
+        <Text style={styles.documentdate}>{item.document_date}</Text>
       </View>
       
     </Fragment>

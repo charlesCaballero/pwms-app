@@ -1,5 +1,6 @@
 import { Page, Font, Document, Text, StyleSheet, PDFViewer, View, Image } from "@react-pdf/renderer";
 import React from "react";
+import Cookies from "js-cookie";
 
 const today = new Date();
 const month = today.toLocaleString('default', { month: 'long' });
@@ -13,6 +14,7 @@ export default function RequestForReturn (props) {
   const { data } = props;
   const [innerHeight,setInnerHeight] = React.useState(0);
   const [innerWidth,setInnerWidth] = React.useState(0);
+  const office_head = Cookies.get("office_head");
 
   // console.log("data: "+JSON.stringify(data.data.details));
   
@@ -52,7 +54,8 @@ export default function RequestForReturn (props) {
               <Text >TO:</Text>
             </View>
             <View style={{width: '90%'}}>
-              <Text >Chief/Head</Text>
+              <Text >GLADYS A. ELTANAL</Text>
+              {/* <Text >Chief/Head</Text> */}
             </View>
           </View>
           <View style={styles.flex}>
@@ -60,7 +63,7 @@ export default function RequestForReturn (props) {
               <Text ></Text>
             </View>
             <View style={{width: '90%'}}>
-              <Text >ReLMS/GSU</Text>
+              <Text >Head, GSU</Text>
             </View>
           </View>
           
@@ -133,11 +136,11 @@ export default function RequestForReturn (props) {
           <View wrap={false} >
             <View style={styles.flex}>
             <Text style={[styles.signatoryFor,styles.border,{width: '55%'}]}>Requesting Officer:</Text>
-            <Text style={[styles.signatoryFor,styles.border,{width: '55%'}]}>Recieved by:</Text>
+            <Text style={[styles.signatoryFor,styles.border,{width: '55%'}]}>Received by:</Text>
             </View>
             <View style={styles.flex}>
               <View style={[styles.border,styles.tableCell,{width: '35%'}]}>
-                <Text style={styles.signatoryName}></Text>
+                <Text style={styles.signatoryName}>{office_head}</Text>
               </View>
               <View style={[styles.border,styles.tableCell,{width: '20%'}]}>
                 <Text></Text>

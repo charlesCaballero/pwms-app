@@ -113,7 +113,7 @@ export default function SearchRecordDialog(props: SearchDocProps) {
   );
 
   const handleSearch = () => {
-    console.log("keyword: "+keyword);
+    // console.log("keyword: "+keyword);
     searchBox.refetch();
 
   }

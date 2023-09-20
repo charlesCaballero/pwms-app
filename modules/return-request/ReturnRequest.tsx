@@ -95,7 +95,7 @@ export default function ReturnRequest(){
         await returns.mutate(data, {
             onSuccess: (result) => {
               if (result) {
-                console.log("result: " + JSON.stringify(result.data));
+                // console.log("result: " + JSON.stringify(result.data));
                 if (result.data.code === 200) {
                   setOpenConfirm(false);
                   setOpenRequestForm(true);

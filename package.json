@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -H 172.22.123.129 -p 8080",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 172.22.123.129 -p 8080",
     "lint": "next lint"
   },
   "dependencies": {
@@ -30,6 +30,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.33.1",
     "react-query": "^3.39.1",
+    "sharp": "^0.32.6",
     "webpack": "^5.73.0",
     "yup": "^0.32.11"
   },

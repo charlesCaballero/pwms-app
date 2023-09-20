@@ -78,6 +78,7 @@ interface DocumentDateProps {
   largestMonth: number;
 }
 
+
 export default function DocumentDate(props: DocumentDateProps) {
   const {
     anchorEl,
@@ -109,11 +110,12 @@ export default function DocumentDate(props: DocumentDateProps) {
     if (selectedMonths.length <= 1) {
       setSelectedMonths(selectedMonths.concat(month));
     }
+    else setSelectedMonths(month)
   };
 
   const clearDocumentDate = () => {
     setSelectedMonths([]);
-    setSelectedYear(currentYear);
+    setSelectedYear(null);
   };
 
   return (
@@ -186,7 +188,7 @@ export default function DocumentDate(props: DocumentDateProps) {
                           }}
                           sx={{
                             backgroundColor:
-                              selectedYear === year || currentYear === year
+                              selectedYear === year 
                                 ? "#6aa84f"
                                 : "",
                           }}
@@ -214,9 +216,12 @@ export default function DocumentDate(props: DocumentDateProps) {
                       largest = selectedMonths[1];
                     else largest = largestMonth;
 
-                    let docDate = selectedMonths[0]===selectedMonths[1]?
-                                  months[selectedMonths[0]] + " " + selectedYear:
-                                  months[selectedMonths[0]] + "-" + months[selectedMonths[1]] + " " + selectedYear;
+                    let docDate = selectedMonths.length>1? 
+                    selectedMonths[0]===selectedMonths[1]?
+                    months[selectedMonths[0]] + " " + selectedYear:
+                    months[selectedMonths[0]] + "-" + months[selectedMonths[1]] + " " + selectedYear
+                    :months[selectedMonths[0]]+" "+selectedYear;
+                      
                     saveDocumentDate(
                       docDate,
                       currentYear > 0 ? currentYear : selectedYear,

@@ -9,10 +9,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { DialogProps } from "@helpers/interface";
 import {
   Alert,
-  Collapse,
   Divider,
+  FormControl,
   IconButton,
-  Link,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   TextField,
 } from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
@@ -48,10 +51,15 @@ interface DocumentDetails {
   retention_period: string;
   document_date: string;
 }
+
+type PriorityLevel = "Red" | "Blue" | "Black";
+
 interface BoxDetails {
   // uID: any;
   office_id: number;
   box_code: any;
+  priority_level: PriorityLevel,
+  classification: string,
   box_details: DocumentDetails[];
   disposal_date: string;
   remarks: string;
@@ -66,12 +74,13 @@ interface StorageDialogProps extends DialogProps {
 
 export default function AddStorageDialog(props: StorageDialogProps) {
   const { isOpen, onClose, getBoxData, editBoxData, officeID, newBoxCode } = props;
-  const [addDetail, setAddDetail] = React.useState([false]);
+  // const [addDetail, setAddDetail] = React.useState([false]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [currentYear, setCurrentYear] = React.useState(-1);
   const [largestMonth, setLargestMonth] = React.useState(-1);
   const [largestRetention, setLargestRetention] = React.useState(0);
   const [defaultRDS, setDefaultRDS] = React.useState([]);
+  // const [addedRemarks, setAddedRemarks] = React.useState("");
   
 
 
@@ -80,6 +89,8 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     // uID: "",
     office_id: officeID,
     box_code: "",
+    priority_level: "Blue",
+    classification: "STORAGE",
     box_details: [
       {
         id: 0,
@@ -107,6 +118,8 @@ export default function AddStorageDialog(props: StorageDialogProps) {
       // uID: boxID + 1,
       office_id: officeID,
       box_code: newBoxCode,
+      priority_level: "Blue",
+      classification: "STORAGE",
       box_details: [
         {
           id: 0,
@@ -147,6 +160,13 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     }
   };
 
+  const handlePriorityChange = (event: SelectChangeEvent) => {
+    setBoxData({
+      ...boxData,
+      priority_level: event.target.value as PriorityLevel,
+    });
+  }
+
   const handleChangeValue = (selected, index) => {
     // console.log("selected: " + JSON.stringify(selected));
     // console.log("index: " + index);
@@ -161,6 +181,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           retention_period: selected.retention_period,
           document_date: "",
         };
+
       } else {
         newSelected.push({
           id: selected.id,
@@ -170,6 +191,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           retention_period: selected.retention_period,
           document_date: "",
         });
+        
       }
 
       // console.log("newSelected: " + JSON.stringify(newSelected));
@@ -182,6 +204,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
         ...boxData,
         box_details: [...newSelected],
         disposal_date: permanent ? "Permanent" : "",
+        remarks: selected.remarks? selected.remarks+'\n'+boxData.remarks: '',
       });
     }
   };
@@ -264,6 +287,8 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           {/* <DialogContentText>
             You can set my maximum width and whether to adapt or not.
           </DialogContentText> */}
+          <Box display={"flex"} mt={2}>
+          <Box sx={{ flexGrow:1, pr:1}}>
           <TextField
             autoFocus
             required
@@ -281,8 +306,27 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             InputProps={{
               readOnly: true,
             }}
-            sx={{ mt: 2 }}
           />
+          </Box>
+
+          <Box sx={{ flexGrow:1, pl:1}}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Priority Level</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={boxData.priority_level}
+                label="Priority Level"
+                onChange={(event)=>handlePriorityChange(event)}
+              >
+                <MenuItem value={'Red'}>RED</MenuItem>
+                <MenuItem value={'Blue'}>BLUE</MenuItem>
+                <MenuItem value={'Black'}>BLACK</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          </Box>
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>
             {boxData.box_details.map((row, idx) => {
               return (
@@ -310,12 +354,16 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                         getFilteredOptions(options, params)
                       }
                       renderOption={(props, option, { inputValue }) => {
+                        // const optionRemarks = option.remarks? '('+option.remarks+')':'';
+                        // const showOption = option.series_title_description+' '+optionRemarks;
                         const matches = match(
                           option.series_title_description,
+                          // showOption,
                           inputValue
                         );
                         const parts = parse(
                           option.series_title_description,
+                          // showOption,
                           matches
                         );
 
@@ -344,7 +392,6 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       id="rds_no"
                       name="rds_no"
                       label="RDS No."
-                      disabled
                     />
                     <TextField
                       sx={{ width: 120, mr: 1 }}
@@ -358,7 +405,6 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       }
                       id="retention_period"
                       label="Retention"
-                      disabled
                       // helperText="Read-only"
                     />
                     <DocumentDate
@@ -442,7 +488,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           </Box>
           <Box>
             <Alert severity="info" sx={{ my: 1 }}>
-              The document with largest retention period is the basis for the
+              The document with longest retention period is the basis for the
               disposal date.
             </Alert>
             <TextField

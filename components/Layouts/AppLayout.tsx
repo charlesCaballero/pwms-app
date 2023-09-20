@@ -51,8 +51,9 @@ export default function AppLayout({ children }) {
 
   useEffect(() => {
     if (queryUserDetails.data) {
+      // console.log('queryUserDetails: '+JSON.stringify(queryUserDetails.data));
+      
       setUserData(queryUserDetails?.data[0]);
-      Cookies.set("office_name", queryUserDetails?.data[0].office?.name);
     }
   }, [queryUserDetails.isFetched, queryUserDetails.data]);
 
@@ -105,7 +106,7 @@ export default function AppLayout({ children }) {
               {userData.first_name !== undefined ? (
                 <Avatar
                   onClick={(event: any) => handleClick(event)}
-                  sx={{ bgcolor: "#111827", fontWeight: "bold", boxShadow: 5 }}
+                  sx={{ bgcolor: "#111827", fontWeight: "bold", boxShadow: 0,border: "1px solid grey" }}
                   src={userData.photo}
                 >
                   {`${userData.first_name}`?.charAt(0) +

@@ -6,7 +6,7 @@ import { routeGuard } from "@utils/authUtils";
 import SkeletonLoading from "@components/Loader/SkeletonLoading";
 import UnderConstructionPage from "@components/Layouts/UnderConstruction";
 
-export default function HomePage() {
+export default function MapsPage() {
   const route = useRouter();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const authRoute = routeGuard(route.pathname);

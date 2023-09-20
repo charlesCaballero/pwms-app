@@ -100,7 +100,7 @@ export default function DisposalRequest(){
         await disposal.mutate(selected, {
             onSuccess: (result) => {
               if (result) {
-                console.log("result: " + JSON.stringify(result.data));
+                // console.log("result: " + JSON.stringify(result.data));
                 if (result.data.code === 200) {
                   setOpenConfirm(false);
                   setOpenRequestForm(true);

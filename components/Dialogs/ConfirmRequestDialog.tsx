@@ -36,7 +36,7 @@ export default function ConfirmRequestDialog(props: ConfirmRequestDialog) {
           <DialogContentText id="alert-dialog-description">
             {
             request === "confirm"?
-            "By continuing this action, you are confirming that you have recieved the request form with complete signatures in the signatory."
+            "By continuing this action, you are confirming that you have received the request form with complete signatures in the signatory."
             :request === "close"?
             "By continuing this action, you are confirming that you have successfully completed the request for the selected record. "
             :"Save " +

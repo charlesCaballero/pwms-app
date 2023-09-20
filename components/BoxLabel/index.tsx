@@ -18,32 +18,69 @@ interface LabelProps {
 export default function Pdf(props: LabelProps) {
   const { data } = props;
   const office_name = Cookies.get("office_name");
-  console.log("data: " + JSON.stringify(data));
+  const [innerHeight,setInnerHeight] = React.useState(0);
+  const [innerWidth,setInnerWidth] = React.useState(0);
+  const user_name = Cookies.get("user_name");
+  // console.log("data@PDF renderer: " + JSON.stringify(data));
+
+
+  React.useEffect(()=>{
+    setInnerWidth(window.innerWidth);
+    setInnerHeight(window.innerHeight);
+  },[window.innerWidth,window.innerHeight])
 
   return (
-    <PDFViewer width={window.innerWidth} height={window.innerHeight}>
+    <PDFViewer width={innerWidth} height={innerHeight} showToolbar={true} >
       <Document>
-        <Page style={styles.body} orientation={"landscape"}>
+        <Page style={styles.body} orientation={"landscape"} size={'A4'}>
+          <View style={styles.priority_row}>
+            <Text >Priority Level: </Text>
+            <Text style={styles.priority_code}>{data.priority_level}</Text>
+          </View>
+
           <View
             style={{
-              borderLeft: "1px solid black",
-              borderRight: "1px solid black",
+              border: "1px solid black",
             }}
           >
-            <Text style={styles.box_label}>BOX LABEL # {data.box_code}</Text>
-            <Text style={styles.department}>{office_name}</Text>
-            {/* <Text style={styles.document}>{"1. VOUCHER TRANSMITTAL"}</Text> */}
-            {/* {"RDS-A #1" + " BDVS#	B15-1909-00003" + " Oct-Dec 2021"} */}
-            <View style={{ }}>
-              <Row items={data.box_details} />
+            <View style={styles.row}>
+              <Text>Records Classification: </Text>
+              <Text style={styles.row_value}>{data.classification}</Text>
             </View>
-            <View >
-              <Text style={{padding: '8 8 0 8',fontWeight:'bold'}}>Remarks:</Text>
-              <Text style={{padding: '5 20 0 20'}}>{data.remarks}</Text>
+            <View style={styles.row}>
+              <Text>Department: </Text>
+              <Text style={styles.row_value}>{office_name}</Text>
             </View>
-            <Text style={styles.box_label}>
-              Disaposal Date: {data.disposal_date}
-            </Text>
+            <View style={styles.row}>
+              <Text>Box Code/Control No.: </Text>
+              <Text style={styles.row_value}>{data.box_code}</Text>
+            </View>
+            <View style={{borderBottom: '1px solid black', padding: 5,height:227}}>
+              <Text>Title of Records per RDS: </Text>
+              <View>
+                <Row items={data.box_details} />
+                {data.remarks!=="" || undefined?
+                <View >
+                  <Text style={{padding: '8 8 0 8',fontWeight:'bold'}}>Remarks:</Text>
+                  <Text style={{padding: '5 20 0 20'}}>{data.remarks}</Text>
+                </View>
+                :""}
+                </View>
+            </View>
+            <View style={styles.row}>
+              <Text>Records Officer Designate: </Text>
+              <Text style={styles.row_value}>{user_name}</Text>
+            </View>
+            {/* 
+            <View style={{display: "flex", borderBottom: '1px solid black', flexDirection:"row"}}>
+              <Text>Document Date: </Text>
+              <Text style={styles.row_value}>{'STORAGE'}</Text>
+            </View> 
+            */}
+            <View style={styles.row_noborder}>
+              <Text >Disposal Date: </Text>
+              <Text style={styles.row_value}>{data.disposal_date}</Text>
+            </View>
           </View>
         </Page>
       </Document>
@@ -51,42 +88,49 @@ export default function Pdf(props: LabelProps) {
   );
 }
 
-Font.register({
-  family: "Oswald",
-  src: "https://fonts.gstatic.com/s/oswald/v13/Y_TKV6o8WovbUd3m_X9aAA.ttf",
-});
+// Font.register({
+//   family: "Georgia",
+//   src: "https://db.onlinewebfonts.com/t/7dca09e227fdfe16908cebb4244589e4.ttf",
+//   format: 'truetype',
+// });
 
 const styles = StyleSheet.create({
   body: {
     paddingTop: 35,
     paddingBottom: 65,
     paddingHorizontal: 35,
+    // fontFamily: "Georgia"
   },
-  box_label: {
-    fontSize: 30,
-    textAlign: "right",
-    borderBottom: "1px solid black",
-    borderTop: "1px solid black",
-    fontFamily: "Times-Roman",
-    fontWeight: "bold",
-    paddingRight: 8,
+  row: {
+    display: "flex", 
+    borderBottom: '1px solid black', 
+    flexDirection:"row", 
+    padding: 5,
   },
-  department: {
-    fontSize: 25,
-    textAlign: "left",
-    borderBottom: "1px solid black",
-    fontFamily: "Times-Roman",
-    paddingLeft: 8,
+  row_noborder: {
+    display: "flex", 
+    flexDirection:"row", 
+    padding: 5,
   },
-  document: {
-    fontSize: 25,
-    textAlign: "left",
-    fontFamily: "Times-Roman",
+  row_value: {
+    flexGrow: 1,
+    fontWeight: 'bold', 
+    textAlign:'center', 
+    padding :5
   },
-  details: {
-    fontSize: 20,
-    textAlign: "left",
-    fontFamily: "Times-Roman",
-    paddingLeft: 30,
+  priority_row: {
+    display:'flex',
+    flexDirection: "row", 
+    marginBottom:10, 
+    height:  50, 
+    justifyContent: 'center', 
+    alignItems:'center'
   },
+  priority_code: {
+    flexGrow:1, 
+    border: "1px solid black", 
+    textAlign: 'center', 
+    textTransform: "uppercase",
+    padding:8
+  }
 });

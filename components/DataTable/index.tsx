@@ -108,7 +108,7 @@ type MultipleSelectionType =
   | 'Delete'
   | 'Store'
   | 'Signed'
-  | 'Recieved';
+  | 'Received';
 
 type EmptyState = string | JSX.Element | JSX.Element[];
 

@@ -50,10 +50,6 @@ const thead: TableHeader[] = [
     type: "string",
   },
   {
-    label: "Remarks",
-    type: "string",
-  },
-  {
     label: "Disposal Date",
     type: "string",
   },
@@ -64,7 +60,7 @@ interface InventoryProps {
   box_code: any;
   box_details: any;
   disposal_date: any;
-  locationg: string;
+  location: string;
   status: string;
 }
 
@@ -96,7 +92,7 @@ export default function StorageRequest() {
   //   return api(Method.POST, `${storageRequestMutation}`) as AxiosPromise<any>;
   // });
   const handleDeleteBox = (isTrue) => {
-    console.log("delete: "+ JSON.stringify(boxes[selectedIndex]));
+    // console.log("delete: "+ JSON.stringify(boxes[selectedIndex]));
     if(isTrue){
       boxes.splice(selectedIndex,1);
       setOpenDeleteConfirm(false);
@@ -107,7 +103,7 @@ export default function StorageRequest() {
     await inventory.mutate(data, {
       onSuccess: (result) => {
         if (result) {
-          console.log("result: " + JSON.stringify(result.data));
+          // console.log("result: " + JSON.stringify(result.data));
           if (result.status === 200) {
             setOpenConfirm(false);
             setOpenRequestForm(true);
@@ -144,7 +140,7 @@ export default function StorageRequest() {
           sx={{ m: 1 }}
           onClick={() => {
             const getArray = newBoxCode.data?.split("-");
-            console.log("getArray: "+getArray);
+            // console.log("getArray: "+getArray);
             setAdjustedBoxCode(getArray?getArray[0]+"-"+getArray[1]+"-"+(parseInt(getArray[2])+boxes.length).toString().padStart(3,'0'):newBoxCode.data);
             setOpenAddBox(true); 
           }}
@@ -262,6 +258,7 @@ export default function StorageRequest() {
                     >
                       {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
                         detail.document_title }
+                        {box.remarks !==""||undefined?"\nRemarks: \n"+box.remarks:""}
                     </TableCell>
                     <TableCell
                       align="left"
@@ -275,15 +272,7 @@ export default function StorageRequest() {
                       {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
                         detail.document_date}
                     </TableCell>
-                    {cnt < 1 && (
-                      <TableCell
-                        align="left"
-                        rowSpan={box.box_details.length}
-                        sx={{ verticalAlign: "top" }}
-                      >
-                        {box.remarks}
-                      </TableCell>
-                    )}
+                    
                     {cnt < 1 && (
                       <TableCell
                         align="right"

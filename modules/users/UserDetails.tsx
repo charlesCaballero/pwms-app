@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { api, Method } from "@utils/queryUtils";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import BadgeIcon from "@mui/icons-material/Badge";
 import EmailIcon from "@mui/icons-material/Email";
 import ApartmentIcon from "@mui/icons-material/Apartment";
@@ -29,10 +29,13 @@ import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
-import RoomPreferencesRoundedIcon from "@mui/icons-material/RoomPreferencesRounded";
+// import RoomPreferencesRoundedIcon from "@mui/icons-material/RoomPreferencesRounded";
 import UserPrevileges from "./UserPrevileges";
 import UserRoles from "./UserRoles";
 import ChangeStatusDialog from "@components/Dialogs/ChangeStatusDialog";
+import { userDetailsMutation } from "@helpers/api-mutations";
+import { AxiosPromise } from "axios";
+import Router from "next/router";
 
 interface UserDetailsProps {
   userId: string | string[];
@@ -50,8 +53,30 @@ export default function UserDetails(props: UserDetailsProps) {
     { refetchOnWindowFocus: false }
   );
 
+  const userDeleteMutation = useMutation(() => {
+    return api(Method.DELETE, `${userDetailsMutation}/${userId}`) as AxiosPromise<any>;
+  });
+
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+  };
+
+  const handleDelete = async () => {
+    await userDeleteMutation.mutate(null,{
+      onSuccess: (result: any) => {
+        if (result) {
+          // console.log("result: " + JSON.stringify(result.data));
+          if (result.code === 200) {
+            Router.push('/app/users');
+          }
+          // Router.push("/");
+          // setAnchorEl(null);
+        }
+      },
+      onError: (error) => {
+        console.log("Error: " + error);
+      },
+    });
   };
 
   // const handleChangeStatus = () => {};
@@ -203,6 +228,7 @@ export default function UserDetails(props: UserDetailsProps) {
               <Button
                 color="error"
                 variant="outlined"
+                onClick={()=>handleDelete()}
                 sx={{
                   textTransform: "capitalize",
                   borderWidth: 2,

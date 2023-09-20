@@ -41,6 +41,7 @@ export interface RegisterFormProps {
   email: string;
   office_id: string;
   password: string;
+  role_id: string;
 }
 
 export type ColumnType = string | number | boolean;
@@ -115,6 +116,28 @@ export interface PopoverProps {
   id: string;
 }
 
+export interface ActiveColumns {
+  id: string;
+  active: boolean;
+  label: string;
+  from?: string;
+  boolean?: BooleanCell;
+}
+
+export type FilterOperators =
+  | 'contains'
+  | 'matches with'
+  | 'starts with'
+  | 'ends with'
+  | 'is empty'
+  | 'not empty';
+
+export interface FilterType {
+  column: string;
+  operator: FilterOperators;
+  value: string;
+}
+
 //from datatable package
 export type BooleanCell = [true: string, false: string];
 export type DataTypes = "json" | "date";
@@ -128,6 +151,16 @@ export interface HeadCell {
   datatype?: DataTypes;//for json and date type of data
   concat?: string; //used to concat one column to original id
   remarks?: string // for adding remarks value to a specific cell
+}
+
+export type FilterFields = 'column' | 'operator' | 'value';
+
+export interface FilterProps extends PopoverProps {
+  header: HeadCell[];
+  filters: FilterType[];
+  onFilterChange(value: string, field: FilterFields, column: string): void;
+  onAddFilter(): void;
+  onDeleteFilter(column: string): void;
 }
 
 export declare type Order = "asc" | "desc";

@@ -18,7 +18,7 @@ import { AxiosPromise } from "axios";
 import { useMutation } from "react-query";
 import Cookies from "js-cookie";
 import Router from "next/router";
-import AppLogo from "@assets/images/pwms-logo-3.png";
+import AppLogo from "@assets/images/pwms-logo-alt-3.png";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -88,7 +88,10 @@ export default function Login() {
         } else {
           Cookies.set("token", result?.data.data.token);
           Cookies.set("user_id", result?.data.data.user_id);
+          Cookies.set("user_name", result?.data.data.user_name);
           Cookies.set("office_id", result?.data.data.office_id);
+          Cookies.set("office_head", result?.data.data.office_head);
+          Cookies.set("office_name", result?.data.data.office_name);
           Router.push("/app/home");
         }
       },
@@ -163,7 +166,7 @@ export default function Login() {
           >
             Log In
           </Button>
-          <Grid container>
+          {/* <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2" color={"info.main"}>
                 Forgot password?
@@ -174,7 +177,7 @@ export default function Login() {
                 {"Don't have an account? Register"}
               </Link>
             </Grid>
-          </Grid>
+          </Grid> */}
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />

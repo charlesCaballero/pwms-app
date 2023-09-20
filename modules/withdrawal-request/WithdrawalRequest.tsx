@@ -78,7 +78,7 @@ export default function WithdrawalRequest () {
     }
 
     const handleEditItem = (id) => {
-        console.log('edit id: '+id);
+        // console.log('edit id: '+id);
         setEditID(id);
     }
 
@@ -96,7 +96,7 @@ export default function WithdrawalRequest () {
         await withdrawal.mutate(selected, {
             onSuccess: (result) => {
               if (result) {
-                console.log("result: " + JSON.stringify(result.data));
+                // console.log("result: " + JSON.stringify(result.data));
                 if (result.data.code === 200) {
                     
                   setOpenConfirm(false);
