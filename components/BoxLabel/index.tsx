@@ -55,7 +55,7 @@ export default function Pdf(props: LabelProps) {
               <Text>Box Code/Control No.: </Text>
               <Text style={styles.row_value}>{data.box_code}</Text>
             </View>
-            <View style={{borderBottom: '1px solid black', padding: 5,height:227}}>
+            <View style={{borderBottom: '1px solid black', padding: 5,height:200}}>
               <Text>Title of Records per RDS: </Text>
               <View>
                 <Row items={data.box_details} />
@@ -77,7 +77,17 @@ export default function Pdf(props: LabelProps) {
               <Text style={styles.row_value}>{'STORAGE'}</Text>
             </View> 
             */}
-            <View style={styles.row_noborder}>
+            <View style={styles.row}>
+              <Text >Record Date: </Text>
+              <Text style={styles.row_value}>
+              {
+                data.box_details.map((details,count)=> (
+                  "("+(count+1)+") "+details.document_date+", "
+                ))
+              }
+              </Text>
+            </View>
+            <View style={styles.row_no_border}>
               <Text >Disposal Date: </Text>
               <Text style={styles.row_value}>{data.disposal_date}</Text>
             </View>
@@ -105,15 +115,16 @@ const styles = StyleSheet.create({
     display: "flex", 
     borderBottom: '1px solid black', 
     flexDirection:"row", 
-    padding: 5,
+    padding: 4,
   },
-  row_noborder: {
+  row_no_border: {
     display: "flex", 
     flexDirection:"row", 
-    padding: 5,
+    padding: 3,
   },
   row_value: {
-    flexGrow: 1,
+    // flexGrow: 1,
+    width:"100%",
     fontWeight: 'bold', 
     textAlign:'center', 
     padding :5

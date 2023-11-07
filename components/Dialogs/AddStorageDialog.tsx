@@ -329,6 +329,8 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           </Box>
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>
             {boxData.box_details.map((row, idx) => {
+              // console.log('defaultRDS: '+JSON.stringify(defaultRDS));
+              
               return (
                 <React.Fragment key={idx}>
                   <Box display="flex" alignItems={"center"} sx={{ pt: 1 }}>
@@ -338,12 +340,12 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       sx={{ flexGrow: 1, mr: 1 }}
                       options={retentions?.data}
                       value={
-                        defaultRDS[idx] !== undefined ? defaultRDS[idx] : null
+                        row.document_title
                       }
                       groupBy={(option: any) => option.dept_unit}
-                      getOptionLabel={(option: any) =>
-                        option.series_title_description
-                      }
+                      getOptionLabel={(option: any) =>{
+                        return option.series_title_description ? option.series_title_description:option;
+                      }}
                       renderInput={(params) => (
                         <TextField {...params} label="Document Title" />
                       )}
@@ -457,7 +459,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                   ...boxData,
                   box_details: boxData.box_details.concat({
                     id: boxData.box_details.length + 1,
-                    document_title: "",
+                    document_title: null,
                     rds_number: "",
                     retention_period: "",
                     document_date: "",

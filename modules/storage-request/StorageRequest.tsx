@@ -141,8 +141,9 @@ export default function StorageRequest() {
           onClick={() => {
             const getArray = newBoxCode.data?.split("-");
             // console.log("getArray: "+getArray);
-            setAdjustedBoxCode(getArray?getArray[0]+"-"+getArray[1]+"-"+(parseInt(getArray[2])+boxes.length).toString().padStart(3,'0'):newBoxCode.data);
+            setAdjustedBoxCode(getArray?getArray[0]+"-"+(parseInt(getArray[1])+boxes.length).toString().padStart(3,'0')+"-"+getArray[2]:newBoxCode.data);
             setOpenAddBox(true); 
+            setAction("add");
           }}
 
         >
@@ -157,6 +158,7 @@ export default function StorageRequest() {
         }}
         getBoxData={(data) => {
           // console.log(JSON.stringify(data));
+          // console.log(action);
           if (action === "edit") {
             boxes[selectedIndex] = data;
           } else {
