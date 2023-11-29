@@ -14,13 +14,13 @@ export default function RegisterDialog(props: DialogProps) {
     <div>
       <Dialog
         open={isOpen}
-        onClose={onClose}
+        // onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">Add a  New User</DialogTitle>
         <DialogContent>
-          <Box display={"flex"}>
+          {/* <Box display={"flex"}>
             
             <DialogContentText
               sx={{ whiteSpace: "pre-line" }}
@@ -30,14 +30,10 @@ export default function RegisterDialog(props: DialogProps) {
             >
               {"Register a new user."}
             </DialogContentText>
-          </Box>
+          </Box> */}
           <Register onClose={()=>onClose()}/>
         </DialogContent>
-        {/* <DialogActions>
-          <Button onClick={() => onClose()} variant={"contained"} autoFocus>
-            Okay
-          </Button>
-        </DialogActions> */}
+        
       </Dialog>
     </div>
   );

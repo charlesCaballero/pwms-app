@@ -37,7 +37,10 @@ export interface LoginFormProps {
 export interface RegisterFormProps {
   company_id_number: number;
   first_name: string;
+  middle_name: string;
   last_name: string;
+  position: string;
+  contact_number: string;
   email: string;
   office_id: string;
   password: string;

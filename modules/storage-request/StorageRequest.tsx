@@ -140,8 +140,12 @@ export default function StorageRequest() {
           sx={{ m: 1 }}
           onClick={() => {
             const getArray = newBoxCode.data?.split("-");
-            // console.log("getArray: "+getArray);
-            setAdjustedBoxCode(getArray?getArray[0]+"-"+(parseInt(getArray[1])+boxes.length).toString().padStart(3,'0')+"-"+getArray[2]:newBoxCode.data);
+            console.log("getArray: "+getArray);
+            setAdjustedBoxCode(getArray?
+              getArray[0]==="LHIO"? 
+              getArray[1]+"-"+(parseInt(getArray[2])+boxes.length).toString().padStart(3,'0')+"-"+getArray[3]:
+              getArray[0]+"-"+(parseInt(getArray[1])+boxes.length).toString().padStart(3,'0')+"-"+getArray[2]:
+              newBoxCode.data);
             setOpenAddBox(true); 
             setAction("add");
           }}

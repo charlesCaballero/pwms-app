@@ -3,16 +3,12 @@ import { registerMutation } from "@helpers/api-mutations";
 import { AxiosPromise } from "axios";
 import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import app from "@helpers/app-version.json";
-import Router from "next/router";
 import AlertDialog from "@components/Dialogs/AlertDialog";
-import AppLogo from "@assets/images/pwms-logo-2.png";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { RegisterFormProps } from "@helpers/interface";
 import { getOfficesQuery, getRolesQuery } from "@helpers/api-queries";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -31,14 +27,17 @@ import Button from "@mui/material/Button";
 const validationSchema = Yup.object().shape({
   company_id_number: Yup.string()
     .required("You forgot to give the id number.")
-    .matches(
-      /^[0-9]+$/,
-      "ID number should not contain any letter or symbol"
-    )
+    .matches(/^[0-9]+$/, "ID number should not contain any letter or symbol")
     .min(8, "Id number should be 8 digits")
     .max(8, "Id number can't exceed 8 digits"),
   first_name: Yup.string().required("First name is empty."),
+  middle_name: Yup.string().required("Middle name is empty."),
   last_name: Yup.string().required("Last name is empty."),
+  position: Yup.string().required("Position is empty."),
+  contact_number: Yup.string()
+    .required("Contact number is empty.")
+    .min(11, "A contact number or mobile number has 11-13 characters")
+    .max(13, "A contact number or mobile number has 11-13 characters/number"),
   email: Yup.string()
     .email("Please provide a valid email.")
     .required("You forgot to provide an email."),
@@ -53,37 +52,12 @@ const validationSchema = Yup.object().shape({
     .min(6, "Password should at at least contain 6 characters."),
 });
 
-function Copyright(props: any) {
-  return (
-    <Box display={"flex"} flexDirection={"row"}>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        align="left"
-        flexGrow={1}
-        {...props}
-      >
-        {"Copyright © PhilHealth "}
-        {new Date().getFullYear()}
-        {"."}
-      </Typography>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        align="right"
-        {...props}
-      >
-        v{app.version}
-      </Typography>
-    </Box>
-  );
-}
 interface RegisterProps {
   onClose(): void;
 }
 
-export default function Register(props:RegisterProps) {
-  const {onClose}=props;
+export default function Register(props: RegisterProps) {
+  const { onClose } = props;
   const {
     register,
     reset,
@@ -91,7 +65,7 @@ export default function Register(props:RegisterProps) {
     formState: { errors },
   } = useForm<RegisterFormProps>({
     resolver: yupResolver(validationSchema),
-    defaultValues: { office_id: "1",role_id: "2" },
+    defaultValues: { office_id: "1", role_id: "2" },
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -114,10 +88,9 @@ export default function Register(props:RegisterProps) {
     { refetchOnWindowFocus: false }
   );
 
-
   const onSubmit = async (data: RegisterFormProps) => {
     // console.log("form data: "+JSON.stringify(data));
-    
+
     await registerUser.mutate(data, {
       onSuccess: (result: any) => {
         // console.log("result: " + JSON.stringify(result));
@@ -135,10 +108,8 @@ export default function Register(props:RegisterProps) {
   };
 
   const onCloseSuccessAlert = () => {
-
     setIsAlertOpen(false);
     onClose();
-    // Router.push("/auth/login");
   };
 
   return (
@@ -152,15 +123,6 @@ export default function Register(props:RegisterProps) {
           alignItems: "center",
         }}
       >
-        {/* <Avatar
-          sx={{ height: 100, width: 100 }}
-          variant={"square"}
-          alt="PWMS Logo"
-          src={AppLogo.src}
-        ></Avatar>
-        <Typography component="h1" variant="h5" pt={3}>
-          Register
-        </Typography> */}
         <Box
           component="form"
           noValidate
@@ -203,7 +165,7 @@ export default function Register(props:RegisterProps) {
                   required
                   {...register("role_id")}
                 >
-                  { rolesList?.data?.map((role) => {
+                  {rolesList?.data?.map((role) => {
                     return (
                       <MenuItem key={role.id} value={role.id}>
                         {role.name + " (" + role.abbreviation + ")"}
@@ -218,7 +180,7 @@ export default function Register(props:RegisterProps) {
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
@@ -227,6 +189,17 @@ export default function Register(props:RegisterProps) {
                 {...register("first_name")}
                 error={errors.first_name !== undefined}
                 helperText={errors.first_name?.message}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                id="middle-name"
+                label="Middle Name"
+                {...register("middle_name")}
+                error={errors.middle_name !== undefined}
+                helperText={errors.middle_name?.message}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -245,12 +218,36 @@ export default function Register(props:RegisterProps) {
               <TextField
                 required
                 fullWidth
+                id="position"
+                label="Position"
+                autoComplete="position"
+                {...register("position")}
+                error={errors.position !== undefined}
+                helperText={errors.position?.message}
+              />
+            </Grid>
+            <Grid item xs={12} sm={7}>
+              <TextField
+                required
+                fullWidth
                 id="email"
                 label="Email Address"
                 autoComplete="email"
                 {...register("email")}
                 error={errors.email !== undefined}
                 helperText={errors.email?.message}
+              />
+            </Grid>
+            <Grid item xs={12} sm={5}>
+              <TextField
+                required
+                fullWidth
+                id="contact-number"
+                label="Contact Number"
+                autoComplete="contact_number"
+                {...register("contact_number")}
+                error={errors.contact_number !== undefined}
+                helperText={errors.contact_number?.message}
               />
             </Grid>
             <Grid item xs={12}>
@@ -266,7 +263,7 @@ export default function Register(props:RegisterProps) {
                   required
                   {...register("office_id")}
                 >
-                  { officeList?.data?.map((office) => {
+                  {officeList?.data?.map((office) => {
                     return (
                       <MenuItem key={office.id} value={office.id}>
                         {office.name + " (" + office.acronym + ")"}
@@ -307,21 +304,29 @@ export default function Register(props:RegisterProps) {
               />
             </Grid>
           </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Register
-          </Button>
-          {/* <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Link href="/auth/login" variant="body2" color={"info.main"}>
-                Already have an account? Log in
-              </Link>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Button
+                onClick={onClose}
+                type="button"
+                fullWidth
+                variant="text"
+                color="inherit"
+              >
+                Cancel
+              </Button>
             </Grid>
-          </Grid> */}
+            <Grid item xs={12} sm={6}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="secondary"
+              >
+                Register
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
       </Box>
       {/* <Copyright sx={{ mt: 5 }} /> */}
