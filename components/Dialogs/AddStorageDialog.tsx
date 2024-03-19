@@ -42,7 +42,6 @@ const months = [
   "December",
 ];
 
-
 const filter = createFilterOptions();
 interface DocumentDetails {
   id: number;
@@ -52,14 +51,14 @@ interface DocumentDetails {
   document_date: string;
 }
 
-type PriorityLevel = "Red" | "Blue" | "Black";
+type PriorityLevel = "Red" | "Green" | "Black";
 
 interface BoxDetails {
   // uID: any;
   office_id: number;
   box_code: any;
-  priority_level: PriorityLevel,
-  classification: string,
+  priority_level: PriorityLevel;
+  classification: string;
   box_details: DocumentDetails[];
   disposal_date: string;
   remarks: string;
@@ -73,7 +72,8 @@ interface StorageDialogProps extends DialogProps {
 }
 
 export default function AddStorageDialog(props: StorageDialogProps) {
-  const { isOpen, onClose, getBoxData, editBoxData, officeID, newBoxCode } = props;
+  const { isOpen, onClose, getBoxData, editBoxData, officeID, newBoxCode } =
+    props;
   // const [addDetail, setAddDetail] = React.useState([false]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [currentYear, setCurrentYear] = React.useState(-1);
@@ -81,15 +81,12 @@ export default function AddStorageDialog(props: StorageDialogProps) {
   const [largestRetention, setLargestRetention] = React.useState(0);
   const [defaultRDS, setDefaultRDS] = React.useState([]);
   // const [addedRemarks, setAddedRemarks] = React.useState("");
-  
-
-
 
   const [boxData, setBoxData] = React.useState<BoxDetails>({
     // uID: "",
     office_id: officeID,
     box_code: "",
-    priority_level: "Blue",
+    priority_level: "Green",
     classification: "STORAGE",
     box_details: [
       {
@@ -118,7 +115,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
       // uID: boxID + 1,
       office_id: officeID,
       box_code: newBoxCode,
-      priority_level: "Blue",
+      priority_level: "Green",
       classification: "STORAGE",
       box_details: [
         {
@@ -165,7 +162,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
       ...boxData,
       priority_level: event.target.value as PriorityLevel,
     });
-  }
+  };
 
   const handleChangeValue = (selected, index) => {
     // console.log("selected: " + JSON.stringify(selected));
@@ -181,7 +178,6 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           retention_period: selected.retention_period,
           document_date: "",
         };
-
       } else {
         newSelected.push({
           id: selected.id,
@@ -191,7 +187,6 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           retention_period: selected.retention_period,
           document_date: "",
         });
-        
       }
 
       // console.log("newSelected: " + JSON.stringify(newSelected));
@@ -204,7 +199,9 @@ export default function AddStorageDialog(props: StorageDialogProps) {
         ...boxData,
         box_details: [...newSelected],
         disposal_date: permanent ? "Permanent" : "",
-        remarks: selected.remarks? selected.remarks+'\n'+boxData.remarks: '',
+        remarks: selected.remarks
+          ? selected.remarks + "\n" + boxData.remarks
+          : "",
       });
     }
   };
@@ -248,11 +245,11 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     const date_array = boxData.box_details[0].document_date.split(" ");
     setCurrentYear(parseInt(date_array[1]));
     setLargestRetention(Math.max(...retention_array));
-    
+
     if (currentYear >= 0) {
-      // const disposalYear = 
+      // const disposalYear =
       // console.log("currentYear: "+ currentYear);
-      
+
       setBoxData({
         ...boxData,
         disposal_date: permanent
@@ -262,17 +259,16 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             (parseInt(date_array[1]) + largestRetention),
       });
     }
-
   }, [boxData]);
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     // console.log("newBoxCode: "+newBoxCode);
-    
+
     setBoxData({
-        ...boxData,
-        box_code: newBoxCode,
-      });
-  },[newBoxCode])
+      ...boxData,
+      box_code: newBoxCode,
+    });
+  }, [newBoxCode]);
 
   return (
     <React.Fragment>
@@ -288,49 +284,50 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             You can set my maximum width and whether to adapt or not.
           </DialogContentText> */}
           <Box display={"flex"} mt={2}>
-          <Box sx={{ flexGrow:1, pr:1}}>
-          <TextField
-            autoFocus
-            required
-            fullWidth
-            id="box_code"
-            name="box_code"
-            label="Box Code"
-            type="text"
-            value={boxData.box_code}
-            // value={newBoxCode.data}
-            // onChange={(event) => {
-            //   setBoxData({ ...boxData, box_code: event.target.value });
-            // }}
-            variant="outlined"
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          </Box>
+            <Box sx={{ flexGrow: 1, pr: 1 }}>
+              <TextField
+                autoFocus
+                required
+                fullWidth
+                id="box_code"
+                name="box_code"
+                label="Box Code"
+                type="text"
+                value={boxData.box_code}
+                // value={newBoxCode.data}
+                // onChange={(event) => {
+                //   setBoxData({ ...boxData, box_code: event.target.value });
+                // }}
+                variant="outlined"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Box>
 
-          <Box sx={{ flexGrow:1, pl:1}}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Priority Level</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={boxData.priority_level}
-                label="Priority Level"
-                onChange={(event)=>handlePriorityChange(event)}
-              >
-                <MenuItem value={'Red'}>RED</MenuItem>
-                <MenuItem value={'Blue'}>BLUE</MenuItem>
-                <MenuItem value={'Black'}>BLACK</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-
+            <Box sx={{ flexGrow: 1, pl: 1 }}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Priority Level
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={boxData.priority_level}
+                  label="Priority Level"
+                  onChange={(event) => handlePriorityChange(event)}
+                >
+                  <MenuItem value={"Red"}>RED</MenuItem>
+                  <MenuItem value={"Green"}>GREEN</MenuItem>
+                  <MenuItem value={"Black"}>BLACK</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
           <Box sx={{ p: 1, my: 1, border: "1px dashed gray", borderRadius: 2 }}>
             {boxData.box_details.map((row, idx) => {
               // console.log('defaultRDS: '+JSON.stringify(defaultRDS));
-              
+
               return (
                 <React.Fragment key={idx}>
                   <Box display="flex" alignItems={"center"} sx={{ pt: 1 }}>
@@ -339,12 +336,12 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                       id={"retentions" + idx}
                       sx={{ flexGrow: 1, mr: 1 }}
                       options={retentions?.data}
-                      value={
-                        row.document_title
-                      }
+                      value={row.document_title}
                       groupBy={(option: any) => option.dept_unit}
-                      getOptionLabel={(option: any) =>{
-                        return option.series_title_description ? option.series_title_description:option;
+                      getOptionLabel={(option: any) => {
+                        return option.series_title_description
+                          ? option.series_title_description
+                          : option;
                       }}
                       renderInput={(params) => (
                         <TextField {...params} label="Document Title" />
@@ -436,14 +433,16 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                         setBoxData({
                           ...boxData,
                           box_details: boxData.box_details,
-                          disposal_date: boxData.box_details[0].document_date.split(" ").pop.toString(),
+                          disposal_date: boxData.box_details[0].document_date
+                            .split(" ")
+                            .pop.toString(),
                         });
                       }}
                     >
                       <Delete />
                     </IconButton>
                   </Box>
-                  
+
                   <Divider sx={{ mt: 1, mb: 2 }} />
                 </React.Fragment>
               );
@@ -471,22 +470,22 @@ export default function AddStorageDialog(props: StorageDialogProps) {
             </Button>
           </Box>
           <Box>
-              <TextField
-                id="remarks"
-                name="remarks"
-                label="Remarks"
-                variant="outlined"
-                multiline
-                rows={3}
-                fullWidth
-                value={boxData.remarks}
-                onChange={(event) => {
-                  setBoxData({
-                    ...boxData,
-                    remarks: event.target.value,
-                  });
-                }}
-              />
+            <TextField
+              id="remarks"
+              name="remarks"
+              label="Remarks"
+              variant="outlined"
+              multiline
+              rows={3}
+              fullWidth
+              value={boxData.remarks}
+              onChange={(event) => {
+                setBoxData({
+                  ...boxData,
+                  remarks: event.target.value,
+                });
+              }}
+            />
           </Box>
           <Box>
             <Alert severity="info" sx={{ my: 1 }}>

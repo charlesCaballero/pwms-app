@@ -34,10 +34,7 @@ const validationSchema = Yup.object().shape({
   middle_name: Yup.string().required("Middle name is empty."),
   last_name: Yup.string().required("Last name is empty."),
   position: Yup.string().required("Position is empty."),
-  contact_number: Yup.string()
-    .required("Contact number is empty.")
-    .min(11, "A contact number or mobile number has 11-13 characters")
-    .max(13, "A contact number or mobile number has 11-13 characters/number"),
+  contact_number: Yup.string(),
   email: Yup.string()
     .email("Please provide a valid email.")
     .required("You forgot to provide an email."),
@@ -240,7 +237,6 @@ export default function Register(props: RegisterProps) {
             </Grid>
             <Grid item xs={12} sm={5}>
               <TextField
-                required
                 fullWidth
                 id="contact-number"
                 label="Contact Number"

@@ -64,13 +64,13 @@ const tableHeader: HeadCell[] = [
 ];
 
 export default function Users() {
-  const [openRegister, setOpenRegister]= useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
   const handleRefetch = (fetch) => {
     return fetch;
   };
-  const handleClose =()=> {
-    setOpenRegister(false)
-  }
+  const handleClose = () => {
+    setOpenRegister(false);
+  };
 
   return (
     <Box pt={2}>
@@ -92,8 +92,14 @@ export default function Users() {
           alignItems={"flex-start"}
           justifyContent={"flex-end"}
         >
-          <Button variant="contained" color="secondary" onClick={()=>setOpenRegister(true)}>Add User</Button>
-          <RegisterDialog isOpen={openRegister} onClose={()=>handleClose()}/>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setOpenRegister(true)}
+          >
+            Add User
+          </Button>
+          <RegisterDialog isOpen={openRegister} onClose={() => handleClose()} />
         </Box>
       </Box>
       <Suspense>
