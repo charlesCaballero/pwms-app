@@ -243,7 +243,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     if (defaultVal !== undefined) setDefaultRDS(defaultVal);
 
     const date_array = boxData.box_details[0].document_date.split(" ");
-    setCurrentYear(parseInt(date_array[1]));
+    setCurrentYear(parseInt(date_array[date_array.length - 1]));
     setLargestRetention(Math.max(...retention_array));
 
     if (currentYear >= 0) {
@@ -256,7 +256,9 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           ? "Permanent"
           : months[Math.max(...months_array)] +
             " " +
-            (parseInt(date_array[1]) + largestRetention + 1),
+            (parseInt(date_array[date_array.length - 1]) +
+              largestRetention +
+              1),
       });
     }
   }, [boxData]);

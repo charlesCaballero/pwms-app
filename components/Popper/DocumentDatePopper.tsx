@@ -123,6 +123,7 @@ export default function DocumentDate(props: DocumentDateProps) {
 
   const clearDocumentDate = () => {
     setSelectedMonths([]);
+    setSelectedDay(null);
     setSelectedYear(null);
   };
 
@@ -250,25 +251,18 @@ export default function DocumentDate(props: DocumentDateProps) {
                     if (largestMonth < selectedMonths[1])
                       largest = selectedMonths[1];
                     else largest = largestMonth;
+                    const day = selectedDay ? selectedDay + ", " : "";
 
                     let docDate =
                       selectedMonths.length > 1
                         ? selectedMonths[0] === selectedMonths[1]
-                          ? months[selectedMonths[0]] +
-                            " " +
-                            selectedDay +
-                            ", " +
-                            selectedYear
+                          ? months[selectedMonths[0]] + " " + day + selectedYear
                           : months[selectedMonths[0]] +
                             "-" +
                             months[selectedMonths[1]] +
                             " " +
                             selectedYear
-                        : months[selectedMonths[0]] +
-                          " " +
-                          selectedDay +
-                          ", " +
-                          selectedYear;
+                        : months[selectedMonths[0]] + " " + day + selectedYear;
 
                     saveDocumentDate(
                       docDate,
