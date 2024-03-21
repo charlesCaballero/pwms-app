@@ -150,7 +150,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
         box_details: boxData.box_details,
         disposal_date: permanent
           ? "Permanent"
-          : months[largest] + " " + (parseInt(year) + largestRetention),
+          : months[largest] + " " + (parseInt(year) + largestRetention + 1),
       });
       setCurrentYear(year);
       setLargestMonth(largest);
@@ -256,7 +256,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
           ? "Permanent"
           : months[Math.max(...months_array)] +
             " " +
-            (parseInt(date_array[1]) + largestRetention),
+            (parseInt(date_array[1]) + largestRetention + 1),
       });
     }
   }, [boxData]);
@@ -543,9 +543,9 @@ const getFilteredOptions = (options, params) => {
   return filtered;
 };
 
-function updateArray(arr, index, value) {
-  let updatedArray = arr;
-  updatedArray[index] = value;
+// function updateArray(arr, index, value) {
+//   let updatedArray = arr;
+//   updatedArray[index] = value;
 
-  return [...updatedArray];
-}
+//   return [...updatedArray];
+// }

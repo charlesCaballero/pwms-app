@@ -76,8 +76,8 @@ interface DocumentDateProps {
   ): void;
   currentYear: number;
   largestMonth: number;
+  date?: number;
 }
-
 
 export default function DocumentDate(props: DocumentDateProps) {
   const {
@@ -88,9 +88,11 @@ export default function DocumentDate(props: DocumentDateProps) {
     saveDocumentDate,
     currentYear,
     largestMonth,
+    date,
   } = props;
   const [open, setOpen] = React.useState(false);
   const [val, setVal] = React.useState(0);
+  const [selectedDay, setSelectedDay] = React.useState(0);
   const [selectedMonths, setSelectedMonths] = React.useState([]);
   const [selectedYear, setSelectedYear] = React.useState(currentYear);
 
@@ -104,13 +106,19 @@ export default function DocumentDate(props: DocumentDateProps) {
     else setOpen(true);
   };
 
+  const getDays = (): any[] => {
+    const days = Array.apply(null, { length: 31 + 1 })
+      .map(Number.call, Number)
+      .slice(1);
+    return days;
+  };
+
   const selectedMonthRange = (month) => {
     // console.log("months: " + month);
 
     if (selectedMonths.length <= 1) {
       setSelectedMonths(selectedMonths.concat(month));
-    }
-    else setSelectedMonths(month)
+    } else setSelectedMonths(month);
   };
 
   const clearDocumentDate = () => {
@@ -150,6 +158,11 @@ export default function DocumentDate(props: DocumentDateProps) {
                       sx={{ minHeight: 15, fontSize: 12, py: 0 }}
                     />
                     <Tab
+                      label="Day"
+                      disabled={selectedMonths.length > 1}
+                      sx={{ minHeight: 15, fontSize: 12, py: 0 }}
+                    />
+                    <Tab
                       label="Year"
                       sx={{ minHeight: 15, fontSize: 12, py: 0 }}
                     />
@@ -179,6 +192,30 @@ export default function DocumentDate(props: DocumentDateProps) {
                   </Grid>
                 </TabPanel>
                 <TabPanel value={val} index={1}>
+                  <Grid
+                    container
+                    sx={{ width: 310, height: 300, overflowY: "auto" }}
+                    spacing={1}
+                  >
+                    {getDays().map((day) => (
+                      <Grid key={"day-" + day} item xs={2}>
+                        <DocDate
+                          sx={{
+                            height: 40,
+                            backgroundColor:
+                              selectedDay === day ? "#6aa84f" : "",
+                          }}
+                          onClick={() => {
+                            setSelectedDay(day);
+                          }}
+                        >
+                          {day}
+                        </DocDate>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </TabPanel>
+                <TabPanel value={val} index={2}>
                   <Grid container sx={{ width: 310 }} spacing={1}>
                     {getYears().map((year, index) => (
                       <Grid key={"year" + index} item xs={4}>
@@ -188,9 +225,7 @@ export default function DocumentDate(props: DocumentDateProps) {
                           }}
                           sx={{
                             backgroundColor:
-                              selectedYear === year 
-                                ? "#6aa84f"
-                                : "",
+                              selectedYear === year ? "#6aa84f" : "",
                           }}
                         >
                           {year}
@@ -216,12 +251,25 @@ export default function DocumentDate(props: DocumentDateProps) {
                       largest = selectedMonths[1];
                     else largest = largestMonth;
 
-                    let docDate = selectedMonths.length>1? 
-                    selectedMonths[0]===selectedMonths[1]?
-                    months[selectedMonths[0]] + " " + selectedYear:
-                    months[selectedMonths[0]] + "-" + months[selectedMonths[1]] + " " + selectedYear
-                    :months[selectedMonths[0]]+" "+selectedYear;
-                      
+                    let docDate =
+                      selectedMonths.length > 1
+                        ? selectedMonths[0] === selectedMonths[1]
+                          ? months[selectedMonths[0]] +
+                            " " +
+                            selectedDay +
+                            ", " +
+                            selectedYear
+                          : months[selectedMonths[0]] +
+                            "-" +
+                            months[selectedMonths[1]] +
+                            " " +
+                            selectedYear
+                        : months[selectedMonths[0]] +
+                          " " +
+                          selectedDay +
+                          ", " +
+                          selectedYear;
+
                     saveDocumentDate(
                       docDate,
                       currentYear > 0 ? currentYear : selectedYear,
