@@ -14,17 +14,13 @@ import ConfirmRequestDialog from "@components/Dialogs/ConfirmRequestDialog";
 import { useMutation, useQuery } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { AxiosPromise } from "axios";
-import {
-  inventoryMutation,
-} from "@helpers/api-mutations";
+import { inventoryMutation } from "@helpers/api-mutations";
 import RequestFormDialog from "@components/Dialogs/RequestFormDialog";
 import DeleteDialog from "@components/Dialogs/DeleteDialog";
 import Cookie from "js-cookie";
 import { getNewBoxCodeQuery } from "@helpers/api-queries";
 
 type ColumnType = string | number | boolean;
-const officeID = Cookie.get("office_id");
-
 
 interface TableHeader {
   label: string;
@@ -76,7 +72,7 @@ export default function StorageRequest() {
   const [openRequestForm, setOpenRequestForm] = React.useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = React.useState(false);
   const [adjustedBoxCode, setAdjustedBoxCode] = React.useState("");
-
+  const officeID = Cookie.get("office_id");
 
   const inventory = useMutation((data: any) => {
     return api(Method.POST, `${inventoryMutation}`, data) as AxiosPromise<any>;
@@ -84,8 +80,8 @@ export default function StorageRequest() {
 
   const newBoxCode = useQuery(
     "new-box-code",
-    async () => (await api(Method.GET, `${getNewBoxCodeQuery}/${officeID}`)) as any,
-    { refetchOnWindowFocus: false }
+    async () =>
+      (await api(Method.GET, `${getNewBoxCodeQuery}/${officeID}`)) as any
   );
 
   // const storageRequest = useMutation(() => {
@@ -93,11 +89,11 @@ export default function StorageRequest() {
   // });
   const handleDeleteBox = (isTrue) => {
     // console.log("delete: "+ JSON.stringify(boxes[selectedIndex]));
-    if(isTrue){
-      boxes.splice(selectedIndex,1);
+    if (isTrue) {
+      boxes.splice(selectedIndex, 1);
       setOpenDeleteConfirm(false);
     }
-  }
+  };
 
   const handleSave = async (data: InventoryProps[]) => {
     await inventory.mutate(data, {
@@ -140,16 +136,29 @@ export default function StorageRequest() {
           sx={{ m: 1 }}
           onClick={() => {
             const getArray = newBoxCode.data?.split("-");
-            console.log("getArray: "+getArray);
-            setAdjustedBoxCode(getArray?
-              getArray[0]==="LHIO"? 
-              getArray[1]+"-"+(parseInt(getArray[2])+boxes.length).toString().padStart(3,'0')+"-"+getArray[3]:
-              getArray[0]+"-"+(parseInt(getArray[1])+boxes.length).toString().padStart(3,'0')+"-"+getArray[2]:
-              newBoxCode.data);
-            setOpenAddBox(true); 
+            console.log("getArray: " + getArray);
+            setAdjustedBoxCode(
+              getArray
+                ? getArray[0] === "LHIO"
+                  ? getArray[1] +
+                    "-" +
+                    (parseInt(getArray[2]) + boxes.length)
+                      .toString()
+                      .padStart(3, "0") +
+                    "-" +
+                    getArray[3]
+                  : getArray[0] +
+                    "-" +
+                    (parseInt(getArray[1]) + boxes.length)
+                      .toString()
+                      .padStart(3, "0") +
+                    "-" +
+                    getArray[2]
+                : newBoxCode.data
+            );
+            setOpenAddBox(true);
             setAction("add");
           }}
-
         >
           Add Box
         </Button>
@@ -202,7 +211,7 @@ export default function StorageRequest() {
       />
       <DeleteDialog
         isOpen={openDeleteConfirm}
-        onClose={(isTrue)=>handleDeleteBox(isTrue)}
+        onClose={(isTrue) => handleDeleteBox(isTrue)}
         rowData={boxes[selectedIndex]}
         isStrict={false}
       />
@@ -263,8 +272,10 @@ export default function StorageRequest() {
                       }}
                     >
                       {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
-                        detail.document_title }
-                        {box.remarks !==""||undefined?"\nRemarks: \n"+box.remarks:""}
+                        detail.document_title}
+                      {box.remarks !== "" || undefined
+                        ? "\nRemarks: \n" + box.remarks
+                        : ""}
                     </TableCell>
                     <TableCell
                       align="left"
@@ -278,7 +289,7 @@ export default function StorageRequest() {
                       {(box.box_details.length > 1 ? cnt + 1 + ". " : "") +
                         detail.document_date}
                     </TableCell>
-                    
+
                     {cnt < 1 && (
                       <TableCell
                         align="right"
@@ -318,14 +329,14 @@ export default function StorageRequest() {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Delete">
-                          <IconButton 
+                          <IconButton
                             color="error"
                             onClick={() => {
                               setSelectedIndex(count);
                               setOpenDeleteConfirm(true);
                               setAction("delete");
                             }}
-                            >
+                          >
                             <Delete />
                           </IconButton>
                         </Tooltip>
