@@ -92,7 +92,7 @@ export default function DocumentDate(props: DocumentDateProps) {
   } = props;
   const [open, setOpen] = React.useState(false);
   const [val, setVal] = React.useState(0);
-  const [selectedDay, setSelectedDay] = React.useState(0);
+  const [selectedDay, setSelectedDay] = React.useState([]);
   const [selectedMonths, setSelectedMonths] = React.useState([]);
   const [selectedYear, setSelectedYear] = React.useState(currentYear);
 
@@ -121,9 +121,17 @@ export default function DocumentDate(props: DocumentDateProps) {
     } else setSelectedMonths(month);
   };
 
+  const selectedDayRange = (day) => {
+    // console.log("day: " + day);
+
+    if (selectedDay.length <= 1) {
+      setSelectedDay(selectedDay.concat(day));
+    } else setSelectedDay(day);
+  };
+
   const clearDocumentDate = () => {
     setSelectedMonths([]);
-    setSelectedDay(null);
+    setSelectedDay([]);
     setSelectedYear(null);
   };
 
@@ -204,10 +212,14 @@ export default function DocumentDate(props: DocumentDateProps) {
                           sx={{
                             height: 40,
                             backgroundColor:
-                              selectedDay === day ? "#6aa84f" : "",
+                              day === selectedDay[0] || day === selectedDay[1]
+                                ? "#6aa84f"
+                                : day >= selectedDay[0] && day <= selectedDay[1]
+                                ? "#b6d7a8"
+                                : "",
                           }}
                           onClick={() => {
-                            setSelectedDay(day);
+                            selectedDayRange(day);
                           }}
                         >
                           {day}
@@ -251,18 +263,33 @@ export default function DocumentDate(props: DocumentDateProps) {
                     if (largestMonth < selectedMonths[1])
                       largest = selectedMonths[1];
                     else largest = largestMonth;
-                    const day = selectedDay ? selectedDay + ", " : "";
+                    const day = () => {
+                      if (selectedDay.length > 1) {
+                        if (selectedDay[0] === selectedDay[1])
+                          return selectedDay[0] + ", ";
+                        else
+                          return selectedDay[0] + "-" + selectedDay[1] + ", ";
+                      } else if (selectedDay.length === 1)
+                        return selectedDay[0] + ", ";
+                      else return "";
+                    };
 
                     let docDate =
                       selectedMonths.length > 1
                         ? selectedMonths[0] === selectedMonths[1]
-                          ? months[selectedMonths[0]] + " " + day + selectedYear
+                          ? months[selectedMonths[0]] +
+                            " " +
+                            day() +
+                            selectedYear
                           : months[selectedMonths[0]] +
                             "-" +
                             months[selectedMonths[1]] +
                             " " +
                             selectedYear
-                        : months[selectedMonths[0]] + " " + day + selectedYear;
+                        : months[selectedMonths[0]] +
+                          " " +
+                          day() +
+                          selectedYear;
 
                     saveDocumentDate(
                       docDate,

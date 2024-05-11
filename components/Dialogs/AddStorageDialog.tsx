@@ -248,7 +248,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
 
     if (currentYear >= 0) {
       // const disposalYear =
-      // console.log("currentYear: "+ currentYear);
+      // console.log("date_array: " + date_array);
 
       setBoxData({
         ...boxData,

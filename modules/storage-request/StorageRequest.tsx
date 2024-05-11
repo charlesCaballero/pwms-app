@@ -140,7 +140,9 @@ export default function StorageRequest() {
             setAdjustedBoxCode(
               getArray
                 ? getArray[0] === "LHIO"
-                  ? getArray[1] +
+                  ? getArray[0] +
+                    "-" +
+                    getArray[1] +
                     "-" +
                     (parseInt(getArray[2]) + boxes.length)
                       .toString()
