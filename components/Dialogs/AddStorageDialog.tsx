@@ -26,6 +26,7 @@ import { useQuery } from "react-query";
 import { api, Method } from "@utils/queryUtils";
 import { getRetentionsQuery } from "@helpers/api-queries";
 import DocumentDate from "@components/Popper/DocumentDatePopper";
+import { setPriority } from "os";
 
 const months = [
   "January",
@@ -136,6 +137,12 @@ export default function AddStorageDialog(props: StorageDialogProps) {
     resetValues();
   };
 
+  const setPriorityLevel = (largestRetention, permanent) => {
+    if (permanent) return "Red";
+    else if (largestRetention > 2) return "Green";
+    else return "Black";
+  };
+
   const handleDocumentDateChange = (date, year, largest, index) => {
     // console.log("year: " + year);
     let permanent = false;
@@ -148,6 +155,7 @@ export default function AddStorageDialog(props: StorageDialogProps) {
       setBoxData({
         ...boxData,
         box_details: boxData.box_details,
+        priority_level: setPriorityLevel(largestRetention, permanent),
         disposal_date: permanent
           ? "Permanent"
           : months[largest] + " " + (parseInt(year) + largestRetention + 1),
@@ -319,9 +327,13 @@ export default function AddStorageDialog(props: StorageDialogProps) {
                   label="Priority Level"
                   onChange={(event) => handlePriorityChange(event)}
                 >
-                  <MenuItem value={"Red"}>RED</MenuItem>
-                  <MenuItem value={"Green"}>GREEN</MenuItem>
-                  <MenuItem value={"Black"}>BLACK</MenuItem>
+                  <MenuItem value={"Red"}>RED (Permanent Files)</MenuItem>
+                  <MenuItem value={"Green"}>
+                    GREEN (3 years above retention period)
+                  </MenuItem>
+                  <MenuItem value={"Black"}>
+                    BLACK (1-2 years retention period or photocopied documents)
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Box>
